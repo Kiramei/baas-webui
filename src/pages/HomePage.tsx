@@ -74,7 +74,7 @@ const HomePage: React.FC<ProfileProps> = ({profileId}) => {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `logs-${new Date().toISOString()}.txt`;
+    anchor.download = `logs-${profileId}-${new Date().toISOString()}.txt`;
     anchor.click();
     URL.revokeObjectURL(url);
   };
@@ -87,7 +87,31 @@ const HomePage: React.FC<ProfileProps> = ({profileId}) => {
           <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{t('home')}</h2>
           <h2 className="text-2xl ml-3 text-slate-500 dark:text-slate-400">#{profile?.name}</h2>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex sm:hidden items-center gap-2">
+          <CButton
+            variant="secondary"
+            onClick={() => setHotkeyModalOpen(true)}
+            className="flex pl-2 pr-2 items-center"
+          >
+            <KeyboardIcon className="w-4 h-4"/>
+          </CButton>
+          <CButton
+            onClick={scriptRunning ? stopScript : startScript}
+            variant={scriptRunning ? 'danger' : 'primary'}
+            className="pl-2 pr-2 flex items-center justify-center"
+          >
+            {scriptRunning ? <Square className="w-4 h-4"/> : <Play className="w-4 h-4"/>}
+          </CButton>
+        </div>
+        <div className="hidden sm:flex items-center gap-2">
+          <CButton
+            variant="secondary"
+            onClick={() => setHotkeyModalOpen(true)}
+            className="flex items-center"
+          >
+            <KeyboardIcon className="w-4 h-4 mr-2"/>
+            {t('hotkeys')}
+          </CButton>
           <CButton
             onClick={scriptRunning ? stopScript : startScript}
             variant={scriptRunning ? 'danger' : 'primary'}
