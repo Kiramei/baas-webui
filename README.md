@@ -116,11 +116,52 @@ pnpm dev
 
 ## 📸 Visuals
 
-|                                                **📖 Wiki Page**                                                 |                                                **⚙️ Settings Page 2**                                                |                                               **️️⚙️ Settings Page 1**                                               |
-|:---------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------:|
-|    <img src="docs/page-wiki.png" alt="Wiki Page" style="width: 100%; height: 200px; object-fit: contain;" />    | <img src="docs/page-setting-2.png" alt="Settings Page 2" style="width: 100%; height: 200px; object-fit: contain;" /> | <img src="docs/page-setting-1.png" alt="Settings Page 1" style="width: 100%; height: 200px; object-fit: contain;" /> |
-|                                              **🧩 Configuration**                                               |                                                   **⏱ Scheduler**                                                    |                                                  **☕ Café Feature**                                                  |
-| <img src="docs/page-config.png" alt="Configuration" style="width: 100%; height: 200px; object-fit: contain;" /> | <img src="docs/page-scheduler.png" alt="Scheduler Page" style="width: 100%; height: 200px; object-fit: contain;" />  |   <img src="docs/feature-cafe.png" alt="Cafe Feature" style="width: 100%; height: 200px; object-fit: contain;" />    |
+<table style="table-layout: fixed; width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th style="text-align: center;">①</th>
+      <th style="text-align: center;">②</th>
+      <th style="text-align: center;">③</th>
+    </tr>
+  </thead>
+  <tr>
+    <td style="text-align: center; height: 300px;">
+      <img src="docs/page-wiki.png" alt="Wiki Page" id="image1" width="100%" />
+    </td>
+    <td style="text-align: center; height: 300px;">
+      <img src="docs/page-setting-2.png" alt="Settings Page 2" id="image2" width="100%" />
+    </td>
+    <td style="text-align: center; height: 300px;">
+      <img src="docs/page-setting-1.png" alt="Settings Page 1" id="image3" width="100%" />
+    </td>
+  </tr>
+  <thead>
+    <tr>
+      <th style="text-align: center;">④</th>
+      <th style="text-align: center;">⑤</th>
+      <th style="text-align: center;">⑥</th>
+    </tr>
+  </thead>
+  <tr>
+    <td style="text-align: center; height: 300px;">
+      <img src="docs/page-config.png" alt="Configuration" id="image4" width="100%" />
+    </td>
+    <td style="text-align: center; height: 300px;">
+      <img src="docs/page-scheduler.png" alt="Scheduler Page" id="image5" width="100%" />
+    </td>
+    <td style="text-align: center; height: 300px;">
+      <img src="docs/feature-cafe.png" alt="Cafe Feature" id="image6" width="100%" />
+    </td>
+  </tr>
+</table>
+
+- **📖 Wiki Page**: This page serves as the documentation hub for the project, providing users with easy access to the project's instructions, API documentation, and general guidelines. See image ①.  
+- **⚙️ Settings Page 2**: Settings Page 2 allows users to configure additional options, such as advanced preferences, notifications, and more detailed system settings. See image ②.  
+- **⚙️ Settings Page 1**: Settings Page 1 focuses on user account settings, where users can modify their personal information, change their password, and set language preferences. See image ③.  
+- **🧩 Configuration**: The configuration page is used by system administrators to set up core system features, including managing database connections, API keys, and backend services. See image ④.  
+- **⏱ Scheduler**: The scheduler feature allows users to automate tasks such as running reports, sending notifications, or syncing data with other systems. Check image ⑤.  
+- **☕ Café Feature**: The café feature enables users to explore coffee options and place orders directly through the app, integrating the café's menu and ordering system into the user's interface. See image ⑥.
+
 
 ---
 
