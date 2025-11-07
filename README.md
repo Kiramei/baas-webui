@@ -6,18 +6,21 @@
 [![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react&logoColor=white)](https://react.dev/) [![Tailwind](https://img.shields.io/badge/Tailwind-4.1-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/) [![Contributors](https://img.shields.io/badge/contributors-1-orange)](#-contributing) [![Last Commit](https://img.shields.io/badge/last_commit-2025--10--18-6C63FF)]() [![License: GPL v3](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 </div>
 
-
-| ☀️ Light Mode | 🌙 Dark Mode |
-|:--:|:--:|
+|            ☀️ Light Mode            |           🌙 Dark Mode            |
+|:-----------------------------------:|:---------------------------------:|
 | ![Light Mode](docs/cover-light.png) | ![Dark Mode](docs/cover-dark.png) |
 
 ---
 
 ## 🚀 Overview
 
-BlueArchive Auto Script GUI is a React-driven desktop dashboard that wraps the Blue Archive automation core with a polished, responsive control surface. It keeps pilots in control of multi-instance farming by blending real-time telemetry, drag-and-drop scheduling, and richly localized documentation in one place.
+BlueArchive Auto Script GUI is a React-driven desktop dashboard that wraps the Blue Archive automation core with a
+polished, responsive control surface. It keeps pilots in control of multi-instance farming by blending real-time
+telemetry, drag-and-drop scheduling, and richly localized documentation in one place.
 
-Under the hood the app binds secure WebSocket channels (`provider`, `sync`, `trigger`, `heartbeat`) to a local automation service, persists UI preferences, and renders fine-grained configuration panels for every daily activity — from cafés and arenas to tactical drills and whitelist management.
+Under the hood the app binds secure WebSocket channels (`provider`, `sync`, `trigger`, `heartbeat`) to a local
+automation service, persists UI preferences, and renders fine-grained configuration panels for every daily activity —
+from cafés and arenas to tactical drills and whitelist management.
 
 ```
 ✨ Multi-profile orchestration with drag-to-reorder tabs  
@@ -113,11 +116,11 @@ pnpm dev
 
 ## 📸 Visuals
 
-|                         **📖 Wiki Page**                          |                         **⚙️ Settings Page 2**                         |                       **️ ️️⚙️ Settings Page 1**                       |
-|:-----------------------------------------------------------------:|:----------------------------------------------------------------------:|:----------------------------------------------------------------------:|
-|    <img src="docs/page-wiki.png" alt="Wiki Page" width="100%">    | <img src="docs/page-setting-2.png" alt="Settings Page 2" width="100%"> | <img src="docs/page-setting-1.png" alt="Settings Page 1" width="100%"> |
-|                       **🧩 Configuration**                        |                            **⏱ Scheduler**                             |                           **☕ Café Feature**                           |
-| <img src="docs/page-config.png" alt="Configuration" width="100%"> | <img src="docs/page-scheduler.png" alt="Scheduler Page" width="100%">  |   <img src="docs/feature-cafe.png" alt="Cafe Feature" width="100%">    |
+|                                                **📖 Wiki Page**                                                 |                                                **⚙️ Settings Page 2**                                                |                                               **️️⚙️ Settings Page 1**                                               |
+|:---------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------:|
+|    <img src="docs/page-wiki.png" alt="Wiki Page" style="width: 100%; height: 200px; object-fit: contain;" />    | <img src="docs/page-setting-2.png" alt="Settings Page 2" style="width: 100%; height: 200px; object-fit: contain;" /> | <img src="docs/page-setting-1.png" alt="Settings Page 1" style="width: 100%; height: 200px; object-fit: contain;" /> |
+|                                              **🧩 Configuration**                                               |                                                   **⏱ Scheduler**                                                    |                                                  **☕ Café Feature**                                                  |
+| <img src="docs/page-config.png" alt="Configuration" style="width: 100%; height: 200px; object-fit: contain;" /> | <img src="docs/page-scheduler.png" alt="Scheduler Page" style="width: 100%; height: 200px; object-fit: contain;" />  |   <img src="docs/feature-cafe.png" alt="Cafe Feature" style="width: 100%; height: 200px; object-fit: contain;" />    |
 
 ---
 
