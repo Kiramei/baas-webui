@@ -3,7 +3,7 @@
 
 *Automation command center for multi-profile Blue Archive orchestration*
 
-[![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react&logoColor=white)](https://react.dev/) [![Tailwind](https://img.shields.io/badge/Tailwind-4.1-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/) [![Contributors](https://img.shields.io/badge/contributors-1-orange)](#-contributing) [![Last Commit](https://img.shields.io/badge/last_commit-2025--10--18-6C63FF)]() [![License: GPL v3](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react&logoColor=white)](https://react.dev/) [![Tailwind](https://img.shields.io/badge/Tailwind-4.1-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/) [![License: GPL v3](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 </div>
 
 |            ☀️ Light Mode            |           🌙 Dark Mode            |
