@@ -1,3 +1,5 @@
+const baseUrl = import.meta.env.BASE_URL;
+
 // src/descriptions/wikiContent.ts
 export type LanguageCode = 'en' | 'zh' | 'ja' | 'ko' | 'fr' | 'de' | 'ru';
 
@@ -48,7 +50,7 @@ const LANG_PATHS: Record<LanguageCode, string> = {
 // Load Docs from local
 export const loadDocs = async (basename: string, language: LanguageCode) => {
   const result: Partial<Record<LanguageCode, string>> = {};
-  const path = `/docs/${LANG_PATHS[language]}/${basename}.md`;
+  const path = `${baseUrl}docs/${LANG_PATHS[language]}/${basename}.md`;
   const articleFetched = await fetch(path);
   result[language] = await articleFetched.text();
   return result;
@@ -59,7 +61,7 @@ export const loadDocs = async (basename: string, language: LanguageCode) => {
 // Passage List
 // ----------------------
 export const getWikiArticles: (language: LanguageCode) => Promise<WikiArticle[]> = async (language: LanguageCode): Promise<WikiArticle[]> => {
-  const res = await fetch("/docs/entry.json");
+  const res = await fetch(`${baseUrl}docs/entry.json`);
   const parsedRef = await res.json();
   return Promise.all(parsedRef.map(async (item: { basename: string }) => ({
     ...item, body: await loadDocs(item.basename, language)

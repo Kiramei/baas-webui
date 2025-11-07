@@ -16,6 +16,8 @@ import {motion} from "framer-motion";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {PageKey} from "@/types/app";
 
+const baseUrl = import.meta.env.BASE_URL;
+
 interface SidebarProps {
   activePage: string;
   setActivePage: (page: PageKey) => void;
@@ -46,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({activePage, setActivePage}) => {
         className="w-64 h-full flex-shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex-col lg:block hidden"
       >
         <div className="h-16 flex items-center border-b border-slate-200 dark:border-slate-700 px-4">
-          <img src="/images/logo.png" alt="Logo" className="h-8 w-8"/>
+          <img src={`${baseUrl}images/logo.png`} alt="Logo" className="h-8 w-8"/>
           <h1 className="text-xl font-bold text-primary-600 dark:text-primary-400 flex-1 text-start ml-2">
             {t("appTitle")}
           </h1>

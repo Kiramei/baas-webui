@@ -3,6 +3,7 @@ import {useTranslation} from 'react-i18next';
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.tsx";
 
+const baseUrl = import.meta.env.BASE_URL;
 
 const useTimeAgo = () => {
   const {t} = useTranslation();
@@ -25,30 +26,30 @@ const useTimeAgo = () => {
   };
 }
 
-const Skeleton: React.FC<{ className?: string }> = ({ className = "" }) => (
-  <div className={`animate-pulse bg-slate-200 dark:bg-slate-700 rounded-md ${className}`} />
+const Skeleton: React.FC<{ className?: string }> = ({className = ""}) => (
+  <div className={`animate-pulse bg-slate-200 dark:bg-slate-700 rounded-md ${className}`}/>
 );
 
-const AssetsDisplay: React.FC<{ profileId: string }> = ({ profileId }) => {
-  const { t } = useTranslation();
+const AssetsDisplay: React.FC<{ profileId: string }> = ({profileId}) => {
+  const {t} = useTranslation();
   const timeAgo = useTimeAgo();
   const config = useWebSocketStore((e) => e.configStore[profileId]);
-  const [open, setOpen] = useState(Array.from({ length: 8 }).map(() => false));
+  const [open, setOpen] = useState(Array.from({length: 8}).map(() => false));
 
   const noData = !config || Object.keys(config).length === 0;
 
   if (noData) {
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-2 p-2">
-        {Array.from({ length: 8 }).map((_, i) => (
+        {Array.from({length: 8}).map((_, i) => (
           <div
             key={i}
             className="flex items-center bg-white dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700"
           >
-            <Skeleton className="w-10 h-10 rounded-full mr-4" />
+            <Skeleton className="w-10 h-10 rounded-full mr-4"/>
             <div className="flex-1 space-y-2">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/2" />
+              <Skeleton className="h-4 w-3/4"/>
+              <Skeleton className="h-3 w-1/2"/>
             </div>
           </div>
         ))}
@@ -61,49 +62,49 @@ const AssetsDisplay: React.FC<{ profileId: string }> = ({ profileId }) => {
       name: t("property.ap"),
       value: `${config.ap.count}/${config.ap.max}`,
       time: config.ap.time,
-      icon: "/icons/property/currency_icon_ap.webp",
+      icon: `${baseUrl}icons/property/currency_icon_ap.webp`,
     },
     {
       name: t("property.credits"),
       value: config.creditpoints.count.toLocaleString(),
       time: config.creditpoints.time,
-      icon: "/icons/property/currency_icon_gold.webp",
+      icon: `${baseUrl}icons/property/currency_icon_gold.webp`,
     },
     {
       name: t("property.pyroxene"),
       value: config.pyroxene.count.toLocaleString(),
       time: config.pyroxene.time,
-      icon: "/icons/property/currency_icon_gem.webp",
+      icon: `${baseUrl}icons/property/currency_icon_gem.webp`,
     },
     {
       name: t("property.coin.arena"),
       value: config.tactical_challenge_coin.count.toLocaleString(),
       time: config.tactical_challenge_coin.time,
-      icon: "/icons/property/item_icon_chasecoin.webp",
+      icon: `${baseUrl}icons/property/item_icon_chasecoin.webp`,
     },
     {
       name: t("property.coin.commission"),
       value: config.bounty_coin.count,
       time: config.bounty_coin.time,
-      icon: "/icons/property/item_icon_arenacoin.webp",
+      icon: `${baseUrl}icons/property/item_icon_arenacoin.webp`,
     },
     {
       name: t("property.keystone"),
       value: config.create_item_holding_quantity.Keystone?.toLocaleString() || "-1",
       time: config.pyroxene.time,
-      icon: "/icons/property/item_icon_craftitem_1.webp",
+      icon: `${baseUrl}icons/property/item_icon_craftitem_1.webp`,
     },
     {
       name: t("property.keystone.piece"),
       value: config.create_item_holding_quantity["Keystone-Piece"]?.toLocaleString() || "-1",
       time: config.pyroxene.time,
-      icon: "/icons/property/item_icon_craftitem_0.webp",
+      icon: `${baseUrl}icons/property/item_icon_craftitem_0.webp`,
     },
     {
       name: t("property.pass"),
       value: `${config._pass.level}/${config._pass.max_level}`,
       time: config._pass.time,
-      icon: "/icons/property/item_icon_pass.webp",
+      icon: `${baseUrl}icons/property/item_icon_pass.webp`,
     },
   ];
 
@@ -140,7 +141,7 @@ const AssetsDisplay: React.FC<{ profileId: string }> = ({ profileId }) => {
               className="bg-white dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-start transition-transform hover:scale-[1.02]"
             >
               <div className="flex flex-col items-center justify-center mr-4 min-w-10 ml-1">
-                <img src={item.icon} className="w-8 h-6" alt={item.name} />
+                <img src={item.icon} className="w-8 h-6" alt={item.name}/>
                 <div className="text-sm text-slate-500 dark:text-slate-400">{item.name}</div>
               </div>
               <div>
@@ -150,7 +151,8 @@ const AssetsDisplay: React.FC<{ profileId: string }> = ({ profileId }) => {
             </div>
           </PopoverTrigger>
 
-          <PopoverContent className="w-56 p-2 mr-6 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 max-h-100 overflow-y-auto" />
+          <PopoverContent
+            className="w-56 p-2 mr-6 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 max-h-100 overflow-y-auto"/>
         </Popover>
       ))}
     </div>
