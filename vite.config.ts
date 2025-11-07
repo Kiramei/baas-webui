@@ -7,6 +7,7 @@ import compression from "vite-plugin-compression";
 
 export default defineConfig(() => {
   return {
+    base: '/baas-webui/',
     clearScreen: false,
     define: {
       global: 'window'
