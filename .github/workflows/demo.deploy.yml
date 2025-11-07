@@ -30,6 +30,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       
+      - name: Modify vite.config.js for GitHub Pages
+        run: |
+          if [ "$GITHUB_REF" == "refs/heads/master" ]; then
+            echo "Modifying base path for GitHub Pages..."
+            sed -i 's|base: \"/\"|base: \"/baas-webui/\"|' vite.config.js
+          fi
+
       - name: Build Project
         run: pnpm build
         
