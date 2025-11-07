@@ -3,8 +3,9 @@ name: Demonstration of baas-webui
 on:
   push:
     branches: [ "demo" ]
-  pull_request:
-    branches: [ "demo" ]
+
+permissions:
+  contents: write
 
 jobs:
   cache-and-install:
@@ -31,3 +32,9 @@ jobs:
       
       - name: Build Project
         run: pnpm build
+        
+      - name: Deploy Github Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: ./dist
