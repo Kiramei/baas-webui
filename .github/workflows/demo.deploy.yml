@@ -32,9 +32,9 @@ jobs:
         # Ensure pnpm is in the PATH
         echo "/usr/local/bin" >> $GITHUB_PATH
 
-    # Cache pnpm store
+    # Cache pnpm store using actions/cache@v3
     - name: Cache pnpm store
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.pnpm-store
         key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
