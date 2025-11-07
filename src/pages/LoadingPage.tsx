@@ -9,6 +9,8 @@ import {useWebSocketStore} from "../store/websocketStore";
 import {useTranslation} from "react-i18next";
 import {Info, KeyRound} from "lucide-react";
 
+const baseUrl = import.meta.env.BASE_URL;
+
 interface LoadingPageProps {
   /**
    * Optional text rendered underneath the loading animation.
@@ -71,7 +73,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = (
       <div
         className="fixed inset-0 bg-[var(--color-slate-100)] dark:bg-[oklch(12.9%_0.042_264.695)] overflow-hidden">
         <img
-          src={theme === "light" ? "/images/bg-light.webp" : "/images/bg-dark.webp"}
+          src={theme === "light" ? `${baseUrl}images/bg-light.webp` : `${baseUrl}images/bg-dark.webp`}
           alt="Loading BG"
           className="w-full h-full object-cover object-center"
         />
@@ -126,7 +128,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = (
           }}
         >
           <img
-            src="/images/logo.png"
+            src={`${baseUrl}images/logo.png`}
             alt="App Logo"
             className="w-36 h-36 mb-6 fixed rounded-full drop-shadow-[0_0_80px_rgba(0,215,255,0.8)] dark:drop-shadow-[0_0_80px_rgba(59,130,246,0.8)]"
           />
