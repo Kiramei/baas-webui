@@ -2,7 +2,7 @@ name: Demonstration of baas-webui
 
 on:
   push:
-    branches: [ "demo" ]
+    branches: [ "master" ]
 
 permissions:
   contents: write
