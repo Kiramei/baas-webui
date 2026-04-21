@@ -13,6 +13,7 @@ import {LoadingPage} from '@/pages/LoadingPage';
 import {Toaster} from "@/components/ui/sonner";
 import {PageKey} from "@/types/app";
 import i18n, {loadLocale} from "@/lib/i18n";
+import BAComet from "@/components/ui/BAComet.tsx";
 
 /**
  * Shared motion variants that keep inactive pages mounted while keeping the transition lightweight.
@@ -54,7 +55,7 @@ const App: React.FC = () => {
   return (
     <>
       <ThemeProvider>
-
+        <BAComet />
         {!hideLoading && (
           <motion.div
             initial={false}

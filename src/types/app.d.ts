@@ -44,7 +44,7 @@ export interface WsCallBackDict {
 }
 
 
-type WsName = "provider" | "sync" | "trigger" | "heartbeat";
+type WsName = "provider" | "sync" | "trigger" | "heartbeat" | `remote-${string}`;
 
 export interface LogItem {
   time: string;
@@ -129,6 +129,13 @@ interface WebSocketState {
   modify: (path: string, value: any, showToast?: boolean) => void;
   patch: (path: string, value: any) => void;
   trigger: (payload: CommandPayload, callback?: (e: any) => void) => void;
+  connectRemote: (
+    profileId: string,
+    onopen: (event: Event) => void,
+    onclose: (event: CloseEvent) => void,
+    onerror: (event: Event) => void,
+    onmessage: (event: ArrayBuffer) => void
+  ) => Promise<`remote-${string}`> ;
   pendingCallbacks: Record<string, (data?: any) => void>;
 
   _all_data_initialized: boolean;

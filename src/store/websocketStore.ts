@@ -395,6 +395,42 @@ export const useWebSocketStore = create<WebSocketState>()(
       }));
     },
 
+    connectRemote: async (
+      profileId: string,
+      onopen: (event: Event) => void,
+      onclose: (event: CloseEvent) => void,
+      onerror: (event: Event) => void,
+      onmessage: (event: ArrayBuffer) => void,
+    ): Promise<`remote-${string}`> => {
+      const url = `${BASE}/ws/remote`;
+      const unique = crypto.randomUUID();
+      const name = "remote-" + unique as `remote-${string}`;
+      StorageUtil.set("SECRET", get()._secret);
+      const ws = new SecureWebSocket(url, get()._secret, name, "arraybuffer");
+
+      ws.onOpen = (event: Event) => {
+        let _interval = setInterval(() => {
+          if (ws.checkSecret()) {
+            ws.sendJson({
+              "config_id": profileId,
+            })
+            clearInterval(_interval);
+          }
+        }, 100)
+        onopen(event);
+      };
+      ws.onError = onerror;
+      ws.onClose = (event: CloseEvent) => {
+        onclose(event);
+        set((state) => {
+          const next = {...state.connections};
+          delete next[name];
+          return {connections: next};
+        });
+      };
+      await ws.connect(onmessage, false)
+      return new Promise(() => name);
+    },
 
     disconnect: (name: WsName) => {
       const conn = get().connections[name];

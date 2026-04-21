@@ -36,22 +36,32 @@ export class SecureWebSocket {
   private readonly name: string;
   private ws: WebSocket | null = null;
   private fernetSecret: any = null;
+  private readonly binaryType: BinaryType | null = null;
 
   // Optional lifecycle callbacks that the consumer can attach to.
   public onOpen?: (event: Event) => void;
   public onClose?: (event: CloseEvent) => void;
   public onError?: (event: Event) => void;
 
-  constructor(url: string, sharedSecret: string, name: string) {
+  constructor(url: string, sharedSecret: string, name: string, binaryType: BinaryType | null = null) {
     this.url = url;
     this.sharedSecret = sharedSecret;
     this.name = name;
+    this.binaryType = binaryType;
   }
 
-  async connect(onMessage?: (msg: any) => void): Promise<void> {
+  public checkSecret(): boolean {
+    return this.fernetSecret !== null;
+  }
+
+  async connect(onMessage?: (msg: any) => void, do_decode: boolean = true): Promise<void> {
     return new Promise((resolve, reject) => {
       let handshakeDone = false;
       this.ws = new WebSocket(this.url);
+
+      if (this.binaryType !== null) {
+        this.ws.binaryType = this.binaryType;
+      }
 
       this.ws.onopen = (e) => {
         console.log(`[${this.name}] Connected`);
@@ -80,10 +90,15 @@ export class SecureWebSocket {
               token,
               ttl: 0,
             });
-            const plaintext = f.decode();
-            if (this.name !== "heartbeat")
-              console.log(`[${this.name}] Recv: ${plaintext}`);
-            onMessage?.(plaintext);
+            if (do_decode) {
+              const plaintext = f.decode();
+              if (this.name !== "heartbeat")
+                console.log(`[${this.name}] Recv: ${plaintext}`);
+              onMessage?.(plaintext);
+            } else {
+              const plainBytes = f.decode();
+              onMessage?.(plainBytes);
+            }
           } catch (err) {
             console.error(`[${this.name}] Decrypt error: ${err}`);
           }

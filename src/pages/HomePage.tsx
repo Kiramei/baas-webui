@@ -11,6 +11,7 @@ import {ProfileProps} from "@/types/app";
 import {TaskStatus} from "@/components/HomeTaskStatus.tsx";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {formatIsoToReadable, getTimestamp, getTimestampMs} from "@/lib/utils.ts";
+import { RemoteDisplay } from '@/components/RemoteDisplay.tsx';
 
 /**
  * Landing experience for a profile that provides orchestration controls, status, and live logs.
@@ -118,6 +119,8 @@ const HomePage: React.FC<ProfileProps> = ({profileId}) => {
         </div>
       )}
 
+
+
       {/* Streaming log viewer with scroll management and export tooling. */}
       <Card className="flex-1 min-h-100 flex flex-col">
         <CardHeader className="flex justify-between items-center">
@@ -160,7 +163,8 @@ const HomePage: React.FC<ProfileProps> = ({profileId}) => {
           </div>
         </CardHeader>
 
-        <CardContent className="flex-1 min-h-0 p-0 flex overflow-x-hidden">
+        <CardContent className="relative flex-1 min-h-0 p-0 flex overflow-x-hidden">
+          <RemoteDisplay profileId={profileId!} />
           <Logger logs={logStore[`config:${profileId}`]} scrollToEnd={uiSettings?.scrollToEnd}/>
         </CardContent>
       </Card>
