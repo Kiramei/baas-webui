@@ -11,15 +11,9 @@ import {Separator} from "@/components/ui/separator.tsx";
 import {EllipsisWithTooltip} from "@/components/ui/etooltip.tsx";
 import {toast} from "sonner";
 import {
-  AppWindow,
-  CheckCircle2, Cloud, GitBranch,
-  HardDrive,
-  Info,
-  Loader2,
-  MinusCircle, RefreshCcw,
-  TestTube,
-  UserSearch,
-  XCircle
+  AppWindow, CheckCircle2, Cloud, GitBranch,
+  HardDrive, Info, Loader2, MinusCircle,
+  RefreshCcw, TestTube, UserSearch, XCircle
 } from "lucide-react";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {formatIsoToReadable, getTimestampMs} from "@/lib/utils.ts";
@@ -485,13 +479,11 @@ const SettingsPage: React.FC = () => {
                   key={idx}
                   className="odd:bg-white even:bg-slate-50 dark:odd:bg-slate-900 dark:even:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                 >
-                  {/* 方法列自适应 */}
                   <td className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex">
                     <EllipsisWithTooltip text={t(r.method)}/>
                     <div className="flex-grow"></div>
                   </td>
 
-                  {/* 状态列：固定宽度 */}
                   <td className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700 w-20">
                     {r.status === "success" && (
                       <CheckCircle2 className="w-5 h-5 mx-auto text-green-500"/>
@@ -507,12 +499,10 @@ const SettingsPage: React.FC = () => {
                     )}
                   </td>
 
-                  {/* 耗时列：固定宽度 */}
                   <td className="px-4 py-3 text-center border-b border-slate-200 dark:border-slate-700 font-mono w-24">
                     {r.time ?? "-"}
                   </td>
 
-                  {/* SHA列：固定宽度，单行截断或换行 */}
                   <td className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 font-mono w-20">
                     {r.sha ?
                       <EllipsisWithTooltip text={r.sha.substring(0, 6)} tooltip={r.sha}/> : "-"}

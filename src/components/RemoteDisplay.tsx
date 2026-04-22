@@ -612,7 +612,7 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({profileId}) => {
    */
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-  const [sockName, setSockName] = useState<WsName>("remote-null");
+  const sockNameRef = useRef<WsName>("remote-null");
 
   /**
    * Send a remote input operation to the backend.
@@ -879,8 +879,8 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({profileId}) => {
     canvasRef.current = canvas;
     canvasHostRef.current?.appendChild(canvas);
     const decoder = new H264WebSocketDecoder(canvas);
+    const transferType = decoder.getType();
 
-    let configured = false;
     let timestampUs = 0;
     let reconnectTimer: number | null = null;
 
@@ -899,9 +899,10 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({profileId}) => {
        * or reconnection event.
        */
       let needKeyFrame = true;
-
-      const _sockName = await connectRemote(
+      console.log(transferType);
+      sockNameRef.current = await connectRemote(
         profileId,
+        transferType,
         (_) => {
           if (statusRef.current) {
             statusRef.current.textContent = "connected";
@@ -912,9 +913,6 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({profileId}) => {
           if (statusRef.current) {
             statusRef.current.textContent = "closed (retrying...)";
           }
-
-          configured = false;
-
           if (decoder) {
             try {
               decoder.close();
@@ -939,12 +937,13 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({profileId}) => {
           /**
            * Text messages are reserved for configuration/control metadata.
            */
-          // if (!configured || !decoder) return;
-          console.log(data);
+            // if (!configured || !decoder) return;
+            // console.log(data);
 
           const view = new DataView(data);
           if (view.byteLength <= 1) return;
           const isKeyFrame = view.getUint8(0) === 1;
+          console.log(`Keyframe => ${isKeyFrame}`);
           const pts = Number(view.getBigUint64(1, false));
           const encodedData = new Uint8Array(data, 9);
           /**
@@ -953,8 +952,10 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({profileId}) => {
            */
           if (needKeyFrame) {
             if (!isKeyFrame) return;
+            setConnectionState(ConnectionStatus.playing);
             needKeyFrame = false;
           }
+
 
           try {
             decoder.decode(
@@ -968,7 +969,6 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({profileId}) => {
             console.error("decode throw", error);
           }
         });
-      setSockName(_sockName);
     };
 
     connect().then(_ => undefined);
@@ -977,7 +977,7 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({profileId}) => {
       if (reconnectTimer !== null) {
         window.clearTimeout(reconnectTimer);
       }
-      disconect(sockName)
+      disconect(sockNameRef.current)
       if (decoder) {
         try {
           decoder.close();

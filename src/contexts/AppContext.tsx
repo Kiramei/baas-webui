@@ -23,31 +23,6 @@ const DEFAULT_UI_SETTINGS = {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-function createResource<T>(promise: Promise<T>) {
-  let status = "pending";
-  let result: T;
-  let suspender = promise.then(
-    (r) => {
-      status = "success";
-      result = r;
-    },
-    (e) => {
-      status = "error";
-      result = e;
-    }
-  );
-  return {
-    read(): T {
-      if (status === "pending") throw suspender;
-      if (status === "error") throw result;
-      return result!;
-    },
-  };
-}
-
-const init = useWebSocketStore.getState().init;
-const configRes = createResource(init())
-
 
 export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: boolean) => void }> = (
   {
@@ -59,10 +34,17 @@ export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: bool
   const [activeProfile, setActiveProfile] = useState<ConfigProfile | null>(null);
   const [stageInitiated, setStageInitiated] = useState<boolean>(false)
   const [uiSettings, setUiSettings] = useState<UISettings>(DEFAULT_UI_SETTINGS);
-
-  configRes.read()
-
+  const init = useWebSocketStore((s) => s.init);
+  const authPhase = useWebSocketStore((s) => s._auth_phase);
+  const allDataInitialized = useWebSocketStore((s) => s._all_data_initialized);
+  const initiating = useWebSocketStore((s) => s._initiating);
   const configStore = useWebSocketStore((s) => s.configStore);
+
+  useEffect(() => {
+    if (authPhase === "authenticated" && !allDataInitialized) {
+      void init();
+    }
+  }, [authPhase, allDataInitialized, init]);
 
   useEffect(() => {
     const _uiSettings: UISettings | null = StorageUtil.get("uiSettings")
@@ -108,8 +90,8 @@ export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: bool
   }, [configStore]);
 
   useEffect(() => {
-    setReady(true);
-  }, []);
+    setReady(authPhase === "authenticated" && allDataInitialized && (activeProfile !== null) && (!initiating));
+  }, [authPhase, allDataInitialized, setReady, activeProfile, initiating]);
 
   const value = {
     profiles,

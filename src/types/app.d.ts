@@ -1,6 +1,7 @@
 import {DynamicConfig} from "@/types/dynamic";
 import {Dispatch, SetStateAction} from "react";
 import {PageKey} from "@/App.tsx";
+import {AuthPhase, ControlConnection, ControlSessionBundle, SecureWebSocket} from "@/lib/SecureWebSocket";
 
 export interface ConfigProfile {
   id: string;
@@ -44,7 +45,7 @@ export interface WsCallBackDict {
 }
 
 
-type WsName = "provider" | "sync" | "trigger" | "heartbeat" | `remote-${string}`;
+export type WsName = "provider" | "sync" | "trigger" | `remote-${string}`;
 
 export interface LogItem {
   time: string;
@@ -104,7 +105,7 @@ interface WsMessageItem {
   data?: any;
   resource?: string;
   resource_id?: string;
-  "ops"?: SyncOperation;
+  "ops"?: SyncOperation[];
   "command"?: string;
 }
 
@@ -122,6 +123,8 @@ interface WebSocketState {
   updateStore: any;
   versionStore: any;
   statusStore: { [id: string]: StatusItem };
+  startAuthFlow: () => Promise<void>;
+  submitPassword: (password: string) => Promise<void>;
   connect: (name: WsName) => Promise<void>;
   disconnect: (name: WsName) => void;
   send: (name: WsName, data: any) => void;
@@ -131,6 +134,7 @@ interface WebSocketState {
   trigger: (payload: CommandPayload, callback?: (e: any) => void) => void;
   connectRemote: (
     profileId: string,
+    transferType: "AnnexB" | "fMP4",
     onopen: (event: Event) => void,
     onclose: (event: CloseEvent) => void,
     onerror: (event: Event) => void,
@@ -141,7 +145,13 @@ interface WebSocketState {
   _all_data_initialized: boolean;
   _heartbeat_time: number;
   _initiating: boolean;
-  _secret: string;
+  _auth_phase: AuthPhase;
+  _auth_error: string | null;
+  _server_initialized: boolean;
+  _server_verified: boolean;
+  _pwd_epoch: number;
+  _control: ControlConnection | null;
+  _session: ControlSessionBundle | null;
 }
 
 interface ConnectionError {
