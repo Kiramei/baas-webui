@@ -7,6 +7,12 @@ import {useTheme} from "@/hooks/useTheme.tsx";
 import {useWebSocketStore} from "../store/websocketStore";
 import {useTranslation} from "react-i18next";
 import {Info, KeyRound, ShieldCheck} from "lucide-react";
+import {FormInput} from "@/components/ui/FormInput.tsx";
+import CButton from "@/components/ui/CButton.tsx";
+import {FormSelect} from "@/components/ui/FormSelect.tsx";
+import i18n from "i18next";
+import {loadLocale} from "@/lib/i18n.ts";
+import {useUISettings} from "@/contexts/UISettingsProvider.tsx";
 
 const baseUrl = import.meta.env.BASE_URL;
 
@@ -54,7 +60,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({message = "Loading..."}
 
   const loadingMessage =
     authPhase === "control_connecting"
-      ? "Verifying server identity..."
+      ? "Connecting to the server..."
       : authPhase === "initializing"
         ? "Initializing system password..."
         : authPhase === "authenticating"
@@ -72,7 +78,8 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({message = "Loading..."}
       </div>
 
       <div className="fixed w-full h-full p-2">
-        <div className="w-full h-full bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-[5px] rounded-md p-2 border border-2 border-primary-500/70">
+        <div
+          className="w-full h-full bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-[5px] rounded-md p-2 border-2 border-primary-500/70">
           <AutoScrollTerminal>
             {globalLogData.map((log, idx) => (
               <div className="flex" key={`${log.time}-${idx}`}>
@@ -170,6 +177,7 @@ export const PasswordInputModal: React.FC<{
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState("");
+  const {setUiSettings} = useUISettings();
 
   useEffect(() => {
     if (!open) {
@@ -183,16 +191,23 @@ export const PasswordInputModal: React.FC<{
 
   const handleConfirm = async () => {
     if (!password.trim()) {
-      setLocalError("Please enter the current system password.");
+      setLocalError("Please enter the key!");
       return;
     }
     if (setupMode && password !== confirmPassword) {
-      setLocalError("The two passwords do not match.");
+      setLocalError("The two passwords do not match!");
       return;
     }
     setLocalError("");
     await onConfirm(password.trim());
   };
+
+  const handleLanguageChange = (value: string) => {
+    loadLocale(value).then(() => {
+      setUiSettings(state => ({...state, lang: value}));
+    });
+  };
+
 
   return (
     <div className={overlayCls}>
@@ -205,80 +220,111 @@ export const PasswordInputModal: React.FC<{
       >
         <div className="flex items-center gap-3 mb-4">
           <div className="rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-600 p-3">
-            {serverVerified ? <ShieldCheck className="w-6 h-6"/> : <KeyRound className="w-6 h-6"/>}
+            {serverVerified ? (
+              <ShieldCheck className="w-6 h-6"/>
+            ) : (
+              <KeyRound className="w-6 h-6"/>
+            )}
           </div>
+
           <div>
             <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-              {setupMode ? "Initialize System Password" : "Enter System Password"}
+              {setupMode
+                ? t("auth.initializeKeyTitle")
+                : t("auth.enterKeyTitle")}
             </h2>
+
             <p className="text-sm text-slate-500 dark:text-slate-400">
               {serverVerified
                 ? setupMode
-                  ? "Server identity verified. Set the first shared system password."
-                  : "Server identity verified. Enter the current shared system password."
-                : "Waiting for server identity verification."}
+                  ? t("auth.setKeySubtitle")
+                  : t("auth.validateKeySubtitle")
+                : t("auth.verifyingServerIdentity")}
             </p>
           </div>
+
+          <div className="grow-1"/>
+
+          <FormSelect
+            value={i18n.language}
+            onChange={handleLanguageChange}
+            options={[
+              {value: "en", label: t('english')},
+              {value: "zh", label: t('chinese')},
+              {value: "ja", label: t('japanese')},
+              {value: "ko", label: t('korean')},
+              {value: "de", label: t('deutsch')},
+              {value: "ru", label: t('russian')},
+              {value: "fr", label: t('french')}
+            ]}
+            className="float-right"
+          />
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm text-slate-600 dark:text-slate-300 mb-1">
-            {setupMode ? "New Password" : t("secretLabel") || "Password"}
-          </label>
-          <div className="flex items-center gap-2 border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 bg-slate-50 dark:bg-slate-800 focus-within:ring-2 focus-within:ring-primary-500 transition">
-            <KeyRound className="w-4 h-4 text-slate-500"/>
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder={setupMode ? "Set the system password..." : "Enter the current system password..."}
-              className="flex-1 bg-transparent outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 text-sm transition"
-              disabled={!serverVerified || submitting}
-            />
-          </div>
+          <FormInput
+            label={
+              setupMode
+                ? t("auth.newPasswordLabel")
+                : t("auth.passwordLabel")
+            }
+            type="password"
+            value={password}
+            onKeyDown={async (e) => {
+              if (setupMode) return;
+              e.preventDefault();
+              if (e.code === "Enter") await handleConfirm();
+            }}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder={
+              setupMode
+                ? t("auth.setPasswordPlaceholder")
+                : t("auth.enterPasswordPlaceholder")
+            }
+            disabled={!serverVerified || submitting}
+          />
         </div>
 
         {setupMode && (
           <div className="mb-4">
-            <label className="block text-sm text-slate-600 dark:text-slate-300 mb-1">Confirm Password</label>
-            <div className="flex items-center gap-2 border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 bg-slate-50 dark:bg-slate-800 focus-within:ring-2 focus-within:ring-primary-500 transition">
-              <KeyRound className="w-4 h-4 text-slate-500"/>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                placeholder="Repeat the new system password..."
-                className="flex-1 bg-transparent outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 text-sm transition"
-                disabled={!serverVerified || submitting}
-              />
-            </div>
+            <FormInput
+              label={t("auth.confirmPasswordLabel")}
+              type="password"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              placeholder={t("auth.setPasswordPlaceholder")}
+              disabled={!serverVerified || submitting}
+              autoComplete="off"
+            />
           </div>
         )}
 
         {(localError || error) && (
-          <p className="mb-4 text-xs text-red-500 dark:text-red-400">{localError || error}</p>
+          <p className="mb-4 text-xs text-red-500 dark:text-red-400">
+            {localError || error}
+          </p>
         )}
 
         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-4">
           <Info className="w-4 h-4 text-primary-500"/>
           <span>
-            {setupMode
-              ? "The password is only kept in memory long enough to derive the authenticated session."
-              : "The password is never persisted in the browser and is only used for this authenticated session."}
+            {setupMode ? t("auth.rememberKeyTip") : t("auth.forgotKeyTip")}
           </span>
         </div>
 
         <div className="flex justify-end gap-2">
-          <button
+          <CButton
             onClick={handleConfirm}
             disabled={!serverVerified || submitting}
-            className="px-4 py-2 rounded-md bg-primary-600 hover:bg-primary-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium shadow-sm transition-colors"
           >
-            {submitting ? "Please wait..." : setupMode ? "Initialize" : t("confirm") || "Confirm"}
-          </button>
+            {submitting
+              ? t("auth.pleaseWait")
+              : setupMode
+                ? t("auth.initialize")
+                : t("Confirm")}
+          </CButton>
         </div>
       </motion.div>
     </div>
   );
 };
-

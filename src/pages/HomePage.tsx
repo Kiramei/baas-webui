@@ -11,14 +11,15 @@ import {ProfileProps} from "@/types/app";
 import {TaskStatus} from "@/components/HomeTaskStatus.tsx";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {formatIsoToReadable, getTimestamp, getTimestampMs} from "@/lib/utils.ts";
-import { RemoteDisplay } from '@/components/RemoteDisplay.tsx';
+import {useUISettings} from "@/contexts/UISettingsProvider.tsx";
+// import { RemoteDisplay } from '@/components/RemoteDisplay.tsx';
 
 /**
  * Landing experience for a profile that provides orchestration controls, status, and live logs.
  */
 const HomePage: React.FC<ProfileProps> = ({profileId}) => {
   const {t} = useTranslation();
-  const {uiSettings, setUiSettings} = useApp();
+  const {uiSettings, setUiSettings} = useUISettings();
   const {profiles, activeProfile} = useApp();
   const pid = profileId ?? activeProfile?.id;
   const profile = useMemo(
@@ -164,7 +165,7 @@ const HomePage: React.FC<ProfileProps> = ({profileId}) => {
         </CardHeader>
 
         <CardContent className="relative flex-1 min-h-0 p-0 flex overflow-x-hidden">
-          <RemoteDisplay profileId={profileId!} />
+          {/*<RemoteDisplay profileId={profileId!} />*/}
           <Logger logs={logStore[`config:${profileId}`]} scrollToEnd={uiSettings?.scrollToEnd}/>
         </CardContent>
       </Card>

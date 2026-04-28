@@ -366,44 +366,6 @@ interface H264AccessUnit {
    */
   pts: number;
 }
-
-interface Fmp4Segment {
-  /**
-   * "init" must contain the MP4 initialization segment.
-   * "media" must contain one or more MP4 media fragments.
-   */
-  type: "init" | "media";
-
-  /**
-   * Actual bytes to append into SourceBuffer.
-   */
-  data: Uint8Array;
-
-  /**
-   * Optional MIME codec string.
-   * Example: video/mp4; codecs="avc1.64001f"
-   *
-   * If omitted, the decoder will derive one from SPS when possible.
-   */
-  mimeCodec?: string;
-}
-
-interface IAnnexBToFmp4Muxer {
-  /**
-   * Push a single H.264 access unit and produce zero or more fMP4 segments.
-   *
-   * Notes:
-   * - The muxer may delay output until it has enough information.
-   * - The muxer is expected to emit an "init" segment before the first "media".
-   */
-  pushAccessUnit(accessUnit: H264AccessUnit): Fmp4Segment[];
-
-  /**
-   * Reset internal muxing state.
-   */
-  reset(): void;
-}
-
 /**
  * Abstract base class shared by all H.264 decoder backends.
  *
@@ -646,13 +608,6 @@ abstract class AbstractH264DecoderBackend {
       .toString(16)
       .padStart(2, "0")}${sps[3].toString(16).padStart(2, "0")}`;
   }
-
-  /**
-   * Build MIME type for MSE SourceBuffer.
-   */
-  protected mseMimeFromSPS(sps: NalUnit): string {
-    return `video/mp4; codecs="${this.codecFromSPS(sps)}"`;
-  }
 }
 
 /**
@@ -746,7 +701,14 @@ class WebCodecsH264DecoderBackend extends AbstractH264DecoderBackend {
 
     const codec = this.codecFromSPS(this.latestSPS);
     const description = this.buildConfigRecord(this.latestSPS, this.latestPPS);
-
+    console.log(
+      {
+        codec,
+        description,
+        optimizeForLatency: true,
+        hardwareAcceleration: "prefer-hardware",
+      }
+    )
     this.decoder!.configure({
       codec,
       description,
@@ -861,7 +823,7 @@ class MSEH264DecoderBackend extends AbstractH264DecoderBackend {
       return;
     }
 
-    const { segment } = parsed;
+    const {segment} = parsed;
     const kind = this.detectSegmentKind(segment);
 
     if (kind === "unknown") {

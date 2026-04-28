@@ -3,7 +3,6 @@ import {useTranslation} from 'react-i18next';
 import {Card, CardContent, CardHeader, CardTitle} from '../components/ui/Card';
 import {useTheme} from '../hooks/useTheme';
 import type {Theme} from '@/types/app';
-import {useApp} from "@/contexts/AppContext.tsx";
 import {FormSelect} from "@/components/ui/FormSelect.tsx";
 import {FormInput} from "@/components/ui/FormInput.tsx";
 import CButton from "@/components/ui/CButton.tsx";
@@ -19,6 +18,7 @@ import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {formatIsoToReadable, getTimestampMs} from "@/lib/utils.ts";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
 import {loadLocale} from "@/lib/i18n.ts";
+import {useUISettings} from "@/contexts/UISettingsProvider.tsx";
 
 type RepoConfig = {
   label: string;
@@ -64,7 +64,7 @@ const shaMethodsInit = [
 const SettingsPage: React.FC = () => {
   const {t, i18n} = useTranslation();
   const {theme, setTheme} = useTheme();
-  const {uiSettings, setUiSettings} = useApp();
+  const {uiSettings, setUiSettings} = useUISettings();
   const trigger = useWebSocketStore(state => state.trigger);
   const updateConfig = useWebSocketStore(state => state.updateStore);
   const versionStore = useWebSocketStore(state => state.versionStore);

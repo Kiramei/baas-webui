@@ -1,8 +1,8 @@
 import React, {useEffect, useRef} from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import {useApp} from "@/contexts/AppContext.tsx";
 import {PageKey} from "@/types/app";
+import {useUISettings} from "@/contexts/UISettingsProvider.tsx";
 
 
 interface MainLayoutProps {
@@ -30,7 +30,7 @@ export function useZoom(scale: number) {
 
 
 const MainLayout: React.FC<MainLayoutProps> = ({children, activePage, setActivePage}) => {
-  const {uiSettings} = useApp();
+  const {uiSettings} = useUISettings();
   const zoomRef = useZoom(uiSettings?.zoomScale / 100); // 缩放 110%
   return (
     <div className="flex h-full w-full overflow-hidden text-slate-800 dark:text-slate-200" ref={zoomRef}>

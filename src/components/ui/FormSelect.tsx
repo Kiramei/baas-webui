@@ -24,7 +24,6 @@ interface FormSelectProps {
   options: Option[];
   placeholder?: string;
   className?: string;
-  /** 同一 SelectGroup 内要唯一，用于互斥控制；不传则自动生成 */
   selectId?: string;
   disabled?: boolean;
 }
@@ -75,10 +74,9 @@ export const FormSelect: React.FC<FormSelectProps> = (
         {...(global && {open, onOpenChange: handleOpenChange})}
       >
         <SelectTrigger className="w-full">
-          <SelectValue placeholder={placeholder ?? "请选择"}/>
+          <SelectValue placeholder={placeholder}/>
         </SelectTrigger>
 
-        {/* 用 popper，避免内容层遮挡触发器；modal=false 避免事件被阻断 */}
         <SelectContent position="popper">
           {options.map((opt) => (
             <SelectItem key={opt.value} value={opt.value}>

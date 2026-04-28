@@ -562,7 +562,7 @@ export const useWebSocketStore = create<WebSocketState>()(
 
       await ws.connect((buffer: ArrayBuffer) => {
         onmessage(buffer);
-      }, false, false);
+      }, false, true);
 
       ws.sendJson({config_id: profileId, transfer_type: transferType});
       set((state) => ({

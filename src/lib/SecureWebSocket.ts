@@ -688,7 +688,7 @@ export class SecureWebSocket {
         const plaintext = decrypt? this.stream!.decrypt(ciphertext): ciphertext;
         if (decodeJson) {
           const decoded = JSON.parse(textDecoder.decode(plaintext))
-          console.log(`${this.name} Recv: ${textDecoder.decode(plaintext)}`);
+          // console.log(`${this.name} Recv: ${textDecoder.decode(plaintext)}`);
           onMessage?.(decoded);
         } else {
           onMessage?.(plaintext.buffer.slice(plaintext.byteOffset, plaintext.byteOffset + plaintext.byteLength));
