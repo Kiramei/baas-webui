@@ -1,6 +1,6 @@
 import React, {useState, useMemo, useEffect} from "react";
 import {useTranslation} from "react-i18next";
-import {EllipsisWithTooltip} from "@/components/ui/etooltip.tsx";
+import {EllipsisWithTooltip} from "../components/ui/ETooltip.tsx";
 
 // shadcn tabs
 import {
@@ -8,7 +8,7 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "@/components/ui/tabs";
+} from "../components/ui/Tabs";
 import {FormInput} from "@/components/ui/FormInput.tsx";
 import {DynamicConfig} from "@/types/dynamic";
 import {useWebSocketStore} from "@/store/websocketStore.ts";

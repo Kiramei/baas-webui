@@ -1,7 +1,7 @@
 import {Hourglass, List} from "lucide-react";
 import React, {useState} from "react";
 import {useTranslation} from "react-i18next";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {Popover, PopoverContent, PopoverTrigger} from "./ui/Popover";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 
 export const TaskStatus: React.FC<{ profileId: string }> = ({profileId}) => {
@@ -16,7 +16,7 @@ export const TaskStatus: React.FC<{ profileId: string }> = ({profileId}) => {
       <div
         className={'bg-white dark:bg-slate-800/50 p-2 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center'}>
         <Hourglass className="w-5 h-5 mr-2 text-primary-500"/>
-        <div className={'flex-grow'}>
+        <div className='grow'>
           {t('runningTask')}:
         </div>
         <div className={'flex flex-col items-center justify-center float-end'}>
@@ -47,7 +47,6 @@ export const TaskStatus: React.FC<{ profileId: string }> = ({profileId}) => {
           )}
         </div>
 
-        {/* 队列图标 + 浮动菜单 */}
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <button

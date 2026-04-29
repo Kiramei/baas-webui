@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {TextGenerateEffect} from "@/components/ui/text-generate-effect.tsx";
+import {TextGenerateEffect} from "../components/ui/TextGenerateEffect.tsx";
 import {useGlobalLogStore} from "@/store/globalLogStore.ts";
 import {formatIsoToReadableTime} from "@/lib/utils.ts";
 import {motion} from "framer-motion";
@@ -69,7 +69,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({message = "Loading..."}
 
   return (
     <>
-      <div className="fixed inset-0 bg-[var(--color-slate-100)] dark:bg-[oklch(12.9%_0.042_264.695)] overflow-hidden">
+      <div className="fixed inset-0 bg-slate-100 dark:bg-slate-950 overflow-hidden">
         <img
           src={theme === "light" ? `${baseUrl}images/bg-light.webp` : `${baseUrl}images/bg-dark.webp`}
           alt="Loading BG"
@@ -83,11 +83,11 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({message = "Loading..."}
           <AutoScrollTerminal>
             {globalLogData.map((log, idx) => (
               <div className="flex" key={`${log.time}-${idx}`}>
-                <div className="min-w-[80px] text-slate-600 dark:text-slate-400">
+                <div className="min-w-20 text-slate-600 dark:text-slate-400">
                   <TextGenerateEffect words={formatIsoToReadableTime(log.time)} mode="all"/>
                 </div>
                 <div
-                  className="min-w-[80px] flex justify-end mr-2 font-bold"
+                  className="min-w-20 flex justify-end mr-2 font-bold"
                   style={{color: statusColorMap[log.level]}}
                 >
                   <TextGenerateEffect words={log.level} mode="all"/>
@@ -216,7 +216,7 @@ export const PasswordInputModal: React.FC<{
         animate={{opacity: 1, scale: 1, y: 0}}
         exit={{opacity: 0, scale: 0.95, y: 10}}
         transition={{duration: 0.18, ease: "easeOut"}}
-        className="w-[440px] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6"
+        className="w-110 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6"
       >
         <div className="flex items-center gap-3 mb-4">
           <div className="rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-600 p-3">
@@ -243,7 +243,7 @@ export const PasswordInputModal: React.FC<{
             </p>
           </div>
 
-          <div className="grow-1"/>
+          <div className="grow"/>
 
           <FormSelect
             value={i18n.language}
@@ -270,10 +270,13 @@ export const PasswordInputModal: React.FC<{
             }
             type="password"
             value={password}
+            id="baas-key-input"
             onKeyDown={async (e) => {
-              if (setupMode) return;
-              e.preventDefault();
-              if (e.code === "Enter") await handleConfirm();
+              if (e.code === "Enter") {
+                if (setupMode) return;
+                e.preventDefault();
+                await handleConfirm();
+              }
             }}
             onChange={(event) => setPassword(event.target.value)}
             placeholder={

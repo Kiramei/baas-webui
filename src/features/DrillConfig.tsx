@@ -2,7 +2,7 @@ import React, {useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {FormSelect} from "@/components/ui/FormSelect.tsx";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
-import {Separator} from "@/components/ui/separator.tsx";
+import {Separator} from "../components/ui/Separator.tsx";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {DynamicConfig} from "@/types/dynamic";
 

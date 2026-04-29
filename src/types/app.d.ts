@@ -9,12 +9,22 @@ export interface ConfigProfile {
   settings: DynamicConfig;
 }
 
+export interface RemoteSettings {
+  maxWidth: number;
+  maxHeight: number;
+  maxFPS: number;
+  bitRate: number;
+  iFrameRate: number;
+  showStatus: boolean;
+}
+
 export interface UISettings {
   lang: string;
   theme: string;
   zoomScale: number;
   scrollToEnd: boolean;
   assetsDisplay: boolean;
+  remoteSettings: RemoteSettings;
 }
 
 export type Theme = 'light' | 'dark' | 'system';

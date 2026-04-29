@@ -7,9 +7,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "./Select";
 import {LabelWithTooltip} from "@/components/ui/LabelWithTooltip.tsx";
-import {useGlobalSelect} from "@/components/ui/select-global.tsx"; // ⬅️ 新增
+import {useGlobalSelect} from "./SelectGlobal.tsx"; // ⬅️ 新增
 
 interface Option {
   value: string;

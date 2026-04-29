@@ -10,8 +10,8 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "@/components/ui/tabs";
-import {Separator} from "@/components/ui/separator.tsx";
+} from "../components/ui/Tabs";
+import {Separator} from "../components/ui/Separator.tsx";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {serverMap} from "@/lib/utils.ts";
 import {DynamicConfig} from "@/types/dynamic";

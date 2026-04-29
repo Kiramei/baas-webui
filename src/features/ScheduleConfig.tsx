@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {Check, Plus, X} from "lucide-react";
 import {Reorder} from "framer-motion";
-import {Separator} from "@/components/ui/separator";
+import {Separator} from "../components/ui/Separator";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
 import {FormInput} from "@/components/ui/FormInput.tsx";
 import StudentSelectorModal from "@/components/StudentSelectorModal.tsx";

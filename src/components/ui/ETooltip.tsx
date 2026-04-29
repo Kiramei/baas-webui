@@ -4,7 +4,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "./Tooltip"
 
 interface EllipsisWithTooltipProps {
   text: string

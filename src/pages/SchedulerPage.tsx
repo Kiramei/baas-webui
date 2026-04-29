@@ -16,11 +16,11 @@ import {ProfileProps} from "@/types/app";
 import {FormInput} from "@/components/ui/FormInput";
 import {FormSelect} from "@/components/ui/FormSelect";
 import CButton from "@/components/ui/CButton.tsx";
-import {Separator} from "@/components/ui/separator";
+import {Separator} from "../components/ui/Separator";
 import FeatureSwitchModal from "@/components/FeatureSwitchModal";
 import {DateTimePicker} from "@/components/DateTimePicker.tsx";
 import {EventConfig} from "@/types/event";
-import {EllipsisWithTooltip} from "@/components/ui/etooltip.tsx";
+import {EllipsisWithTooltip} from "../components/ui/ETooltip.tsx";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 
 const EMPTY_ARRAY: any[] = [];

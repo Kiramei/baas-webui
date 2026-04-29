@@ -11,7 +11,7 @@ import {
   SlidersHorizontal,
   XCircle
 } from 'lucide-react';
-import HeartbeatChart from "@/components/HeartbeatDiv.tsx";
+import HeartbeatChart from "../HeartbeatIndicator.tsx";
 import {motion} from "framer-motion";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {PageKey} from "@/types/app";

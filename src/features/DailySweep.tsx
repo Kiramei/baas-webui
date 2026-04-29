@@ -1,10 +1,10 @@
 import React, {useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "../components/ui/Tabs";
 import {FormSelect} from "@/components/ui/FormSelect";
 import {FormInput} from "@/components/ui/FormInput";
 import {LabelWithTooltip} from "@/components/ui/LabelWithTooltip.tsx";
-import {Separator} from "@/components/ui/separator.tsx";
+import {Separator} from "../components/ui/Separator.tsx";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {DynamicConfig} from "@/types/dynamic";
 import CButton from "@/components/ui/CButton.tsx";

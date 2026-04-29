@@ -7,7 +7,7 @@ interface IndicatorProps {
   onStateChanged: (state: boolean) => void;
 }
 
-export const HeartbeatIndicator: React.FC<IndicatorProps> = ({onStateChanged}) => {
+export const IndicatorBase: React.FC<IndicatorProps> = ({onStateChanged}) => {
   const [alive, setAlive] = useState(false);
   const [connected, setConnected] = useState(true);
   const heartbeatTime = useWebSocketStore((s) => s._heartbeat_time);
@@ -58,14 +58,14 @@ export const HeartbeatIndicator: React.FC<IndicatorProps> = ({onStateChanged}) =
   );
 };
 
-const HeartbeatDiv = () => {
+const HeartbeatIndicator = () => {
   const {t} = useTranslation();
   const [connected, setConnected] = useState(false);
 
   return (
     <div
       className="flex flex-row items-center justify-center p-4 bg-slate-100/50 dark:bg-slate-700/50 w-full rounded-xl self-start">
-      <HeartbeatIndicator onStateChanged={setConnected}/>
+      <IndicatorBase onStateChanged={setConnected}/>
       <motion.div
         className="ml-4 text-sm font-bold rounded-lg"
         animate={{
@@ -75,9 +75,9 @@ const HeartbeatDiv = () => {
       >
         {connected ? t("heartbeat.connected") : t("heartbeat.connecting")}
       </motion.div>
-      <div className="flex-grow"/>
+      <div className="grow"/>
     </div>
   );
 }
 
-export default HeartbeatDiv;
+export default HeartbeatIndicator;

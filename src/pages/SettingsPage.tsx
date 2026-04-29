@@ -6,8 +6,8 @@ import type {Theme} from '@/types/app';
 import {FormSelect} from "@/components/ui/FormSelect.tsx";
 import {FormInput} from "@/components/ui/FormInput.tsx";
 import CButton from "@/components/ui/CButton.tsx";
-import {Separator} from "@/components/ui/separator.tsx";
-import {EllipsisWithTooltip} from "@/components/ui/etooltip.tsx";
+import {Separator} from "../components/ui/Separator.tsx";
+import {EllipsisWithTooltip} from "../components/ui/ETooltip.tsx";
 import {toast} from "sonner";
 import {
   AppWindow, CheckCircle2, Cloud, GitBranch,

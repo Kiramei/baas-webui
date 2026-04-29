@@ -10,7 +10,7 @@ import WikiPage from "@/pages/WikiPage.tsx";
 import type {Variants} from 'framer-motion';
 import {motion} from 'framer-motion';
 import {LoadingPage} from '@/pages/LoadingPage';
-import {Toaster} from "@/components/ui/sonner";
+import {Toaster} from "./components/ui/Sonner";
 import {PageKey} from "@/types/app";
 import i18n, {loadLocale} from "@/lib/i18n";
 import BAComet from "@/components/ui/BAComet.tsx";
@@ -68,7 +68,7 @@ const App: React.FC = () => {
                 setHideLoading(true);
               }
             }}
-            className="fixed inset-0 z-[100]"
+            className="fixed inset-0 z-100"
           >
             <UISettingsProvider>
               <LoadingPage/>

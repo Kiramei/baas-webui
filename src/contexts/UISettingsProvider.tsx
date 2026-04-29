@@ -20,6 +20,14 @@ const DEFAULT_UI_SETTINGS: UISettings = {
   zoomScale: 100,
   scrollToEnd: true,
   assetsDisplay: true,
+  remoteSettings: {
+    maxWidth: 1280,
+    maxHeight: 720,
+    maxFPS: 60,
+    iFrameRate: 10,
+    bitRate: 7340032,
+    showStatus: false
+  }
 };
 
 const UISettingsContext = createContext<UISettingsContextType | undefined>(

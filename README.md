@@ -70,7 +70,7 @@ from cafés and arenas to tactical drills and whitelist management.
 - **Task engine** — `src/pages/SchedulerPage.tsx` manages the dual-column event queue with `FeatureSwitchModal` to edit
   task payloads.
 - **Telemetry pipeline** — `src/components/ui/Logger.tsx` streams thousands of log lines using `react-window`
-  virtualization while `HeartbeatDiv.tsx` visualizes socket health.
+  virtualization while `HeartbeatIndicator.tsx` visualizes socket health.
 - **Secure handshake** — `src/lib/SecureWebSocket.ts` performs HMAC + Fernet negotiation before any payload is
   exchanged.
 

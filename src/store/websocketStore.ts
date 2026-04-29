@@ -24,7 +24,7 @@ const resolveBase = () => {
   //   const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   //   return `${wsProtocol}//${window.location.host}`;
   // }
-  return "ws://192.168.31.22:8190";
+  return "ws://127.0.0.1:8190";
 };
 
 const {appendGlobalLog} = useGlobalLogStore.getState();

@@ -12,7 +12,7 @@ import {TaskStatus} from "@/components/HomeTaskStatus.tsx";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {formatIsoToReadable, getTimestamp, getTimestampMs} from "@/lib/utils.ts";
 import {useUISettings} from "@/contexts/UISettingsProvider.tsx";
-// import { RemoteDisplay } from '@/components/RemoteDisplay.tsx';
+import { RemoteDisplay } from '@/components/RemoteDisplay.tsx';
 
 /**
  * Landing experience for a profile that provides orchestration controls, status, and live logs.
@@ -137,7 +137,7 @@ const HomePage: React.FC<ProfileProps> = ({profileId}) => {
                 setUiSettings(state => ({...state, scrollToEnd: value}));
               }}
               label={t('log.scroll')}
-              className="!px-4"
+              className="px-4!"
             />
             <CButton onClick={exportLog} className="ml-2">
               <div className="flex">
@@ -154,18 +154,18 @@ const HomePage: React.FC<ProfileProps> = ({profileId}) => {
                 setUiSettings(state => ({...state, scrollToEnd: value}));
               }}
               label=""
-              className="!px-4 ml-2 w-8 h-8"
+              className="px-4! ml-2 w-8 h-8"
             >
-              <ListEnd size={20} className="rounded w-4 h-4 translate-x-[-8px]"/>
+              <ListEnd size={20} className="rounded w-4 h-4 -translate-x-2"/>
             </SwitchButton>
             <CButton onClick={exportLog} className="ml-2 w-8 h-8">
-              <FileUp size={20} className="rounded w-4 h-4 translate-x-[-8px]"/>
+              <FileUp size={20} className="rounded w-4 h-4 -translate-x-2"/>
             </CButton>
           </div>
         </CardHeader>
 
         <CardContent className="relative flex-1 min-h-0 p-0 flex overflow-x-hidden">
-          {/*<RemoteDisplay profileId={profileId!} />*/}
+          <RemoteDisplay profileId={profileId!} />
           <Logger logs={logStore[`config:${profileId}`]} scrollToEnd={uiSettings?.scrollToEnd}/>
         </CardContent>
       </Card>

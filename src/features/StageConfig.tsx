@@ -1,11 +1,11 @@
 import React, {Dispatch, SetStateAction, useEffect, useMemo, useState} from "react";
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "../components/ui/Tabs";
 import {FormInput} from "@/components/ui/FormInput";
 import SwitchButton from "@/components/ui/SwitchButton";
 import CButton from "@/components/ui/CButton.tsx";
 import {Card} from "@/components/ui/Card";
 import {useTranslation} from "react-i18next";
-import {Separator} from "@/components/ui/separator.tsx";
+import {Separator} from "../components/ui/Separator.tsx";
 import {useWebSocketStore} from "@/store/websocketStore.ts";
 import {DynamicConfig} from "@/types/dynamic";
 import {getTimestampMs, serverMap} from "@/lib/utils.ts";

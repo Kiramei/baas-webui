@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {Input} from "@/components/ui/input"
+import {Input} from "./Input"
 import {LabelWithTooltip} from "@/components/ui/LabelWithTooltip.tsx";
 import {cn} from "@/lib/utils.ts";
 

@@ -1,7 +1,7 @@
 import React, {useState, useMemo, useEffect} from "react";
-import {Tabs, TabsList, TabsTrigger, TabsContent} from "@/components/ui/tabs";
-import {Select, SelectTrigger, SelectContent, SelectItem, SelectValue} from "@/components/ui/select";
-import {Textarea} from "@/components/ui/textarea";
+import {Tabs, TabsList, TabsTrigger, TabsContent} from "../components/ui/Tabs";
+import {Select, SelectTrigger, SelectContent, SelectItem, SelectValue} from "../components/ui/Select";
+import {Textarea} from "../components/ui/Textarea";
 import {useTranslation} from "react-i18next";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
 import {FormInput} from "@/components/ui/FormInput.tsx";
