@@ -1,10 +1,10 @@
-import {toast} from "sonner";
-import {create} from "zustand";
-import {ControlConnection, randomUUID, SecureWebSocket} from "@/lib/SecureWebSocket";
-import {subscribeWithSelector} from "zustand/middleware";
-import {getTimestampMs, isPlainObject} from "@/lib/utils.ts";
-import {useGlobalLogStore} from "@/store/globalLogStore.ts";
-import {t} from "i18next";
+import { toast } from "sonner";
+import { create } from "zustand";
+import { ControlConnection, randomUUID, SecureWebSocket } from "@/lib/SecureWebSocket";
+import { subscribeWithSelector } from "zustand/middleware";
+import { getTimestampMs, isPlainObject } from "@/lib/utils.ts";
+import { useGlobalLogStore } from "@/store/globalLogStore.ts";
+import { t } from "i18next";
 import {
   LogItem,
   RawLogItem,
@@ -24,10 +24,10 @@ const resolveBase = () => {
   //   const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   //   return `${wsProtocol}//${window.location.host}`;
   // }
-  return "ws://127.0.0.1:8190";
+  return "ws://192.168.31.116:8190";
 };
 
-const {appendGlobalLog} = useGlobalLogStore.getState();
+const { appendGlobalLog } = useGlobalLogStore.getState();
 
 const resetDataStores = (): Partial<WebSocketState> => ({
   connections: {},
@@ -45,7 +45,7 @@ const resetDataStores = (): Partial<WebSocketState> => ({
 });
 
 const connectWithRetry = async (name: WsName, retryInterval = 1000) => {
-  const {connect} = useWebSocketStore.getState();
+  const { connect } = useWebSocketStore.getState();
 
   while (useWebSocketStore.getState()._auth_phase === "authenticated") {
     try {
@@ -63,7 +63,7 @@ export const waitFor = <T>(
   subscribe: any,
   selector: (s: any) => T,
   predicate: (val: T) => boolean,
-  timeoutMs = Infinity,
+  timeoutMs = Infinity
 ) => {
   return new Promise<void>((resolve, reject) => {
     const initial = selector(get());
@@ -94,7 +94,7 @@ export const waitForNormal = <T>(
   getter: () => T,
   predicate: (val: T) => boolean,
   timeoutMs = Infinity,
-  intervalMs = 50,
+  intervalMs = 50
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     const start = Date.now();
@@ -169,7 +169,7 @@ export const useWebSocketStore = create<WebSocketState>()(
         const control = await ControlConnection.open(`${resolveBase()}/ws/control`);
         control.onSecureMessage = (payload) => {
           if (payload.type === "heartbeat") {
-            set((state) => ({...state, _heartbeat_time: payload.timestamp}));
+            set((state) => ({ ...state, _heartbeat_time: payload.timestamp }));
             return;
           }
           if (payload.type === "auth_revoked") {
@@ -228,7 +228,7 @@ export const useWebSocketStore = create<WebSocketState>()(
           _pwd_epoch: control.pwdEpoch,
           _auth_phase: "server_verified",
         }));
-        set((state) => ({...state, _auth_phase: "waiting_password"}));
+        set((state) => ({ ...state, _auth_phase: "waiting_password" }));
       } catch (error) {
         console.error("[control] failed to connect", error);
         set((state) => ({
@@ -341,13 +341,13 @@ export const useWebSocketStore = create<WebSocketState>()(
             const config_added = Object.fromEntries(
               message.data
                 .filter((id: string) => !(id in state.configStore))
-                .map((id: string) => [id, {}]),
+                .map((id: string) => [id, {}])
             );
 
             const event_added = Object.fromEntries(
               message.data
                 .filter((id: string) => !(id in state.eventStore))
-                .map((id: string) => [id, []]),
+                .map((id: string) => [id, []])
             );
 
             const log_added: { [key: string]: LogItem[] } = Object.fromEntries(
@@ -357,35 +357,35 @@ export const useWebSocketStore = create<WebSocketState>()(
                   if (key in state.logStore) return null;
                   return [key, []];
                 })
-                .filter((item: any): item is [string, LogItem[]] => Boolean(item)),
+                .filter((item: any): item is [string, LogItem[]] => Boolean(item))
             );
 
             const status_added = Object.fromEntries(
               message.data
                 .filter((id: string) => !(id in state.statusStore))
-                .map((id: string) => [id, {}]),
+                .map((id: string) => [id, {}])
             );
 
             const config_kept = Object.fromEntries(
-              Object.entries(state.configStore).filter(([id]) => message.data.includes(id)),
+              Object.entries(state.configStore).filter(([id]) => message.data.includes(id))
             );
             const event_kept = Object.fromEntries(
-              Object.entries(state.eventStore).filter(([id]) => message.data.includes(id)),
+              Object.entries(state.eventStore).filter(([id]) => message.data.includes(id))
             );
             const log_kept = Object.fromEntries(
               Object.entries(state.logStore).filter(([key]) =>
-                message.data.some((id: string) => key === `config:${id}`),
-              ),
+                message.data.some((id: string) => key === `config:${id}`)
+              )
             );
             const status_kept = Object.fromEntries(
-              Object.entries(state.statusStore).filter(([id]) => message.data.includes(id)),
+              Object.entries(state.statusStore).filter(([id]) => message.data.includes(id))
             );
 
             return {
-              configStore: {...config_kept, ...config_added},
-              eventStore: {...event_kept, ...event_added},
-              logStore: {...log_kept, ...log_added},
-              statusStore: {...status_kept, ...status_added},
+              configStore: { ...config_kept, ...config_added },
+              eventStore: { ...event_kept, ...event_added },
+              logStore: { ...log_kept, ...log_added },
+              statusStore: { ...status_kept, ...status_added },
             };
           });
         },
@@ -396,7 +396,9 @@ export const useWebSocketStore = create<WebSocketState>()(
 
         "logs_full": (message: WsMessageItem) => {
           const scopes = message.scopes ?? [];
-          const log_added: { [key: string]: LogItem[] } = Object.fromEntries(scopes.map((id) => [id, []]));
+          const log_added: { [key: string]: LogItem[] } = Object.fromEntries(
+            scopes.map((id) => [id, []])
+          );
           message.entries?.forEach((entry: RawLogItem) => {
             const info = {
               time: entry.time,
@@ -406,7 +408,7 @@ export const useWebSocketStore = create<WebSocketState>()(
             log_added[entry.scope].push(info);
             if (entry.scope === "global") appendGlobalLog(info);
           });
-          set(() => ({logStore: log_added}));
+          set(() => ({ logStore: log_added }));
         },
 
         "log": (message: WsMessageItem) => {
@@ -432,7 +434,7 @@ export const useWebSocketStore = create<WebSocketState>()(
           const data = message.status;
           if (typeof data === "string" || !data) return;
           if ("is_all_data_initialized" in data) {
-            set((state) => ({...state, _all_data_initialized: true}));
+            set((state) => ({ ...state, _all_data_initialized: true }));
           } else {
             const firstKey = Object.keys(data)[0];
             if (typeof data[firstKey] === "object" && "config_id" in data[firstKey]) {
@@ -459,10 +461,10 @@ export const useWebSocketStore = create<WebSocketState>()(
         },
 
         "command_response": (message: WsMessageItem) => {
-          const {timestamp, command, data, status} = message;
+          const { timestamp, command, data, status } = message;
           const callback = get().pendingCallbacks[timestamp!];
           if (callback) {
-            callback({command, data, status});
+            callback({ command, data, status });
             delete get().pendingCallbacks[timestamp!];
           } else {
             console.warn("CallBack Not Found:", message);
@@ -478,20 +480,20 @@ export const useWebSocketStore = create<WebSocketState>()(
 
           ops.forEach((op) => {
             if (op.op === "add") {
-              get().send("sync", {type: "list"});
+              get().send("sync", { type: "list" });
               const prevLength = Object.keys(get().configStore).length;
               waitFor(
                 get,
                 api.subscribe,
                 (state: WebSocketState) => Object.keys(state.configStore).length,
-                (length) => length === prevLength + 1,
+                (length) => length === prevLength + 1
               ).then(() => {
-                get().send("sync", {type: "pull", resource: "config", resource_id: resourceId});
-                get().send("sync", {type: "pull", resource: "event", resource_id: resourceId});
+                get().send("sync", { type: "pull", resource: "config", resource_id: resourceId });
+                get().send("sync", { type: "pull", resource: "event", resource_id: resourceId });
               });
             }
             if (op.op === "remove") {
-              get().send("sync", {type: "list"});
+              get().send("sync", { type: "list" });
             } else {
               const path = `${resourceId}::${resource}${op.path}`;
               get().patch(path, op.value);
@@ -517,9 +519,9 @@ export const useWebSocketStore = create<WebSocketState>()(
 
       ws.onClose = () => {
         set((state) => {
-          const next = {...state.connections};
+          const next = { ...state.connections };
           delete next[name];
-          return {connections: next};
+          return { connections: next };
         });
       };
 
@@ -539,7 +541,7 @@ export const useWebSocketStore = create<WebSocketState>()(
       onopen: (event: Event) => void,
       onclose: (event: CloseEvent) => void,
       onerror: (event: Event) => void,
-      onmessage: (event: ArrayBuffer) => void,
+      onmessage: (event: ArrayBuffer) => void
     ): Promise<`remote-${string}`> => {
       const session = get()._session;
       if (!session) {
@@ -554,17 +556,21 @@ export const useWebSocketStore = create<WebSocketState>()(
       ws.onClose = (event: CloseEvent) => {
         onclose(event);
         set((state) => {
-          const next = {...state.connections};
+          const next = { ...state.connections };
           delete next[name];
-          return {connections: next};
+          return { connections: next };
         });
       };
 
-      await ws.connect((buffer: ArrayBuffer) => {
-        onmessage(buffer);
-      }, false, true);
+      await ws.connect(
+        (buffer: ArrayBuffer) => {
+          onmessage(buffer);
+        },
+        false,
+        true
+      );
 
-      ws.sendJson({config_id: profileId, transfer_type: transferType});
+      ws.sendJson({ config_id: profileId, transfer_type: transferType });
       set((state) => ({
         connections: {
           ...state.connections,
@@ -579,9 +585,9 @@ export const useWebSocketStore = create<WebSocketState>()(
       if (conn) {
         conn.close();
         set((state) => {
-          const next = {...state.connections};
+          const next = { ...state.connections };
           delete next[name];
-          return {connections: next};
+          return { connections: next };
         });
       }
     },
@@ -595,49 +601,49 @@ export const useWebSocketStore = create<WebSocketState>()(
       if (get()._initiating || get()._all_data_initialized) return;
       if (get()._auth_phase !== "authenticated") return;
 
-      set((state) => ({...state, _initiating: true}));
+      set((state) => ({ ...state, _initiating: true }));
 
       try {
         await connectWithRetry("provider");
         await connectWithRetry("sync");
 
-        get().send("sync", {type: "pull", resource: "static"});
+        get().send("sync", { type: "pull", resource: "static" });
         await waitFor(
           get,
           api.subscribe,
           (state: WebSocketState) => Object.keys(state.staticStore).length,
-          (length) => length > 0,
+          (length) => length > 0
         );
 
-        get().send("sync", {type: "pull", resource: "setup_toml", resource_id: "global"});
+        get().send("sync", { type: "pull", resource: "setup_toml", resource_id: "global" });
         await waitFor(
           get,
           api.subscribe,
           (state: WebSocketState) => Object.keys(state.updateStore).length,
-          (length) => length > 0,
+          (length) => length > 0
         );
 
-        get().send("sync", {type: "list"});
+        get().send("sync", { type: "list" });
         await waitFor(
           get,
           api.subscribe,
           (state: WebSocketState) => Object.keys(state.configStore).length,
-          (length) => length > 0,
+          (length) => length > 0
         );
 
         Object.keys(get().configStore).forEach((key: string) => {
-          get().send("sync", {type: "pull", resource: "config", resource_id: key});
+          get().send("sync", { type: "pull", resource: "config", resource_id: key });
         });
 
         await waitFor(
           get,
           api.subscribe,
           (state: WebSocketState) => Object.keys(state.eventStore).length,
-          (length) => length > 0,
+          (length) => length > 0
         );
 
         Object.keys(get().configStore).forEach((key: string) => {
-          get().send("sync", {type: "pull", resource: "event", resource_id: key});
+          get().send("sync", { type: "pull", resource: "event", resource_id: key });
         });
 
         await connectWithRetry("trigger");
@@ -658,24 +664,24 @@ export const useWebSocketStore = create<WebSocketState>()(
                 remote: event.data.remote,
               },
             }));
-          },
+          }
         );
 
         await waitFor(
           get,
           api.subscribe,
           (state: WebSocketState) => state.versionStore,
-          (versionStore) => Object.keys(versionStore).length > 0,
+          (versionStore) => Object.keys(versionStore).length > 0
         );
 
         await waitFor(
           get,
           api.subscribe,
           (state: WebSocketState) => state._all_data_initialized,
-          (status) => status,
+          (status) => status
         );
       } finally {
-        set((state) => ({...state, _initiating: false}));
+        set((state) => ({ ...state, _initiating: false }));
       }
     },
 
@@ -706,7 +712,7 @@ export const useWebSocketStore = create<WebSocketState>()(
           return state;
         }
 
-        let base = {...prev};
+        let base = { ...prev };
         if (keys.length === 0 || (keys.length === 1 && keys[0] === "")) {
           base = patch;
         } else {
@@ -746,17 +752,17 @@ export const useWebSocketStore = create<WebSocketState>()(
       const timestamp = getTimestampMs();
       const ops = isPlainObject(patch)
         ? Object.entries(patch).map(([key, value]) => ({
-          op: "replace",
-          path: `/${key}`,
-          value,
-        }))
-        : [
-          {
             op: "replace",
-            path: "/",
-            value: patch,
-          },
-        ];
+            path: `/${key}`,
+            value,
+          }))
+        : [
+            {
+              op: "replace",
+              path: "/",
+              value: patch,
+            },
+          ];
 
       get().pendingCallbacks[timestamp] = () => {
         if (showToast) {
@@ -789,5 +795,5 @@ export const useWebSocketStore = create<WebSocketState>()(
         ...normalizedPayload,
       });
     },
-  })),
+  }))
 );

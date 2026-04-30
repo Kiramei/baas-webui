@@ -54,7 +54,8 @@ const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
 
 export const DEFAULT_SERVER_SIGN_PUBLIC_KEY_B64 =
-  import.meta.env.VITE_BAAS_SERVER_SIGN_PUBLIC_KEY_B64 || "_GMKcfOCE-0_erXPJQRQv6mLiNBnT3tdHmAaXwWRis4=";
+  import.meta.env.VITE_BAAS_SERVER_SIGN_PUBLIC_KEY_B64 ||
+  "_GMKcfOCE-0_erXPJQRQv6mLiNBnT3tdHmAaXwWRis4=";
 
 const PROTOCOL_VERSION = 1;
 
@@ -100,7 +101,9 @@ const base64UrlToBytes = (base64Url: string): Uint8Array => {
 };
 
 const bytesToBase64Url = (bytes: Uint8Array): string =>
-  btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_");
+  btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_");
 
 const nonceFromSeq = (seq: number): Uint8Array => {
   const nonce = new Uint8Array(12);
@@ -110,23 +113,23 @@ const nonceFromSeq = (seq: number): Uint8Array => {
 
 const sha256 = async (data: Uint8Array): Promise<Uint8Array> => {
   if (globalThis.crypto?.subtle) {
-    const buf = await crypto.subtle.digest("SHA-256", data)
-    return new Uint8Array(buf)
+    const buf = await crypto.subtle.digest("SHA-256", data);
+    return new Uint8Array(buf);
   }
-  await sodium.ready
-  const hash = sodium.crypto_hash_sha256(data)
-  return new Uint8Array(hash)
-}
+  await sodium.ready;
+  const hash = sodium.crypto_hash_sha256(data);
+  return new Uint8Array(hash);
+};
 
 const hkdfSha256 = async (
   keyMaterial: Uint8Array,
   info: Uint8Array,
   length: number,
-  salt: Uint8Array,
+  salt: Uint8Array
 ): Promise<Uint8Array> => {
-  const subtle = globalThis.crypto?.subtle
+  const subtle = globalThis.crypto?.subtle;
   if (subtle) {
-    const key = await subtle.importKey("raw", keyMaterial, "HKDF", false, ["deriveBits"])
+    const key = await subtle.importKey("raw", keyMaterial, "HKDF", false, ["deriveBits"]);
     const bits = await subtle.deriveBits(
       {
         name: "HKDF",
@@ -135,33 +138,33 @@ const hkdfSha256 = async (
         info,
       },
       key,
-      length * 8,
-    )
-    return new Uint8Array(bits)
+      length * 8
+    );
+    return new Uint8Array(bits);
   }
-  await sodium.ready
-  const prk = sodium.crypto_auth_hmacsha256(keyMaterial, salt)
-  const hashLen = 32
-  const n = Math.ceil(length / hashLen)
-  let t = new Uint8Array(0)
-  const okm = new Uint8Array(length)
-  let pos = 0
+  await sodium.ready;
+  const prk = sodium.crypto_auth_hmacsha256(keyMaterial, salt);
+  const hashLen = 32;
+  const n = Math.ceil(length / hashLen);
+  let t = new Uint8Array(0);
+  const okm = new Uint8Array(length);
+  let pos = 0;
 
   for (let i = 1; i <= n; i++) {
-    const input = new Uint8Array(t.length + info.length + 1)
-    input.set(t, 0)
-    input.set(info, t.length)
-    input[input.length - 1] = i
+    const input = new Uint8Array(t.length + info.length + 1);
+    input.set(t, 0);
+    input.set(info, t.length);
+    input[input.length - 1] = i;
 
-    t = sodium.crypto_auth_hmacsha256(input, prk)
+    t = sodium.crypto_auth_hmacsha256(input, prk);
 
-    const sliceLen = Math.min(hashLen, length - pos)
-    okm.set(t.slice(0, sliceLen), pos)
-    pos += sliceLen
+    const sliceLen = Math.min(hashLen, length - pos);
+    okm.set(t.slice(0, sliceLen), pos);
+    pos += sliceLen;
   }
 
-  return okm
-}
+  return okm;
+};
 
 const waitForJsonMessage = (ws: WebSocket): Promise<Record<string, any>> =>
   new Promise((resolve, reject) => {
@@ -251,13 +254,13 @@ class JsonSecureChannel {
   encrypt(payload: Record<string, any>): SecureEnvelope {
     const seq = this.txSeq++;
     const nonce = nonceFromSeq(seq);
-    const aad = canonicalBytes({seq, type: "secure"});
+    const aad = canonicalBytes({ seq, type: "secure" });
     const ciphertext = sodium.crypto_aead_chacha20poly1305_ietf_encrypt(
       canonicalBytes(payload),
       aad,
       null,
       nonce,
-      this.txKey,
+      this.txKey
     );
     return {
       type: "secure",
@@ -276,14 +279,14 @@ class JsonSecureChannel {
     }
     this.rxSeq += 1;
     const nonce = nonceFromSeq(seq);
-    const aad = canonicalBytes({seq, type: "secure"});
+    const aad = canonicalBytes({ seq, type: "secure" });
     const plaintext = sodium.crypto_aead_chacha20poly1305_ietf_decrypt(
       null,
       base64UrlToBytes(String(envelope.ciphertext)),
       aad,
       nonce,
       this.rxKey,
-      "uint8array",
+      "uint8array"
     );
     return JSON.parse(textDecoder.decode(plaintext));
   }
@@ -297,7 +300,12 @@ class SecretStreamChannel {
   private readonly pullState: any;
   readonly clientHeader: Uint8Array;
 
-  constructor(txKey: Uint8Array, rxKey: Uint8Array, serverHeader: Uint8Array, aadPrefix: Uint8Array) {
+  constructor(
+    txKey: Uint8Array,
+    rxKey: Uint8Array,
+    serverHeader: Uint8Array,
+    aadPrefix: Uint8Array
+  ) {
     this.aadPrefix = aadPrefix;
     const push = sodium.crypto_secretstream_xchacha20poly1305_init_push(txKey);
     this.pushState = push.state;
@@ -310,7 +318,7 @@ class SecretStreamChannel {
       this.pushState,
       payload,
       this.aad(this.txSeq++),
-      sodium.crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
+      sodium.crypto_secretstream_xchacha20poly1305_TAG_MESSAGE
     );
     return toUint8Array(ciphertext);
   }
@@ -319,7 +327,7 @@ class SecretStreamChannel {
     const result = sodium.crypto_secretstream_xchacha20poly1305_pull(
       this.pullState,
       toUint8Array(ciphertext),
-      this.aad(this.rxSeq++),
+      this.aad(this.rxSeq++)
     );
     if (!result) {
       throw new Error("Invalid secretstream frame");
@@ -334,7 +342,12 @@ class SecretStreamChannel {
   }
 }
 
-async function deriveHandshake(url: string, kind: "control" | "resume", channel: string, extra: Record<string, any> = {}) {
+async function deriveHandshake(
+  url: string,
+  kind: "control" | "resume",
+  channel: string,
+  extra: Record<string, any> = {}
+) {
   await sodium.ready;
   const ws = new WebSocket(url);
   await waitForOpen(ws);
@@ -378,7 +391,7 @@ async function deriveHandshake(url: string, kind: "control" | "resume", channel:
   const isValid = sodium.crypto_sign_verify_detached(
     base64UrlToBytes(serverHello.signature),
     transcript,
-    pinnedKey,
+    pinnedKey
   );
   if (!isValid) {
     throw new Error("Server identity verification failed");
@@ -387,13 +400,13 @@ async function deriveHandshake(url: string, kind: "control" | "resume", channel:
   const sharedKey = toUint8Array(
     sodium.crypto_scalarmult(
       toUint8Array(keyPair.privateKey),
-      base64UrlToBytes(serverHello.server_kx_pub),
-    ),
+      base64UrlToBytes(serverHello.server_kx_pub)
+    )
   );
   const transcriptHash = await sha256(transcript);
   const preauthChannel = new JsonSecureChannel(
     await hkdfSha256(sharedKey, textEncoder.encode("preauth:server-rx"), 32, transcriptHash),
-    await hkdfSha256(sharedKey, textEncoder.encode("preauth:server-tx"), 32, transcriptHash),
+    await hkdfSha256(sharedKey, textEncoder.encode("preauth:server-tx"), 32, transcriptHash)
   );
 
   return {
@@ -405,7 +418,11 @@ async function deriveHandshake(url: string, kind: "control" | "resume", channel:
   };
 }
 
-async function derivePasswordKey(password: string, saltB64: string, params: Argon2Params): Promise<Uint8Array> {
+async function derivePasswordKey(
+  password: string,
+  saltB64: string,
+  params: Argon2Params
+): Promise<Uint8Array> {
   return toUint8Array(
     sodium.crypto_pwhash(
       params.hash_bytes,
@@ -414,8 +431,8 @@ async function derivePasswordKey(password: string, saltB64: string, params: Argo
       params.opslimit,
       params.memlimit,
       sodium.crypto_pwhash_ALG_ARGON2ID13,
-      "uint8array",
-    ),
+      "uint8array"
+    )
   );
 }
 
@@ -472,7 +489,7 @@ export class ControlConnection {
 
   async authenticate(password: string): Promise<ControlSessionBundle> {
     if (!this.initialized) {
-      this.ws.send(JSON.stringify(this.preauthChannel.encrypt({type: "initialize", password})));
+      this.ws.send(JSON.stringify(this.preauthChannel.encrypt({ type: "initialize", password })));
     } else {
       if (!this.pwdSalt) {
         throw new Error("Server did not provide a password salt");
@@ -482,7 +499,7 @@ export class ControlConnection {
         this.sharedKey,
         textEncoder.encode(`auth-proof:${this.pwdEpoch}`),
         32,
-        this.transcriptHash,
+        this.transcriptHash
       );
       const proof = toUint8Array(sodium.crypto_auth_hmacsha256(authContext, pwKey));
       this.ws.send(
@@ -490,8 +507,8 @@ export class ControlConnection {
           this.preauthChannel.encrypt({
             type: "authenticate",
             proof: bytesToBase64Url(proof),
-          }),
-        ),
+          })
+        )
       );
     }
 
@@ -499,24 +516,28 @@ export class ControlConnection {
     if (authOk.type !== "auth_ok") {
       throw new Error("Expected auth_ok from control server");
     }
-    const sessionPwdKey = await derivePasswordKey(password, String(authOk.pwd_salt), authOk.argon2 as Argon2Params);
+    const sessionPwdKey = await derivePasswordKey(
+      password,
+      String(authOk.pwd_salt),
+      authOk.argon2 as Argon2Params
+    );
     const masterSecret = await hkdfSha256(
       concatBytes(this.sharedKey, sessionPwdKey),
       textEncoder.encode("master-secret"),
       32,
-      this.transcriptHash,
+      this.transcriptHash
     );
     const resumeSecret = await hkdfSha256(
       masterSecret,
       textEncoder.encode("resume-secret"),
       32,
-      this.transcriptHash,
+      this.transcriptHash
     );
     const sessionId = String(authOk.session_id);
     const controlSalt = await sha256(textEncoder.encode(sessionId));
     this.controlChannel = new JsonSecureChannel(
       await hkdfSha256(masterSecret, textEncoder.encode("control:server-rx"), 32, controlSalt),
-      await hkdfSha256(masterSecret, textEncoder.encode("control:server-tx"), 32, controlSalt),
+      await hkdfSha256(masterSecret, textEncoder.encode("control:server-tx"), 32, controlSalt)
     );
     this.session = {
       sessionId,
@@ -564,25 +585,25 @@ export class ControlConnection {
 
 const fillRandom = (buf: Uint8Array) => {
   if (globalThis.crypto?.getRandomValues) {
-    return globalThis.crypto.getRandomValues(buf)
+    return globalThis.crypto.getRandomValues(buf);
   }
-  throw new Error("No secure random source available")
-}
+  throw new Error("No secure random source available");
+};
 
 export const randomUUID = (): string => {
   if (globalThis.crypto?.randomUUID) {
-    return globalThis.crypto.randomUUID()
+    return globalThis.crypto.randomUUID();
   }
 
-  const bytes = new Uint8Array(16)
-  fillRandom(bytes)
+  const bytes = new Uint8Array(16);
+  fillRandom(bytes);
 
-  bytes[6] = (bytes[6] & 0x0f) | 0x40
-  bytes[8] = (bytes[8] & 0x3f) | 0x80
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
 
-  const hex = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('')
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
-}
+  const hex = [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+};
 
 export class SecureWebSocket {
   private readonly url: string;
@@ -598,7 +619,12 @@ export class SecureWebSocket {
   public onClose?: (event: CloseEvent) => void;
   public onError?: (event: Event) => void;
 
-  constructor(url: string, name: string, session: ControlSessionBundle, binaryType: BinaryType | null = null) {
+  constructor(
+    url: string,
+    name: string,
+    session: ControlSessionBundle,
+    binaryType: BinaryType | null = null
+  ) {
     this.url = url;
     this.name = name;
     this.session = session;
@@ -619,14 +645,16 @@ export class SecureWebSocket {
       channel: this.channelName,
       pwd_epoch: this.session.pwdEpoch,
     });
-    const resumeMac = toUint8Array(sodium.crypto_auth_hmacsha256(resumeContext, this.session.resumeSecret));
+    const resumeMac = toUint8Array(
+      sodium.crypto_auth_hmacsha256(resumeContext, this.session.resumeSecret)
+    );
     handshake.ws.send(
       JSON.stringify(
         handshake.preauthChannel.encrypt({
           type: "resume_proof",
           resume_mac: bytesToBase64Url(resumeMac),
-        }),
-      ),
+        })
+      )
     );
 
     const resumeOk = handshake.preauthChannel.decrypt(await waitForJsonMessage(handshake.ws));
@@ -641,9 +669,24 @@ export class SecureWebSocket {
       channel: this.channelName,
       pwd_epoch: this.session.pwdEpoch,
     });
-    const base = await hkdfSha256(this.session.masterSecret, scopeBytes, 64, handshake.transcriptHash);
-    const serverTxKey = await hkdfSha256(base.slice(0, 32), textEncoder.encode("secretstream:server-tx"), 32, handshake.transcriptHash);
-    const clientTxKey = await hkdfSha256(base.slice(32), textEncoder.encode("secretstream:server-rx"), 32, handshake.transcriptHash);
+    const base = await hkdfSha256(
+      this.session.masterSecret,
+      scopeBytes,
+      64,
+      handshake.transcriptHash
+    );
+    const serverTxKey = await hkdfSha256(
+      base.slice(0, 32),
+      textEncoder.encode("secretstream:server-tx"),
+      32,
+      handshake.transcriptHash
+    );
+    const clientTxKey = await hkdfSha256(
+      base.slice(32),
+      textEncoder.encode("secretstream:server-rx"),
+      32,
+      handshake.transcriptHash
+    );
     this.stream = new SecretStreamChannel(
       clientTxKey,
       serverTxKey,
@@ -653,7 +696,7 @@ export class SecureWebSocket {
         socket_id: this.socketId,
         channel: this.channelName,
         pwd_epoch: this.session.pwdEpoch,
-      }),
+      })
     );
 
     handshake.ws.send(
@@ -661,8 +704,8 @@ export class SecureWebSocket {
         handshake.preauthChannel.encrypt({
           type: "stream_ready",
           client_header: bytesToBase64Url(this.stream.clientHeader),
-        }),
-      ),
+        })
+      )
     );
 
     this.ws = handshake.ws;
@@ -685,13 +728,18 @@ export class SecureWebSocket {
             ? new Uint8Array(event.data)
             : new Uint8Array(event.data as ArrayBufferLike);
 
-        const plaintext = decrypt? this.stream!.decrypt(ciphertext): ciphertext;
+        const plaintext = decrypt ? this.stream!.decrypt(ciphertext) : ciphertext;
         if (decodeJson) {
-          const decoded = JSON.parse(textDecoder.decode(plaintext))
+          const decoded = JSON.parse(textDecoder.decode(plaintext));
           // console.log(`${this.name} Recv: ${textDecoder.decode(plaintext)}`);
           onMessage?.(decoded);
         } else {
-          onMessage?.(plaintext.buffer.slice(plaintext.byteOffset, plaintext.byteOffset + plaintext.byteLength));
+          onMessage?.(
+            plaintext.buffer.slice(
+              plaintext.byteOffset,
+              plaintext.byteOffset + plaintext.byteLength
+            )
+          );
         }
       } catch (error) {
         console.error(`[${this.name}] Failed to decrypt websocket frame`, error);

@@ -11,27 +11,26 @@ interface CornerBoxProps {
 }
 
 export const CornerBox = ({
-                            size = 200,
-                            cornerSize = 20,
-                            borderWidth = 3,
-                            expand = 10,
-                            color = "white",
-                            className = "",
-                            children
-                          }: CornerBoxProps) => {
-
+  size = 200,
+  cornerSize = 20,
+  borderWidth = 3,
+  expand = 10,
+  color = "white",
+  className = "",
+  children,
+}: CornerBoxProps) => {
   const commonStyle = {
     width: cornerSize,
     height: cornerSize,
     borderWidth: borderWidth,
     borderColor: color,
-    transition: "transform 0.3s ease"
+    transition: "transform 0.3s ease",
   };
 
   return (
     <div
       className={`relative group/inner flex items-center justify-center ${className}`}
-      style={{width: size, height: size}}
+      style={{ width: size, height: size }}
     >
       {children}
 
@@ -40,7 +39,7 @@ export const CornerBox = ({
         className="absolute top-0 left-0 border-b-0! border-r-0! border-t border-l corner-tl opacity-0"
         style={{
           ...commonStyle,
-          transform: "translate(0,0)"
+          transform: "translate(0,0)",
         }}
       />
 
@@ -49,7 +48,7 @@ export const CornerBox = ({
         className="absolute top-0 right-0 border-l-0! border-b-0! border-t border-r corner-tr opacity-0"
         style={{
           ...commonStyle,
-          transform: "translate(0,0)"
+          transform: "translate(0,0)",
         }}
       />
 
@@ -58,7 +57,7 @@ export const CornerBox = ({
         className="absolute bottom-0 left-0 border-r-0! border-t-0! border-b border-l corner-bl opacity-0"
         style={{
           ...commonStyle,
-          transform: "translate(0,0)"
+          transform: "translate(0,0)",
         }}
       />
 
@@ -67,7 +66,7 @@ export const CornerBox = ({
         className="absolute bottom-0 right-0 border-l-0! border-t-0! border-b border-r corner-br opacity-0"
         style={{
           ...commonStyle,
-          transform: "translate(0,0)"
+          transform: "translate(0,0)",
         }}
       />
 

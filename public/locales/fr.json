@@ -466,5 +466,24 @@
   "auth.rememberKeyTip": "Veuillez mémoriser la clé !",
   "auth.forgotKeyTip": "Clé oubliée ? Veuillez consulter le BAAS Wiki.",
   "auth.pleaseWait": "Veuillez patienter...",
-  "auth.initialize": "Initialiser"
+  "auth.initialize": "Initialiser",
+  "remote": {
+    "emulator": "Émulateur distant",
+    "connecting": "Connexion",
+    "inputBytes": "Trafic entrant",
+    "avg": "Taux moyen",
+    "padInput": "Taux d'images entrantes",
+    "padDropped": "Taux d'images perdues",
+    "padDecoded": "Taux d'images décodées",
+    "advanced": "Paramètres avancés",
+    "setClipboard": "Définir le presse-papiers",
+    "getClipboard": "Obtenir le presse-papiers",
+    "width": "Hauteur maximale",
+    "height": "Largeur maximale",
+    "fps": "Taux d'images maximal",
+    "iframe": "Intervalle I-frame",
+    "bitrate": "Débit",
+    "showStatus": "Afficher le statut",
+    "saveAndApply": "Enregistrer et appliquer"
+  }
 }

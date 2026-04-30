@@ -466,5 +466,24 @@
   "auth.rememberKeyTip": "キーを必ず覚えておいてください！",
   "auth.forgotKeyTip": "キーを忘れましたか？BAAS Wiki を参照してください。",
   "auth.pleaseWait": "しばらくお待ちください...",
-  "auth.initialize": "初期化"
+  "auth.initialize": "初期化",
+  "remote": {
+    "emulator": "リモートエミュレーター",
+    "connecting": "接続中",
+    "inputBytes": "入力トラフィック",
+    "avg": "平均レート",
+    "padInput": "入力フレームレート",
+    "padDropped": "ドロップフレームレート",
+    "padDecoded": "デコードフレームレート",
+    "advanced": "詳細設定",
+    "setClipboard": "クリップボードを設定",
+    "getClipboard": "クリップボードを取得",
+    "width": "最大高さ",
+    "height": "最大幅",
+    "fps": "最大フレームレート",
+    "iframe": "Iフレーム間隔",
+    "bitrate": "ビットレート",
+    "showStatus": "ステータスを表示",
+    "saveAndApply": "保存して適用"
+  }
 }

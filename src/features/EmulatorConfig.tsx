@@ -1,10 +1,10 @@
-import React, {useMemo, useState} from "react";
-import {useTranslation} from "react-i18next";
-import {FormInput} from "@/components/ui/FormInput";
-import {FormSelect} from "@/components/ui/FormSelect";
+import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { FormInput } from "@/components/ui/FormInput";
+import { FormSelect } from "@/components/ui/FormSelect";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
-import {DynamicConfig} from "@/types/dynamic";
-import {useWebSocketStore} from "@/store/websocketStore.ts";
+import { DynamicConfig } from "@/types/dynamic";
+import { useWebSocketStore } from "@/store/websocketStore.ts";
 
 type EmulatorConfigProps = {
   profileId: string;
@@ -27,16 +27,13 @@ const multiMap: Record<string, string> = {
   bluestacks_nxt: "蓝叠国际版",
 };
 
-const EmulatorConfig: React.FC<EmulatorConfigProps> = (
-  {
-    profileId,
-    onClose
-  }
-) => {
-  const {t} = useTranslation();
+const EmulatorConfig: React.FC<EmulatorConfigProps> = ({ profileId, onClose }) => {
+  const { t } = useTranslation();
 
-  const settings: Partial<DynamicConfig> = useWebSocketStore(state => state.configStore[profileId]);
-  const modify = useWebSocketStore(state => state.modify);
+  const settings: Partial<DynamicConfig> = useWebSocketStore(
+    (state) => state.configStore[profileId]
+  );
+  const modify = useWebSocketStore((state) => state.modify);
 
   const ext = useMemo<Draft>(() => {
     return {
@@ -53,11 +50,9 @@ const EmulatorConfig: React.FC<EmulatorConfigProps> = (
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(ext);
 
-  const handleChange =
-    (key: keyof Draft) =>
-      (value: string | boolean) => {
-        setDraft((prev) => ({...prev, [key]: value as any}));
-      };
+  const handleChange = (key: keyof Draft) => (value: string | boolean) => {
+    setDraft((prev) => ({ ...prev, [key]: value as any }));
+  };
 
   const handleSave = async () => {
     const patch: Partial<DynamicConfig> = {};
@@ -71,14 +66,13 @@ const EmulatorConfig: React.FC<EmulatorConfigProps> = (
       onClose();
       return;
     }
-    modify(`${profileId}::config`, patch)
+    modify(`${profileId}::config`, patch);
 
     onClose();
   };
 
   return (
     <div className="@container space-y-2">
-
       <div className="flex @lg:flex-row @max-lg:flex-col gap-2">
         {/* 是否启动时打开模拟器 */}
         <SwitchButton
@@ -97,7 +91,6 @@ const EmulatorConfig: React.FC<EmulatorConfigProps> = (
         />
       </div>
 
-
       {/* 启动等待时间 */}
       <FormInput
         type="number"
@@ -106,7 +99,6 @@ const EmulatorConfig: React.FC<EmulatorConfigProps> = (
         onChange={(e) => handleChange("emulator_wait_time")(e.target.value)}
         placeholder="5"
       />
-
 
       {/* 单开模式 */}
       {!draft.emulatorIsMultiInstance && (
@@ -143,9 +135,7 @@ const EmulatorConfig: React.FC<EmulatorConfigProps> = (
             type="number"
             label={t("emulator.instanceCount")}
             value={draft.emulatorMultiInstanceNumber}
-            onChange={(e) =>
-              handleChange("emulatorMultiInstanceNumber")(e.target.value)
-            }
+            onChange={(e) => handleChange("emulatorMultiInstanceNumber")(e.target.value)}
           />
         </div>
       )}

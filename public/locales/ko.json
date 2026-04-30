@@ -466,5 +466,24 @@
   "auth.rememberKeyTip": "키를 반드시 기억하세요!",
   "auth.forgotKeyTip": "키를 잊으셨나요? BAAS Wiki를 참조하세요.",
   "auth.pleaseWait": "잠시만 기다려 주세요...",
-  "auth.initialize": "초기화"
+  "auth.initialize": "초기화",
+  "remote": {
+    "emulator": "원격 에뮬레이터",
+    "connecting": "연결 중",
+    "inputBytes": "입력 트래픽",
+    "avg": "평균 속도",
+    "padInput": "입력 프레임 속도",
+    "padDropped": "손실 프레임 속도",
+    "padDecoded": "디코딩 프레임 속도",
+    "advanced": "고급 설정",
+    "setClipboard": "클립보드 설정",
+    "getClipboard": "클립보드 가져오기",
+    "width": "최대 높이",
+    "height": "최대 너비",
+    "fps": "최대 프레임 속도",
+    "iframe": "I-프레임 간격",
+    "bitrate": "비트레이트",
+    "showStatus": "상태 표시",
+    "saveAndApply": "저장 및 적용"
+  }
 }

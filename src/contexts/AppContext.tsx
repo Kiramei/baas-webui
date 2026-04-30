@@ -1,10 +1,10 @@
-import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
-import type {ConfigProfile, UISettings} from '@/types/app';
-import {GlobalSelectProvider} from "@/components/ui/SelectGlobal"
-import {useWebSocketStore} from "@/store/websocketStore.ts";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import type { ConfigProfile, UISettings } from "@/types/app";
+import { GlobalSelectProvider } from "@/components/ui/SelectGlobal";
+import { useWebSocketStore } from "@/store/websocketStore.ts";
 
-import {StorageUtil} from "@/lib/storage.ts";
-import { UISettingsProvider } from "./UISettingsProvider";
+import { StorageUtil } from "@/lib/storage.ts";
+import { UISettingsProvider, DEFAULT_UI_SETTINGS } from "./UISettingsProvider";
 
 interface AppContextType {
   uiSettings: UISettings;
@@ -14,26 +14,15 @@ interface AppContextType {
   setActiveProfile: (profile: ConfigProfile | null) => void;
 }
 
-const DEFAULT_UI_SETTINGS = {
-  lang: "",
-  theme: "",
-  zoomScale: 100,
-  scrollToEnd: true,
-  assetsDisplay: true
-}
-
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-
-export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: boolean) => void }> = (
-  {
-    children,
-    setReady
-  }
-) => {
+export const AppProvider: React.FC<{ children: ReactNode; setReady: (value: boolean) => void }> = ({
+  children,
+  setReady,
+}) => {
   const [profiles, setProfiles] = useState<ConfigProfile[]>([]);
   const [activeProfile, setActiveProfile] = useState<ConfigProfile | null>(null);
-  const [stageInitiated, setStageInitiated] = useState<boolean>(false)
+  const [stageInitiated, setStageInitiated] = useState<boolean>(false);
   const [uiSettings, setUiSettings] = useState<UISettings>(DEFAULT_UI_SETTINGS);
   const init = useWebSocketStore((s) => s.init);
   const authPhase = useWebSocketStore((s) => s._auth_phase);
@@ -48,7 +37,7 @@ export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: bool
   }, [authPhase, allDataInitialized, init]);
 
   useEffect(() => {
-    const _uiSettings: UISettings | null = StorageUtil.get("uiSettings")
+    const _uiSettings: UISettings | null = StorageUtil.get("uiSettings");
     if (!_uiSettings) {
       setUiSettings(DEFAULT_UI_SETTINGS);
       StorageUtil.set("uiSettings", DEFAULT_UI_SETTINGS);
@@ -61,7 +50,6 @@ export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: bool
   useEffect(() => {
     if (stageInitiated) StorageUtil.set("uiSettings", uiSettings);
   }, [uiSettings]);
-
 
   useEffect(() => {
     const list = Object.keys(configStore).map((key) => ({
@@ -91,7 +79,9 @@ export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: bool
   }, [configStore]);
 
   useEffect(() => {
-    setReady(authPhase === "authenticated" && allDataInitialized && (activeProfile !== null) && (!initiating));
+    setReady(
+      authPhase === "authenticated" && allDataInitialized && activeProfile !== null && !initiating
+    );
   }, [authPhase, allDataInitialized, setReady, activeProfile, initiating]);
 
   const value = {
@@ -99,9 +89,8 @@ export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: bool
     uiSettings,
     setUiSettings,
     activeProfile,
-    setActiveProfile
+    setActiveProfile,
   };
-
 
   return (
     <AppContext.Provider value={value}>
@@ -115,7 +104,7 @@ export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: bool
 export const useApp = (): AppContextType => {
   const context = useContext(AppContext);
   if (context === undefined) {
-    throw new Error('useApp must be used within an AppProvider');
+    throw new Error("useApp must be used within an AppProvider");
   }
   return context;
 };

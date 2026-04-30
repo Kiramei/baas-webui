@@ -1,7 +1,7 @@
-import path from 'path';
-import {defineConfig} from 'vite';
-import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react';
+import path from "path";
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
 import compression from "vite-plugin-compression";
 // import {visualizer} from "rollup-plugin-visualizer";
 
@@ -10,7 +10,7 @@ export default defineConfig(() => {
     base: "/",
     clearScreen: false,
     define: {
-      global: 'window'
+      global: "window",
     },
     server: {
       host: "0.0.0.0",
@@ -24,8 +24,8 @@ export default defineConfig(() => {
         algorithm: "brotliCompress",
         ext: ".br",
         threshold: 1024,
-        deleteOriginFile: false
-      })
+        deleteOriginFile: false,
+      }),
       // Consider using this plugin to analyze the chunk :)
       // visualizer({
       //   filename: 'dist/stats.html',
@@ -36,50 +36,43 @@ export default defineConfig(() => {
       rollupOptions: {
         output: {
           manualChunks: {
-            motion: [
-              'framer-motion'
-            ],
-            highlight: [
-              'rehype-highlight'
-            ],
-            markdown: [
-              'remark-gfm',
-              'react-markdown'
-            ],
+            motion: ["framer-motion"],
+            highlight: ["rehype-highlight"],
+            markdown: ["remark-gfm", "react-markdown"],
             misc: [
-              'react',
+              "react",
               "i18next",
               "zustand",
-              'react-dom',
+              "react-dom",
               "next-themes",
-              'react-window',
+              "react-window",
               "lucide-react",
               "react-i18next",
               "tailwind-merge",
-              "class-variance-authority"
+              "class-variance-authority",
             ],
             ui: [
-              'sonner',
-              'date-fns',
-              'react-day-picker',
+              "sonner",
+              "date-fns",
+              "react-day-picker",
               "@headlessui/react",
-              '@radix-ui/react-popover',
-              '@radix-ui/react-select',
-              '@radix-ui/react-separator',
-              '@radix-ui/react-slot',
-              '@radix-ui/react-switch',
-              '@radix-ui/react-tabs',
-              '@radix-ui/react-tooltip'
-            ]
-          }
-        }
-      }
+              "@radix-ui/react-popover",
+              "@radix-ui/react-select",
+              "@radix-ui/react-separator",
+              "@radix-ui/react-slot",
+              "@radix-ui/react-switch",
+              "@radix-ui/react-tabs",
+              "@radix-ui/react-tooltip",
+            ],
+          },
+        },
+      },
     },
     resolve: {
       alias: {
-        buffer: 'buffer',
-        '@': path.resolve(__dirname, 'src')
-      }
-    }
+        buffer: "buffer",
+        "@": path.resolve(__dirname, "src"),
+      },
+    },
   };
 });

@@ -470,5 +470,24 @@
   "export.log.success": "日志保存成功",
   "export.log.successDesc": "日志保存于: {{path}}",
   "toast.dateUpdated": "日期已更新",
-  "toast.timeUpdated": "时间已更新"
+  "toast.timeUpdated": "时间已更新",
+  "remote": {
+    "emulator": "远程模拟器",
+    "connecting": "连接中",
+    "inputBytes": "输入流量",
+    "avg": "平均速率",
+    "padInput": "输入帧率",
+    "padDropped": "丢失帧率",
+    "padDecoded": "解码帧率",
+    "advanced": "高级设置",
+    "setClipboard": "设置剪切板",
+    "getClipboard": "获取剪切板",
+    "width": "最大高度",
+    "height": "最大宽度",
+    "fps": "最大帧率",
+    "iframe": "I帧间隔",
+    "bitrate": "比特率",
+    "showStatus": "显示状态",
+    "saveAndApply": "保存并应用"
+  }
 }

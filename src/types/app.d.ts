@@ -1,7 +1,12 @@
-import {DynamicConfig} from "@/types/dynamic";
-import {Dispatch, SetStateAction} from "react";
-import {PageKey} from "@/App.tsx";
-import {AuthPhase, ControlConnection, ControlSessionBundle, SecureWebSocket} from "@/lib/SecureWebSocket";
+import { DynamicConfig } from "@/types/dynamic";
+import { Dispatch, SetStateAction } from "react";
+import { PageKey } from "@/App.tsx";
+import {
+  AuthPhase,
+  ControlConnection,
+  ControlSessionBundle,
+  SecureWebSocket,
+} from "@/lib/SecureWebSocket";
 
 export interface ConfigProfile {
   id: string;
@@ -27,12 +32,12 @@ export interface UISettings {
   remoteSettings: RemoteSettings;
 }
 
-export type Theme = 'light' | 'dark' | 'system';
+export type Theme = "light" | "dark" | "system";
 
 /**
  * Identifiers for each primary application route.
  */
-export type PageKey = 'home' | 'scheduler' | 'configuration' | 'settings' | 'wiki';
+export type PageKey = "home" | "scheduler" | "configuration" | "settings" | "wiki";
 
 export interface ProfileProps {
   profileId?: string;
@@ -53,7 +58,6 @@ export interface StringKVMap {
 export interface WsCallBackDict {
   [key: string]: (message: WsMessageItem) => void;
 }
-
 
 export type WsName = "provider" | "sync" | "trigger" | `remote-${string}`;
 
@@ -115,10 +119,9 @@ interface WsMessageItem {
   data?: any;
   resource?: string;
   resource_id?: string;
-  "ops"?: SyncOperation[];
-  "command"?: string;
+  ops?: SyncOperation[];
+  command?: string;
 }
-
 
 interface LogStoreSet {
   [key: string]: LogItem[];
@@ -149,7 +152,7 @@ interface WebSocketState {
     onclose: (event: CloseEvent) => void,
     onerror: (event: Event) => void,
     onmessage: (event: ArrayBuffer) => void
-  ) => Promise<`remote-${string}`> ;
+  ) => Promise<`remote-${string}`>;
   pendingCallbacks: Record<string, (data?: any) => void>;
 
   _all_data_initialized: boolean;

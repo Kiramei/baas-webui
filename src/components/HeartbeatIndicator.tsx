@@ -1,25 +1,29 @@
-import React, {useEffect, useState, useRef} from "react";
-import {motion} from "framer-motion";
-import {useWebSocketStore} from "@/store/websocketStore.ts";
-import {useTranslation} from "react-i18next";
+import React, { useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
+import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useTranslation } from "react-i18next";
 
 interface IndicatorProps {
   onStateChanged: (state: boolean) => void;
 }
 
-export const IndicatorBase: React.FC<IndicatorProps> = ({onStateChanged}) => {
+export const IndicatorBase: React.FC<IndicatorProps> = ({ onStateChanged }) => {
   const [alive, setAlive] = useState(false);
   const [connected, setConnected] = useState(true);
   const heartbeatTime = useWebSocketStore((s) => s._heartbeat_time);
-  const init = useWebSocketStore(s => s.init)
-  const lastBeatRef = useRef<number>(Date.now());
+  const init = useWebSocketStore((s) => s.init);
+  const lastBeatRef = useRef<number>(0);
+
+  useEffect(() => {
+    lastBeatRef.current = Date.now();
+  }, []);
 
   useEffect(() => {
     if (!heartbeatTime) return;
     lastBeatRef.current = Date.now();
     setAlive(true);
     setConnected(true);
-    onStateChanged(true)
+    onStateChanged(true);
     const timer = setTimeout(() => setAlive(false), 300);
     return () => clearTimeout(timer);
   }, [heartbeatTime]);
@@ -28,7 +32,7 @@ export const IndicatorBase: React.FC<IndicatorProps> = ({onStateChanged}) => {
     const checkInterval = setInterval(async () => {
       if (Date.now() - lastBeatRef.current > 5000) {
         setConnected(false);
-        onStateChanged(false)
+        onStateChanged(false);
         await init();
       }
     }, 1000);
@@ -53,31 +57,30 @@ export const IndicatorBase: React.FC<IndicatorProps> = ({onStateChanged}) => {
             : "0 0 10px var(--color-primary-400)"
           : "none",
       }}
-      transition={{type: "spring", stiffness: 300, damping: 15}}
+      transition={{ type: "spring", stiffness: 300, damping: 15 }}
     />
   );
 };
 
 const HeartbeatIndicator = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [connected, setConnected] = useState(false);
 
   return (
-    <div
-      className="flex flex-row items-center justify-center p-4 bg-slate-100/50 dark:bg-slate-700/50 w-full rounded-xl self-start">
-      <IndicatorBase onStateChanged={setConnected}/>
+    <div className="flex flex-row items-center justify-center p-4 bg-slate-100/50 dark:bg-slate-700/50 w-full rounded-xl self-start">
+      <IndicatorBase onStateChanged={setConnected} />
       <motion.div
         className="ml-4 text-sm font-bold rounded-lg"
         animate={{
           color: connected ? "var(--color-primary-400)" : "var(--color-slate-400)",
         }}
-        transition={{duration: 0.4}}
+        transition={{ duration: 0.4 }}
       >
         {connected ? t("heartbeat.connected") : t("heartbeat.connecting")}
       </motion.div>
-      <div className="grow"/>
+      <div className="grow" />
     </div>
   );
-}
+};
 
 export default HeartbeatIndicator;

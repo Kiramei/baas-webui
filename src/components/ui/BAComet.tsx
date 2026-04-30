@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react";
+import React, { useEffect, useRef } from "react";
 
 type RGB = readonly [number, number, number];
 type RGBA = [number, number, number, number];
@@ -100,20 +100,20 @@ declare global {
       shrinkCW: number,
       shrinkCCW: number,
       gapRatioMin: number,
-      gapRatioMax: number,
+      gapRatioMax: number
     ) => void;
     updateGlowSoftness?: (centerSoftness: number, borderSoftness: number) => void;
     updateGlowSettings?: (
       centerGlowRadius: number,
       borderGlowRadius: number,
       centerGlowIntensity: number,
-      borderGlowIntensity: number,
+      borderGlowIntensity: number
     ) => void;
     updateTrailGlow?: (
       radius: number,
       intensity: number,
       softness: number,
-      spacing: number,
+      spacing: number
     ) => void;
     updateTrailTriangleBehavior?: (
       minSpawnDistance: number,
@@ -121,14 +121,20 @@ declare global {
       minCenterOffset: number,
       maxCenterOffset: number,
       maxRadialDistance: number,
-      normalConeDeg: number,
+      normalConeDeg: number
     ) => void;
   }
 }
 
 const hexToRgb = (hex: string): RGB => {
   const clean = hex.replace("#", "");
-  const full = clean.length === 3 ? clean.split("").map((c) => c + c).join("") : clean;
+  const full =
+    clean.length === 3
+      ? clean
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : clean;
   const num = Number.parseInt(full, 16);
   return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
 };
@@ -189,8 +195,10 @@ const FX_COLOR: ColorTree = Object.freeze({
 
 const rgba = (rgb: RGB, a = 1): RGBA => [rgb[0], rgb[1], rgb[2], a];
 const rgbString = (rgb: RGB): string => `${rgb[0]},${rgb[1]},${rgb[2]}`;
-const fillRgba = (count: number, rgb: RGB, a = 1): RGBA[] => Array.from({length: count}, () => rgba(rgb, a));
-const fillTransparent = (count: number): RGBA[] => Array.from({length: count}, () => rgba(FX_COLOR.transparent, 0));
+const fillRgba = (count: number, rgb: RGB, a = 1): RGBA[] =>
+  Array.from({ length: count }, () => rgba(rgb, a));
+const fillTransparent = (count: number): RGBA[] =>
+  Array.from({ length: count }, () => rgba(FX_COLOR.transparent, 0));
 
 class GlowLayer {
   private canvas: HTMLCanvasElement;
@@ -349,7 +357,7 @@ class GlowLayer {
       color[2] / 255,
       color[3],
       intensity,
-      softness,
+      softness
     );
   }
 
@@ -460,7 +468,11 @@ class MouseSparkEngine {
   private borderPeakAngle = 360;
   private borderPeakFrame = 9;
 
-  constructor(canvas: HTMLCanvasElement, glowCanvas: HTMLCanvasElement | null, opts: MouseSparkOptions = {}) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    glowCanvas: HTMLCanvasElement | null,
+    opts: MouseSparkOptions = {}
+  ) {
     this.c = canvas;
     this.glowCanvas = glowCanvas;
 
@@ -518,14 +530,14 @@ class MouseSparkEngine {
 
   normalize2D(x: number, y: number): { x: number; y: number } {
     const len = Math.hypot(x, y);
-    if (len < 1e-6) return {x: 1, y: 0};
-    return {x: x / len, y: y / len};
+    if (len < 1e-6) return { x: 1, y: 0 };
+    return { x: x / len, y: y / len };
   }
 
   rotate2D(x: number, y: number, rad: number): { x: number; y: number } {
     const c = Math.cos(rad);
     const s = Math.sin(rad);
-    return {x: x * c - y * s, y: x * s + y * c};
+    return { x: x * c - y * s, y: x * s + y * c };
   }
 
   distance2D(a: { x: number; y: number }, b: { x: number; y: number }): number {
@@ -576,7 +588,7 @@ class MouseSparkEngine {
     headColor: RGBA,
     tailColor: RGBA,
     headAlpha: number,
-    tailAlpha: number,
+    tailAlpha: number
   ): void {
     if (!this.glow) return;
 
@@ -594,13 +606,20 @@ class MouseSparkEngine {
       const y = this.linearInterpolate(y0, y1, u);
       const col = this.mixColor(headColor, tailColor, u);
       col[3] = this.linearInterpolate(headAlpha, tailAlpha, u);
-      this.glow.addPoint(x, y, this.trailGlowRadius * this.scale, col, this.trailGlowIntensity, this.trailGlowSoftness);
+      this.glow.addPoint(
+        x,
+        y,
+        this.trailGlowRadius * this.scale,
+        col,
+        this.trailGlowIntensity,
+        this.trailGlowSoftness
+      );
     }
   }
 
   resolveNumericTrack(raw: Array<number | null>): number[] {
     const out = raw.map((v) => (v == null ? null : Number(v)));
-    let first = out.findIndex((v) => v != null && Number.isFinite(v));
+    const first = out.findIndex((v) => v != null && Number.isFinite(v));
     if (first === -1) return raw.map(() => 0);
 
     for (let i = 0; i < first; i++) out[i] = out[first];
@@ -645,7 +664,8 @@ class MouseSparkEngine {
 
   initTracks(): void {
     const N = 44;
-    const fill = (count: number, value: number | string): Array<number | string> => Array.from({length: count}, () => value);
+    const fill = (count: number, value: number | string): Array<number | string> =>
+      Array.from({ length: count }, () => value);
 
     const RAW = {
       centerColor: [
@@ -655,23 +675,100 @@ class MouseSparkEngine {
         ...fillRgba(10, FX_COLOR.center.stage4, 0.5),
         ...fillTransparent(31),
       ],
-      centerDiameter: [15, 23.7, 30.3, 34.2, 37, 39.6, 41.7, 43.4, 44.6, 44.6, 44.6, 44.6, 44.6, ...Array.from({length: 31}, () => 0)],
-      centerLightRadius: [...Array.from({length: 13}, () => 35), ...Array.from({length: 31}, () => 0)],
-      pointDiameter: [0, 0, 1, ...Array.from({length: 16}, () => 2), ...Array.from({length: 25}, () => 0)],
-      pointLightRadius: [0, 0, 1, ...Array.from({length: 16}, () => 2.18), ...Array.from({length: 25}, () => 0)],
-      pointColor: [...fillTransparent(2), rgba(FX_COLOR.point.main, 0.5), ...fillRgba(16, FX_COLOR.point.main, 0.5), ...fillTransparent(25)],
-      borderAngle: [
-        0.0, 0.0, 12.98, 67.18, 116.7, 171.5, 228.1, 295.8, 360.0, 308.3, 269.6, 240.0, 219.1, 200.96,
-        185.43, 167.99, 155.9, 143.6, 133.45, 123.1, 109.8, 99.0, 94.1, 87.0, 74.3, 68.0, 64.2, 51.6,
-        46.5, 41.1, 36.0, 29.9, 21.5, 19.8, 13.0, 11.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+      centerDiameter: [
+        15,
+        23.7,
+        30.3,
+        34.2,
+        37,
+        39.6,
+        41.7,
+        43.4,
+        44.6,
+        44.6,
+        44.6,
+        44.6,
+        44.6,
+        ...Array.from({ length: 31 }, () => 0),
       ],
-      borderMaxWidth: Array.from({length: N}, () => 2),
-      borderShrinkAngle: Array.from({length: N}, () => 20),
-      maxBorderDistance: Array.from({length: N}, () => 2.43),
+      centerLightRadius: [
+        ...Array.from({ length: 13 }, () => 35),
+        ...Array.from({ length: 31 }, () => 0),
+      ],
+      pointDiameter: [
+        0,
+        0,
+        1,
+        ...Array.from({ length: 16 }, () => 2),
+        ...Array.from({ length: 25 }, () => 0),
+      ],
+      pointLightRadius: [
+        0,
+        0,
+        1,
+        ...Array.from({ length: 16 }, () => 2.18),
+        ...Array.from({ length: 25 }, () => 0),
+      ],
+      pointColor: [
+        ...fillTransparent(2),
+        rgba(FX_COLOR.point.main, 0.5),
+        ...fillRgba(16, FX_COLOR.point.main, 0.5),
+        ...fillTransparent(25),
+      ],
+      borderAngle: [
+        0.0, 0.0, 12.98, 67.18, 116.7, 171.5, 228.1, 295.8, 360.0, 308.3, 269.6, 240.0, 219.1,
+        200.96, 185.43, 167.99, 155.9, 143.6, 133.45, 123.1, 109.8, 99.0, 94.1, 87.0, 74.3, 68.0,
+        64.2, 51.6, 46.5, 41.1, 36.0, 29.9, 21.5, 19.8, 13.0, 11.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0,
+      ],
+      borderMaxWidth: Array.from({ length: N }, () => 2),
+      borderShrinkAngle: Array.from({ length: N }, () => 20),
+      maxBorderDistance: Array.from({ length: N }, () => 2.43),
       scaleBaseRadius: [
-        0, 0, 30.3 / 2, 32.5 / 2, 34.8 / 2, null, null, null, 42.4 / 2, 42.8 / 2, null, null, null, 48.6 / 2,
-        null, null, null, null, 52.4 / 2, null, null, null, null, 55.2 / 2, null, null, null, null, 56.2 / 2,
-        null, null, null, null, 56.6 / 2, null, null, null, null, null, null, null, null, null, null,
+        0,
+        0,
+        30.3 / 2,
+        32.5 / 2,
+        34.8 / 2,
+        null,
+        null,
+        null,
+        42.4 / 2,
+        42.8 / 2,
+        null,
+        null,
+        null,
+        48.6 / 2,
+        null,
+        null,
+        null,
+        null,
+        52.4 / 2,
+        null,
+        null,
+        null,
+        null,
+        55.2 / 2,
+        null,
+        null,
+        null,
+        null,
+        56.2 / 2,
+        null,
+        null,
+        null,
+        null,
+        56.6 / 2,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
       ] as Array<number | null>,
       triaColorRef: [
         ...fillRgba(9, FX_COLOR.triangle.stage1, 1),
@@ -679,20 +776,26 @@ class MouseSparkEngine {
         rgba(FX_COLOR.triangle.stage3, 0.9),
         ...fillRgba(33, FX_COLOR.triangle.stage4, 0.8),
       ],
-      triaPulseMode: [...(fill(11, "None") as string[]), ...(fill(19, "Dynamic_Opacity") as string[]), ...(fill(4, "Transition") as string[]), ...(fill(10, "None") as string[])],
+      triaPulseMode: [
+        ...(fill(11, "None") as string[]),
+        ...(fill(19, "Dynamic_Opacity") as string[]),
+        ...(fill(4, "Transition") as string[]),
+        ...(fill(10, "None") as string[]),
+      ],
       triaScaleRate: [
-        0.0, 0.09, 0.25, 0.45, 0.69, 0.91, 1.0, 0.99, 0.97, 0.97, 0.96, 0.91, 0.91, 0.89, 0.88, 0.86, 0.85,
-        0.83, 0.82, 0.8, 0.78, 0.77, 0.73, 0.69, 0.64, 0.6, 0.56, 0.52, 0.48, 0.44, 0.4, 0.35, 0.31, 0.28,
-        0.24, 0.21, 0.16, 0.11, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.09, 0.25, 0.45, 0.69, 0.91, 1.0, 0.99, 0.97, 0.97, 0.96, 0.91, 0.91, 0.89, 0.88,
+        0.86, 0.85, 0.83, 0.82, 0.8, 0.78, 0.77, 0.73, 0.69, 0.64, 0.6, 0.56, 0.52, 0.48, 0.44, 0.4,
+        0.35, 0.31, 0.28, 0.24, 0.21, 0.16, 0.11, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0,
       ],
       triaDistance: [
-        20.0, 20.45, 21.07, 21.24, 21.42, 21.78, 22.25, 22.71, 23.02, 23.44, 23.89, 24.26, 24.71, 25.4,
-        25.86, 26.31, 26.71, 27.22, 27.69, 28.17, 28.71, 29.27, 29.62, 29.92, 30.4, 30.93, 31.28, 31.71,
-        32.27, 32.78, 33.21, 33.75, 34.1, 34.54, 35.1, 35.46, 35.91, 36.3, 36.91, 37.0, 37.0, 37.0, 37.0, 37.0,
+        20.0, 20.45, 21.07, 21.24, 21.42, 21.78, 22.25, 22.71, 23.02, 23.44, 23.89, 24.26, 24.71,
+        25.4, 25.86, 26.31, 26.71, 27.22, 27.69, 28.17, 28.71, 29.27, 29.62, 29.92, 30.4, 30.93,
+        31.28, 31.71, 32.27, 32.78, 33.21, 33.75, 34.1, 34.54, 35.1, 35.46, 35.91, 36.3, 36.91,
+        37.0, 37.0, 37.0, 37.0, 37.0,
       ],
-      triaMaxAt7: Array.from({length: N}, () => 14.357 / 2),
-      triaMinAt7: Array.from({length: N}, () => 9.48 / 2),
-      triaOpacityMin: Array.from({length: N}, () => 0.3),
+      triaMaxAt7: Array.from({ length: N }, () => 14.357 / 2),
+      triaMinAt7: Array.from({ length: N }, () => 9.48 / 2),
+      triaOpacityMin: Array.from({ length: N }, () => 0.3),
     };
 
     this.FRAME_COUNT = N;
@@ -741,18 +844,18 @@ class MouseSparkEngine {
   private onMouseDown = (e: MouseEvent): void => {
     if (e.button !== 0) return;
     this.isDown = true;
-    this.lastPos = {x: e.clientX, y: e.clientY};
+    this.lastPos = { x: e.clientX, y: e.clientY };
     this.spawnEffect(e.clientX, e.clientY, 1.0);
   };
 
   private onMouseMove = (e: MouseEvent): void => {
     if (!this.isDown && !window.effectiveAlwaysTrail) return;
-    const p = {x: e.clientX, y: e.clientY};
+    const p = { x: e.clientX, y: e.clientY };
     if (!this.lastPos) this.lastPos = p;
 
-    const prev = {x: this.lastPos.x, y: this.lastPos.y};
+    const prev = { x: this.lastPos.x, y: this.lastPos.y };
     if (Math.hypot(p.x - prev.x, p.y - prev.y) > 2) {
-      this.trail.push({x: p.x, y: p.y, life: 1});
+      this.trail.push({ x: p.x, y: p.y, life: 1 });
       this.maybeSpawnTrailSideParticles(prev, p);
       this.lastPos = p;
       if (this.trail.length > this.maxTrail) this.trail.shift();
@@ -793,7 +896,7 @@ class MouseSparkEngine {
       }
     }
 
-    const triData: TriangleParticle[] = Array.from({length: 4}, () => ({
+    const triData: TriangleParticle[] = Array.from({ length: 4 }, () => ({
       angle: angles.pop() ?? 0,
       flipY: Math.random() < 0.5 ? 1 : -1,
       peakSize: this.rand(minSize, maxSize) * strength,
@@ -815,13 +918,19 @@ class MouseSparkEngine {
     });
   }
 
-  maybeSpawnTrailSideParticles(prevPos: { x: number; y: number }, currPos: { x: number; y: number }): void {
+  maybeSpawnTrailSideParticles(
+    prevPos: { x: number; y: number },
+    currPos: { x: number; y: number }
+  ): void {
     const mid = {
       x: this.linearInterpolate(prevPos.x, currPos.x, 0.5),
       y: this.linearInterpolate(prevPos.y, currPos.y, 0.5),
     };
 
-    if (this.lastTrailSideSpawnPos && this.distance2D(mid, this.lastTrailSideSpawnPos) < this.trailTriMinSpawnDistance) {
+    if (
+      this.lastTrailSideSpawnPos &&
+      this.distance2D(mid, this.lastTrailSideSpawnPos) < this.trailTriMinSpawnDistance
+    ) {
       return;
     }
     if (Math.random() > this.trailTriSpawnProbability) return;
@@ -829,15 +938,21 @@ class MouseSparkEngine {
     this.lastTrailSideSpawnPos = mid;
   }
 
-  spawnTrailSideParticleBurst(prevPos: { x: number; y: number }, currPos: { x: number; y: number }): void {
-    const seg = {x: currPos.x - prevPos.x, y: currPos.y - prevPos.y};
+  spawnTrailSideParticleBurst(
+    prevPos: { x: number; y: number },
+    currPos: { x: number; y: number }
+  ): void {
+    const seg = { x: currPos.x - prevPos.x, y: currPos.y - prevPos.y };
     const tangent = this.normalize2D(seg.x, seg.y);
     const dice = Math.random() > 0.5 ? -1 : 1;
-    const normal = {x: -tangent.y * dice, y: tangent.x * dice};
+    const normal = { x: -tangent.y * dice, y: tangent.x * dice };
 
     const minSize = this.sampleNumeric(this.tracks.triaMinAt7, 7);
     const maxSize = this.sampleNumeric(this.tracks.triaMaxAt7, 7);
-    const maxCenterOffset = Math.min(this.trailTriMaxCenterOffset, this.trailTriMaxRadialDistance - 1);
+    const maxCenterOffset = Math.min(
+      this.trailTriMaxCenterOffset,
+      this.trailTriMaxRadialDistance - 1
+    );
     if (maxCenterOffset <= this.trailTriMinCenterOffset) return;
 
     const coneHalfRad = this.deg2rad(this.trailTriNormalConeDeg * 0.5);
@@ -852,7 +967,11 @@ class MouseSparkEngine {
     const spawnY = base.y + normal.y * startOffset;
     const delta = this.rand(-coneHalfRad, coneHalfRad);
     const moveDir = this.rotate2D(normal.x, normal.y, delta);
-    const maxTravel = this.computeMaxOutwardTravel(startOffset, this.trailTriMaxRadialDistance, Math.abs(delta));
+    const maxTravel = this.computeMaxOutwardTravel(
+      startOffset,
+      this.trailTriMaxRadialDistance,
+      Math.abs(delta)
+    );
     if (maxTravel < 2) return;
 
     const outwardTravel = this.rand(Math.max(2, maxTravel * 0.45), maxTravel);
@@ -894,7 +1013,14 @@ class MouseSparkEngine {
     return false;
   }
 
-  drawGlowDisc(x: number, y: number, radius: number, color: RGBA, alphaMul = 1, intensity = 1): void {
+  drawGlowDisc(
+    x: number,
+    y: number,
+    radius: number,
+    color: RGBA,
+    alphaMul = 1,
+    intensity = 1
+  ): void {
     if (!this.glow || radius <= 0) return;
     const c: RGBA = [color[0], color[1], color[2], color[3] * this.alpha(alphaMul)];
     if (c[3] <= 0.001) return;
@@ -963,7 +1089,7 @@ class MouseSparkEngine {
           glowBase,
           glowBase,
           this.alpha(a0) * 0.65,
-          this.alpha(a1) * 0.65,
+          this.alpha(a1) * 0.65
         );
       }
     }
@@ -975,7 +1101,10 @@ class MouseSparkEngine {
     return t * t * (3 - 2 * t);
   }
 
-  computeBorderSideSpans(framePos1: number, totalSweepDeg: number): { cwDeg: number; ccwDeg: number } {
+  computeBorderSideSpans(
+    framePos1: number,
+    totalSweepDeg: number
+  ): { cwDeg: number; ccwDeg: number } {
     const growSum = this.borderGrowCwRate + this.borderGrowCcwRate;
     const peakCwDeg = this.borderPeakAngle * (this.borderGrowCwRate / growSum);
     const peakCcwDeg = this.borderPeakAngle - peakCwDeg;
@@ -1012,7 +1141,11 @@ class MouseSparkEngine {
 
   getBorderSegmentColor(framePos1: number, u: number): RGBA {
     const bell = Math.sin(Math.PI * u);
-    const baseColor = this.mixColor(this.borderTipColor, this.borderCoreColor, Math.pow(bell, 0.75));
+    const baseColor = this.mixColor(
+      this.borderTipColor,
+      this.borderCoreColor,
+      Math.pow(bell, 0.75)
+    );
     if (framePos1 <= 13) return baseColor;
 
     const progress = this.smoothstep01((framePos1 - 13) / (this.FRAME_COUNT - 13));
@@ -1041,7 +1174,7 @@ class MouseSparkEngine {
     ccwDeg: number,
     maxWidth: number,
     shrinkDeg: number,
-    framePos1: number,
+    framePos1: number
   ): [number, number] {
     if (radius <= 0 || maxWidth <= 0) return [0, 0];
     if (cwDeg <= 0 && ccwDeg <= 0) return [0, 0];
@@ -1071,7 +1204,14 @@ class MouseSparkEngine {
       if (width <= 0.01) continue;
 
       const col = this.getBorderSegmentColor(framePos1, um);
-      const alphaBoost = framePos1 <= 13 ? 0.95 : this.linearInterpolate(0.95, 1.0, this.smoothstep01((framePos1 - 13) / (this.FRAME_COUNT - 13)));
+      const alphaBoost =
+        framePos1 <= 13
+          ? 0.95
+          : this.linearInterpolate(
+              0.95,
+              1.0,
+              this.smoothstep01((framePos1 - 13) / (this.FRAME_COUNT - 13))
+            );
       col[3] = this.alpha(alphaBoost);
 
       this.ctx.strokeStyle = this.rgbaToString(col);
@@ -1091,7 +1231,7 @@ class MouseSparkEngine {
           this.borderGlowRadius * this.scale * (0.88 + 0.12 * bell) * v,
           col,
           this.borderGlowIntensity * (0.58 + 0.42 * bell) * v,
-          this.borderGlowSoftness,
+          this.borderGlowSoftness
         );
       }
     }
@@ -1099,7 +1239,14 @@ class MouseSparkEngine {
     return [start, end];
   }
 
-  drawTriangle(x: number, y: number, size: number, color: RGBA, alphaMul: number, flipY: 1 | -1 = 1): void {
+  drawTriangle(
+    x: number,
+    y: number,
+    size: number,
+    color: RGBA,
+    alphaMul: number,
+    flipY: 1 | -1 = 1
+  ): void {
     if (size <= 0.01) return;
     const c: RGBA = [color[0], color[1], color[2], color[3] * this.alpha(alphaMul)];
     if (c[3] <= 0.001) return;
@@ -1117,10 +1264,15 @@ class MouseSparkEngine {
     this.ctx.restore();
   }
 
-  computeTriangleAlpha(framePos1: number, tri: {
-    pulsePhase: number;
-    pulsePeriodFrames: number
-  }, pulseMode: string, opacityMin: number): number {
+  computeTriangleAlpha(
+    framePos1: number,
+    tri: {
+      pulsePhase: number;
+      pulsePeriodFrames: number;
+    },
+    pulseMode: string,
+    opacityMin: number
+  ): number {
     if (framePos1 >= 35) return 1;
     if (pulseMode === "Dynamic_Opacity" || pulseMode === "Transition") {
       const omega = (Math.PI * 2) / tri.pulsePeriodFrames;
@@ -1143,32 +1295,64 @@ class MouseSparkEngine {
     const t = this.clamp(elapsed / this.DURATION_SEC, 0, 1);
     const framePos1 = 1 + t * (this.FRAME_COUNT - 1);
     const centerColor = this.sampleColor(this.tracks.centerColor, framePos1);
-    const centerDiameter = this.sampleNumeric(this.tracks.centerDiameter, framePos1) * effect.strength * this.scale;
+    const centerDiameter =
+      this.sampleNumeric(this.tracks.centerDiameter, framePos1) * effect.strength * this.scale;
     const pointColor = this.sampleColor(this.tracks.pointColor, framePos1);
-    const pointDiameter = this.sampleNumeric(this.tracks.pointDiameter, framePos1) * effect.strength * this.scale;
+    const pointDiameter =
+      this.sampleNumeric(this.tracks.pointDiameter, framePos1) * effect.strength * this.scale;
     const borderAngle = this.sampleNumeric(this.tracks.borderAngle, framePos1);
     const borderWidth = this.sampleNumeric(this.tracks.borderMaxWidth, framePos1);
     const borderShrink = this.sampleNumeric(this.tracks.borderShrinkAngle, framePos1);
-    const borderGapMax = this.sampleNumeric(this.tracks.maxBorderDistance, framePos1) * effect.strength * this.scale;
+    const borderGapMax =
+      this.sampleNumeric(this.tracks.maxBorderDistance, framePos1) * effect.strength * this.scale;
     const borderGap = borderGapMax * effect.border.gapRatio;
-    const borderBaseRadius = this.sampleNumeric(this.tracks.scaleBaseRadius, framePos1) * effect.strength * this.scale;
-    const {cwDeg, ccwDeg} = this.computeBorderSideSpans(framePos1, borderAngle);
+    const borderBaseRadius =
+      this.sampleNumeric(this.tracks.scaleBaseRadius, framePos1) * effect.strength * this.scale;
+    const { cwDeg, ccwDeg } = this.computeBorderSideSpans(framePos1, borderAngle);
 
     if ((cwDeg > 0.01 || ccwDeg > 0.01) && borderBaseRadius > 0.01) {
       const r0 = Math.max(0, borderBaseRadius - borderGap * 0.5);
       const r1 = borderBaseRadius + borderGap * 0.5;
-      this.drawMeteorArc(effect.x, effect.y, r0, effect.border.innerAnchorAngle, cwDeg, ccwDeg, borderWidth, borderShrink, framePos1);
-      this.drawMeteorArc(effect.x, effect.y, r1, effect.border.outerAnchorAngle, cwDeg, ccwDeg, borderWidth, borderShrink, framePos1);
+      this.drawMeteorArc(
+        effect.x,
+        effect.y,
+        r0,
+        effect.border.innerAnchorAngle,
+        cwDeg,
+        ccwDeg,
+        borderWidth,
+        borderShrink,
+        framePos1
+      );
+      this.drawMeteorArc(
+        effect.x,
+        effect.y,
+        r1,
+        effect.border.outerAnchorAngle,
+        cwDeg,
+        ccwDeg,
+        borderWidth,
+        borderShrink,
+        framePos1
+      );
     }
 
     const triaColor = this.sampleColor(this.tracks.triaColorRef, framePos1);
     const triaMode = this.sampleStep(this.tracks.triaPulseMode, framePos1);
     const triaScaleRate = this.sampleNumeric(this.tracks.triaScaleRate, framePos1);
-    const triaDistance = this.sampleNumeric(this.tracks.triaDistance, framePos1) * effect.strength * this.scale;
+    const triaDistance =
+      this.sampleNumeric(this.tracks.triaDistance, framePos1) * effect.strength * this.scale;
     const triaOpacityMin = this.sampleNumeric(this.tracks.triaOpacityMin, framePos1);
 
     if (centerDiameter > 0.01) {
-      this.drawGlowDisc(effect.x, effect.y, this.centerGlowRadius * effect.strength * this.scale, centerColor, 1, this.centerGlowIntensity);
+      this.drawGlowDisc(
+        effect.x,
+        effect.y,
+        this.centerGlowRadius * effect.strength * this.scale,
+        centerColor,
+        1,
+        this.centerGlowIntensity
+      );
     }
     this.drawSolidDisc(effect.x, effect.y, centerDiameter, centerColor, 1);
     this.drawSolidDisc(effect.x, effect.y, pointDiameter, pointColor, 1);
@@ -1221,7 +1405,8 @@ class MouseSparkEngine {
     window.setInputContext = (mode, alwaysTrailEnabled) => {
       window.currentInputMode = mode === "touch" ? "touch" : "mouse";
       window.enableAlwaysTrailEffect = Boolean(alwaysTrailEnabled);
-      window.effectiveAlwaysTrail = window.currentInputMode === "mouse" && window.enableAlwaysTrailEffect;
+      window.effectiveAlwaysTrail =
+        window.currentInputMode === "mouse" && window.enableAlwaysTrailEffect;
     };
 
     window.externalBoom = (percentX, percentY) => {
@@ -1232,7 +1417,9 @@ class MouseSparkEngine {
       lastBoomTime = now;
       const cx = percentX * window.innerWidth;
       const cy = percentY * window.innerHeight;
-      window.dispatchEvent(new MouseEvent("mousedown", {clientX: cx, clientY: cy, bubbles: true}));
+      window.dispatchEvent(
+        new MouseEvent("mousedown", { clientX: cx, clientY: cy, bubbles: true })
+      );
     };
 
     window.externalMove = (percentX, percentY) => {
@@ -1241,11 +1428,13 @@ class MouseSparkEngine {
       lastMoveY = percentY;
       const cx = percentX * window.innerWidth;
       const cy = percentY * window.innerHeight;
-      window.dispatchEvent(new MouseEvent("mousemove", {clientX: cx, clientY: cy, bubbles: true}));
+      window.dispatchEvent(
+        new MouseEvent("mousemove", { clientX: cx, clientY: cy, bubbles: true })
+      );
     };
 
     window.externalUp = () => {
-      window.dispatchEvent(new MouseEvent("mouseup", {bubbles: true}));
+      window.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
     };
 
     window.updateColor = (value) => {
@@ -1258,13 +1447,22 @@ class MouseSparkEngine {
       this.speed = Math.max(0.2, Math.min(3, Number(speed) || 1));
     };
 
-    window.updateBorderBehavior = (growCW, growCCW, shrinkCW, shrinkCCW, gapRatioMin, gapRatioMax) => {
+    window.updateBorderBehavior = (
+      growCW,
+      growCCW,
+      shrinkCW,
+      shrinkCCW,
+      gapRatioMin,
+      gapRatioMax
+    ) => {
       if (Number.isFinite(growCW) && growCW > 0) this.borderGrowCwRate = growCW;
       if (Number.isFinite(growCCW) && growCCW > 0) this.borderGrowCcwRate = growCCW;
       if (Number.isFinite(shrinkCW) && shrinkCW > 0) this.borderShrinkCwRate = shrinkCW;
       if (Number.isFinite(shrinkCCW) && shrinkCCW > 0) this.borderShrinkCcwRate = shrinkCCW;
-      if (Number.isFinite(gapRatioMin)) this.borderGapRatioMin = Math.max(0, Math.min(1, gapRatioMin));
-      if (Number.isFinite(gapRatioMax)) this.borderGapRatioMax = Math.max(0, Math.min(1, gapRatioMax));
+      if (Number.isFinite(gapRatioMin))
+        this.borderGapRatioMin = Math.max(0, Math.min(1, gapRatioMin));
+      if (Number.isFinite(gapRatioMax))
+        this.borderGapRatioMax = Math.max(0, Math.min(1, gapRatioMax));
       if (this.borderGapRatioMin > this.borderGapRatioMax) {
         const t = this.borderGapRatioMin;
         this.borderGapRatioMin = this.borderGapRatioMax;
@@ -1273,15 +1471,26 @@ class MouseSparkEngine {
     };
 
     window.updateGlowSoftness = (centerSoftness, borderSoftness) => {
-      if (Number.isFinite(centerSoftness) && centerSoftness >= 0.2) this.centerGlowSoftness = centerSoftness;
-      if (Number.isFinite(borderSoftness) && borderSoftness >= 0.2) this.borderGlowSoftness = borderSoftness;
+      if (Number.isFinite(centerSoftness) && centerSoftness >= 0.2)
+        this.centerGlowSoftness = centerSoftness;
+      if (Number.isFinite(borderSoftness) && borderSoftness >= 0.2)
+        this.borderGlowSoftness = borderSoftness;
     };
 
-    window.updateGlowSettings = (centerGlowRadius, borderGlowRadius, centerGlowIntensity, borderGlowIntensity) => {
-      if (Number.isFinite(centerGlowRadius) && centerGlowRadius >= 0) this.centerGlowRadius = centerGlowRadius;
-      if (Number.isFinite(borderGlowRadius) && borderGlowRadius >= 0) this.borderGlowRadius = borderGlowRadius;
-      if (Number.isFinite(centerGlowIntensity) && centerGlowIntensity >= 0) this.centerGlowIntensity = centerGlowIntensity;
-      if (Number.isFinite(borderGlowIntensity) && borderGlowIntensity >= 0) this.borderGlowIntensity = borderGlowIntensity;
+    window.updateGlowSettings = (
+      centerGlowRadius,
+      borderGlowRadius,
+      centerGlowIntensity,
+      borderGlowIntensity
+    ) => {
+      if (Number.isFinite(centerGlowRadius) && centerGlowRadius >= 0)
+        this.centerGlowRadius = centerGlowRadius;
+      if (Number.isFinite(borderGlowRadius) && borderGlowRadius >= 0)
+        this.borderGlowRadius = borderGlowRadius;
+      if (Number.isFinite(centerGlowIntensity) && centerGlowIntensity >= 0)
+        this.centerGlowIntensity = centerGlowIntensity;
+      if (Number.isFinite(borderGlowIntensity) && borderGlowIntensity >= 0)
+        this.borderGlowIntensity = borderGlowIntensity;
     };
 
     window.updateTrailGlow = (radius, intensity, softness, spacing) => {
@@ -1291,13 +1500,26 @@ class MouseSparkEngine {
       if (Number.isFinite(spacing) && spacing >= 1) this.trailGlowSpacing = spacing;
     };
 
-    window.updateTrailTriangleBehavior = (minSpawnDistance, spawnProbability, minCenterOffset, maxCenterOffset, maxRadialDistance, normalConeDeg) => {
-      if (Number.isFinite(minSpawnDistance) && minSpawnDistance >= 0) this.trailTriMinSpawnDistance = minSpawnDistance;
-      if (Number.isFinite(spawnProbability)) this.trailTriSpawnProbability = this.clamp(spawnProbability, 0, 1);
-      if (Number.isFinite(minCenterOffset) && minCenterOffset >= 0) this.trailTriMinCenterOffset = minCenterOffset;
-      if (Number.isFinite(maxCenterOffset) && maxCenterOffset >= 0) this.trailTriMaxCenterOffset = maxCenterOffset;
-      if (Number.isFinite(maxRadialDistance) && maxRadialDistance >= 0) this.trailTriMaxRadialDistance = maxRadialDistance;
-      if (Number.isFinite(normalConeDeg) && normalConeDeg > 0) this.trailTriNormalConeDeg = normalConeDeg;
+    window.updateTrailTriangleBehavior = (
+      minSpawnDistance,
+      spawnProbability,
+      minCenterOffset,
+      maxCenterOffset,
+      maxRadialDistance,
+      normalConeDeg
+    ) => {
+      if (Number.isFinite(minSpawnDistance) && minSpawnDistance >= 0)
+        this.trailTriMinSpawnDistance = minSpawnDistance;
+      if (Number.isFinite(spawnProbability))
+        this.trailTriSpawnProbability = this.clamp(spawnProbability, 0, 1);
+      if (Number.isFinite(minCenterOffset) && minCenterOffset >= 0)
+        this.trailTriMinCenterOffset = minCenterOffset;
+      if (Number.isFinite(maxCenterOffset) && maxCenterOffset >= 0)
+        this.trailTriMaxCenterOffset = maxCenterOffset;
+      if (Number.isFinite(maxRadialDistance) && maxRadialDistance >= 0)
+        this.trailTriMaxRadialDistance = maxRadialDistance;
+      if (Number.isFinite(normalConeDeg) && normalConeDeg > 0)
+        this.trailTriNormalConeDeg = normalConeDeg;
     };
 
     window.setInputContext("mouse", false);
@@ -1324,10 +1546,7 @@ class MouseSparkEngine {
   }
 }
 
-export default function BAComet({
-                                  className,
-                                  enableGlow = false,
-                                }: BACometProps) {
+export default function BAComet({ className, enableGlow = false }: BACometProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const glowCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<MouseSparkEngine | null>(null);
@@ -1358,7 +1577,7 @@ export default function BAComet({
         ref={glowCanvasRef}
         className={`absolute inset-0 h-full w-full ${enableGlow ? "block" : "hidden"}`}
       />
-      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full"/>
+      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
     </div>
   );
 }

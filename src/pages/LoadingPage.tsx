@@ -1,18 +1,18 @@
-import React, {useEffect, useRef, useState} from "react";
-import {TextGenerateEffect} from "../components/ui/TextGenerateEffect.tsx";
-import {useGlobalLogStore} from "@/store/globalLogStore.ts";
-import {formatIsoToReadableTime} from "@/lib/utils.ts";
-import {motion} from "framer-motion";
-import {useTheme} from "@/hooks/useTheme.tsx";
-import {useWebSocketStore} from "../store/websocketStore";
-import {useTranslation} from "react-i18next";
-import {Info, KeyRound, ShieldCheck} from "lucide-react";
-import {FormInput} from "@/components/ui/FormInput.tsx";
+import React, { useEffect, useRef, useState } from "react";
+import { TextGenerateEffect } from "../components/ui/TextGenerateEffect.tsx";
+import { useGlobalLogStore } from "@/store/globalLogStore.ts";
+import { formatIsoToReadableTime } from "@/lib/utils.ts";
+import { motion } from "framer-motion";
+import { useTheme } from "../contexts/ThemeProvider.tsx";
+import { useWebSocketStore } from "../store/websocketStore";
+import { useTranslation } from "react-i18next";
+import { Info, KeyRound, ShieldCheck } from "lucide-react";
+import { FormInput } from "@/components/ui/FormInput.tsx";
 import CButton from "@/components/ui/CButton.tsx";
-import {FormSelect} from "@/components/ui/FormSelect.tsx";
+import { FormSelect } from "@/components/ui/FormSelect.tsx";
 import i18n from "i18next";
-import {loadLocale} from "@/lib/i18n.ts";
-import {useUISettings} from "@/contexts/UISettingsProvider.tsx";
+import { loadLocale } from "@/lib/i18n.ts";
+import { useUISettings } from "@/contexts/UISettingsProvider.tsx";
 
 const baseUrl = import.meta.env.BASE_URL;
 
@@ -27,22 +27,22 @@ const statusColorMap: Record<string, string> = {
   CRITICAL: "var(--color-purple-500)",
 };
 
-export function AutoScrollTerminal({children}: { children: React.ReactNode }) {
+export function AutoScrollTerminal({ children }: { children: React.ReactNode }) {
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({behavior: "smooth"});
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [children]);
 
   return (
     <div className="w-full h-full opacity-50 scrollbar-hide font-mono overflow-auto p-2 text-sm">
       {children}
-      <div ref={endRef}/>
+      <div ref={endRef} />
     </div>
   );
 }
 
-export const LoadingPage: React.FC<LoadingPageProps> = ({message = "Loading..."}) => {
+export const LoadingPage: React.FC<LoadingPageProps> = ({ message = "Loading..." }) => {
   const globalLogData = useGlobalLogStore((state) => state.globalLogData);
   const authPhase = useWebSocketStore((state) => state._auth_phase);
   const authError = useWebSocketStore((state) => state._auth_error);
@@ -50,7 +50,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({message = "Loading..."}
   const serverVerified = useWebSocketStore((state) => state._server_verified);
   const startAuthFlow = useWebSocketStore((state) => state.startAuthFlow);
   const submitPassword = useWebSocketStore((state) => state.submitPassword);
-  const {theme} = useTheme();
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (authPhase === "idle" || authPhase === "revoked") {
@@ -71,26 +71,27 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({message = "Loading..."}
     <>
       <div className="fixed inset-0 bg-slate-100 dark:bg-slate-950 overflow-hidden">
         <img
-          src={theme === "light" ? `${baseUrl}images/bg-light.webp` : `${baseUrl}images/bg-dark.webp`}
+          src={
+            theme === "light" ? `${baseUrl}images/bg-light.webp` : `${baseUrl}images/bg-dark.webp`
+          }
           alt="Loading BG"
           className="w-full h-full object-cover object-center"
         />
       </div>
 
       <div className="fixed w-full h-full p-2">
-        <div
-          className="w-full h-full bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-[5px] rounded-md p-2 border-2 border-primary-500/70">
+        <div className="w-full h-full bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-[5px] rounded-md p-2 border-2 border-primary-500/70">
           <AutoScrollTerminal>
             {globalLogData.map((log, idx) => (
               <div className="flex" key={`${log.time}-${idx}`}>
                 <div className="min-w-20 text-slate-600 dark:text-slate-400">
-                  <TextGenerateEffect words={formatIsoToReadableTime(log.time)} mode="all"/>
+                  <TextGenerateEffect words={formatIsoToReadableTime(log.time)} mode="all" />
                 </div>
                 <div
                   className="min-w-20 flex justify-end mr-2 font-bold"
-                  style={{color: statusColorMap[log.level]}}
+                  style={{ color: statusColorMap[log.level] }}
                 >
-                  <TextGenerateEffect words={log.level} mode="all"/>
+                  <TextGenerateEffect words={log.level} mode="all" />
                 </div>
                 <motion.div
                   className="flex-1 border-l-3 pl-4"
@@ -101,9 +102,9 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({message = "Loading..."}
                     color: log.level === "INFO" ? "inherit" : statusColorMap[log.level],
                     fontWeight: log.level === "INFO" ? "inherit" : "bold",
                   }}
-                  initial={{opacity: 0, filter: "blur(10px)"}}
-                  animate={{opacity: 1, filter: "blur(0px)"}}
-                  transition={{duration: 0.5}}
+                  initial={{ opacity: 0, filter: "blur(10px)" }}
+                  animate={{ opacity: 1, filter: "blur(0px)" }}
+                  transition={{ duration: 0.5 }}
                 >
                   {log.message}
                 </motion.div>
@@ -163,7 +164,8 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({message = "Loading..."}
   );
 };
 
-const overlayCls = "fixed inset-0 flex items-center justify-center bg-black/50 z-50 backdrop-blur-sm";
+const overlayCls =
+  "fixed inset-0 flex items-center justify-center bg-black/50 z-50 backdrop-blur-sm";
 
 export const PasswordInputModal: React.FC<{
   open: boolean;
@@ -172,12 +174,12 @@ export const PasswordInputModal: React.FC<{
   submitting: boolean;
   error: string | null;
   onConfirm: (password: string) => void | Promise<void>;
-}> = ({open, setupMode, serverVerified, submitting, error, onConfirm}) => {
-  const {t} = useTranslation();
+}> = ({ open, setupMode, serverVerified, submitting, error, onConfirm }) => {
+  const { t } = useTranslation();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState("");
-  const {setUiSettings} = useUISettings();
+  const { setUiSettings } = useUISettings();
 
   useEffect(() => {
     if (!open) {
@@ -204,129 +206,114 @@ export const PasswordInputModal: React.FC<{
 
   const handleLanguageChange = (value: string) => {
     loadLocale(value).then(() => {
-      setUiSettings(state => ({...state, lang: value}));
+      setUiSettings((state) => ({ ...state, lang: value }));
     });
   };
-
 
   return (
     <div className={overlayCls}>
       <motion.div
-        initial={{opacity: 0, scale: 0.96, y: 10}}
-        animate={{opacity: 1, scale: 1, y: 0}}
-        exit={{opacity: 0, scale: 0.95, y: 10}}
-        transition={{duration: 0.18, ease: "easeOut"}}
+        initial={{ opacity: 0, scale: 0.96, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
         className="w-110 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6"
       >
-        <div className="flex items-center gap-3 mb-4">
-          <div className="rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-600 p-3">
-            {serverVerified ? (
-              <ShieldCheck className="w-6 h-6"/>
-            ) : (
-              <KeyRound className="w-6 h-6"/>
-            )}
-          </div>
+        <form onSubmit={(e) => e.preventDefault()}>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-600 p-3">
+              {serverVerified ? (
+                <ShieldCheck className="w-6 h-6" />
+              ) : (
+                <KeyRound className="w-6 h-6" />
+              )}
+            </div>
 
-          <div>
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-              {setupMode
-                ? t("auth.initializeKeyTitle")
-                : t("auth.enterKeyTitle")}
-            </h2>
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                {setupMode ? t("auth.initializeKeyTitle") : t("auth.enterKeyTitle")}
+              </h2>
 
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              {serverVerified
-                ? setupMode
-                  ? t("auth.setKeySubtitle")
-                  : t("auth.validateKeySubtitle")
-                : t("auth.verifyingServerIdentity")}
-            </p>
-          </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {serverVerified
+                  ? setupMode
+                    ? t("auth.setKeySubtitle")
+                    : t("auth.validateKeySubtitle")
+                  : t("auth.verifyingServerIdentity")}
+              </p>
+            </div>
 
-          <div className="grow"/>
+            <div className="grow" />
 
-          <FormSelect
-            value={i18n.language}
-            onChange={handleLanguageChange}
-            options={[
-              {value: "en", label: t('english')},
-              {value: "zh", label: t('chinese')},
-              {value: "ja", label: t('japanese')},
-              {value: "ko", label: t('korean')},
-              {value: "de", label: t('deutsch')},
-              {value: "ru", label: t('russian')},
-              {value: "fr", label: t('french')}
-            ]}
-            className="float-right"
-          />
-        </div>
-
-        <div className="mb-4">
-          <FormInput
-            label={
-              setupMode
-                ? t("auth.newPasswordLabel")
-                : t("auth.passwordLabel")
-            }
-            type="password"
-            value={password}
-            id="baas-key-input"
-            onKeyDown={async (e) => {
-              if (e.code === "Enter") {
-                if (setupMode) return;
-                e.preventDefault();
-                await handleConfirm();
-              }
-            }}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder={
-              setupMode
-                ? t("auth.setPasswordPlaceholder")
-                : t("auth.enterPasswordPlaceholder")
-            }
-            disabled={!serverVerified || submitting}
-          />
-        </div>
-
-        {setupMode && (
-          <div className="mb-4">
-            <FormInput
-              label={t("auth.confirmPasswordLabel")}
-              type="password"
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-              placeholder={t("auth.setPasswordPlaceholder")}
-              disabled={!serverVerified || submitting}
-              autoComplete="off"
+            <FormSelect
+              value={i18n.language}
+              onChange={handleLanguageChange}
+              options={[
+                { value: "en", label: t("english") },
+                { value: "zh", label: t("chinese") },
+                { value: "ja", label: t("japanese") },
+                { value: "ko", label: t("korean") },
+                { value: "de", label: t("deutsch") },
+                { value: "ru", label: t("russian") },
+                { value: "fr", label: t("french") },
+              ]}
+              className="float-right"
             />
           </div>
-        )}
 
-        {(localError || error) && (
-          <p className="mb-4 text-xs text-red-500 dark:text-red-400">
-            {localError || error}
-          </p>
-        )}
+          <div className="mb-4">
+            <input type="text" name="username" autoComplete="username" className="hidden" />
 
-        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-4">
-          <Info className="w-4 h-4 text-primary-500"/>
-          <span>
-            {setupMode ? t("auth.rememberKeyTip") : t("auth.forgotKeyTip")}
-          </span>
-        </div>
+            <FormInput
+              label={setupMode ? t("auth.newPasswordLabel") : t("auth.passwordLabel")}
+              type="password"
+              value={password}
+              id="baas-key-input"
+              autoComplete="current-password"
+              onKeyDown={async (e) => {
+                if (e.code === "Enter") {
+                  if (setupMode) return;
+                  e.preventDefault();
+                  await handleConfirm();
+                }
+              }}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder={
+                setupMode ? t("auth.setPasswordPlaceholder") : t("auth.enterPasswordPlaceholder")
+              }
+              disabled={!serverVerified || submitting}
+            />
+          </div>
 
-        <div className="flex justify-end gap-2">
-          <CButton
-            onClick={handleConfirm}
-            disabled={!serverVerified || submitting}
-          >
-            {submitting
-              ? t("auth.pleaseWait")
-              : setupMode
-                ? t("auth.initialize")
-                : t("Confirm")}
-          </CButton>
-        </div>
+          {setupMode && (
+            <div className="mb-4">
+              <FormInput
+                label={t("auth.confirmPasswordLabel")}
+                type="password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                placeholder={t("auth.setPasswordPlaceholder")}
+                disabled={!serverVerified || submitting}
+                autoComplete="off"
+              />
+            </div>
+          )}
+
+          {(localError || error) && (
+            <p className="mb-4 text-xs text-red-500 dark:text-red-400">{localError || error}</p>
+          )}
+
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-4">
+            <Info className="w-4 h-4 text-primary-500" />
+            <span>{setupMode ? t("auth.rememberKeyTip") : t("auth.forgotKeyTip")}</span>
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <CButton onClick={handleConfirm} disabled={!serverVerified || submitting}>
+              {submitting ? t("auth.pleaseWait") : setupMode ? t("auth.initialize") : t("Confirm")}
+            </CButton>
+          </div>
+        </form>
       </motion.div>
     </div>
   );

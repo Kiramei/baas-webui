@@ -8,7 +8,9 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
@@ -128,14 +130,13 @@ html, body, #root {
   body {
     @apply bg-background text-foreground;
   }
-
 }
 
 input:-webkit-autofill {
   -webkit-text-fill-color: var(--foreground);
   box-shadow: 0 0 0 1000px var(--color-autofill) inset;
   border-color: var(--ring);
-  transition: .3s;
+  transition: 0.3s;
 }
 
 @keyframes resetBg {

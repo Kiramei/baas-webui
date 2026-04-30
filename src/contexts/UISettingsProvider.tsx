@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 import type { UISettings } from "@/types/app";
 import { StorageUtil } from "@/lib/storage.ts";
@@ -26,20 +20,15 @@ const DEFAULT_UI_SETTINGS: UISettings = {
     maxFPS: 60,
     iFrameRate: 10,
     bitRate: 7340032,
-    showStatus: false
-  }
+    showStatus: false,
+  },
 };
 
-const UISettingsContext = createContext<UISettingsContextType | undefined>(
-  undefined,
-);
+const UISettingsContext = createContext<UISettingsContextType | undefined>(undefined);
 
-export const UISettingsProvider: React.FC<{ children: ReactNode }> = ({
-                                                                        children,
-                                                                      }) => {
+export const UISettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [initialized, setInitialized] = useState(false);
-  const [uiSettings, setUiSettings] =
-    useState<UISettings>(DEFAULT_UI_SETTINGS);
+  const [uiSettings, setUiSettings] = useState<UISettings>(DEFAULT_UI_SETTINGS);
 
   useEffect(() => {
     const storedSettings = StorageUtil.get("uiSettings") as UISettings | null;

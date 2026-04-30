@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 import React from "react";
 
 export const TextGenerateEffect = ({
-                                     words,
-                                     className,
-                                     filter = true,
-                                     duration = 0.5,
-                                     mode = "word",
-                                   }: {
+  words,
+  className,
+  filter = true,
+  duration = 0.5,
+  mode = "word",
+}: {
   words: string;
   className?: string;
   filter?: boolean;
@@ -20,10 +20,7 @@ export const TextGenerateEffect = ({
   const [scope, animate] = useAnimate();
 
   // 按空格拆分，但仅在 word 模式下用
-  const wordsArray = React.useMemo(
-    () => (mode === "word" ? words.split(" ") : []),
-    [words, mode]
-  );
+  const wordsArray = React.useMemo(() => (mode === "word" ? words.split(" ") : []), [words, mode]);
 
   useEffect(() => {
     animate(

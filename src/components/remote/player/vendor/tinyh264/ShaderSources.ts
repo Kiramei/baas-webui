@@ -2,8 +2,8 @@
  * @type {{type: string, source: string}}
  */
 export const vertexQuad = {
-    type: 'x-shader/x-vertex',
-    source: `
+  type: "x-shader/x-vertex",
+  source: `
   precision mediump float;
 
   uniform mat4 u_projection;
@@ -21,8 +21,8 @@ export const vertexQuad = {
  * @type {{type: string, source: string}}
  */
 export const fragmentYUV = {
-    type: 'x-shader/x-fragment',
-    source: `
+  type: "x-shader/x-fragment",
+  source: `
   precision lowp float;
   
   varying vec2 v_texCoord;

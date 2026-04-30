@@ -466,5 +466,24 @@
   "auth.rememberKeyTip": "Please remember the key!",
   "auth.forgotKeyTip": "Forgot the key? Please refer to BAAS Wiki.",
   "auth.pleaseWait": "Please wait...",
-  "auth.initialize": "Initialize"
+  "auth.initialize": "Initialize",
+  "remote": {
+    "emulator": "Remote Emulator",
+    "connecting": "Connecting",
+    "inputBytes": "Input Traffic",
+    "avg": "Average Rate",
+    "padInput": "Input Frame Rate",
+    "padDropped": "Dropped Frame Rate",
+    "padDecoded": "Decoded Frame Rate",
+    "advanced": "Advanced Settings",
+    "setClipboard": "Set Clipboard",
+    "getClipboard": "Get Clipboard",
+    "width": "Maximum Height",
+    "height": "Maximum Width",
+    "fps": "Maximum Frame Rate",
+    "iframe": "I-Frame Interval",
+    "bitrate": "Bitrate",
+    "showStatus": "Show Status",
+    "saveAndApply": "Save and Apply"
+  }
 }
