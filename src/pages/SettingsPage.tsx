@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import { useTheme } from "../contexts/ThemeProvider";
-import type { Theme } from "@/types/app";
+import { Theme } from "@/types/app";
 import { FormSelect } from "@/components/ui/FormSelect.tsx";
 import { FormInput } from "@/components/ui/FormInput.tsx";
 import CButton from "@/components/ui/CButton.tsx";
@@ -94,6 +94,16 @@ const SettingsPage: React.FC = () => {
   const handleZoomChange = (value: string) => {
     const newZoom = Number(value);
     setUiSettings((state) => ({ ...state, zoomScale: newZoom }));
+  };
+
+  const handlePlayerChange = (value: string) => {
+    setUiSettings((state) => ({
+      ...state,
+      remoteSettings: {
+        ...state.remoteSettings,
+        streamPlayer: value as "mse" | "broadway" | "tinyh264" | "webcodecs",
+      },
+    }));
   };
 
   const [localVersion, setLocalVersion] = useState(t("version.fetching"));
@@ -278,7 +288,6 @@ const SettingsPage: React.FC = () => {
   return (
     <div className="space-y-4">
       <Card className="relative overflow-hidden rounded-2xl border border-slate-200/50 bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 shadow-lg">
-        {/* 渐变边框光晕 */}
         <div className="absolute inset-0 rounded-2xl border border-transparent mask-exclude bg-linear-to-r from-cyan-400/40 via-indigo-400/40 to-purple-400/40 blur-2xl opacity-40 pointer-events-none" />
 
         <CardHeader className="flex flex-row items-center gap-2">
@@ -364,6 +373,17 @@ const SettingsPage: React.FC = () => {
             }))}
           />
 
+          {/* Player Settings */}
+          <FormSelect
+            value={uiSettings?.remoteSettings.streamPlayer}
+            label={t("uisettings.player")}
+            onChange={handlePlayerChange}
+            options={["mse", "broadway", "tinyh264", "webcodecs"].map((v) => ({
+              value: v.toString(),
+              label: v.charAt(0).toUpperCase() + v.slice(1),
+            }))}
+          />
+
           <Separator />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -379,6 +399,23 @@ const SettingsPage: React.FC = () => {
               checked={uiSettings?.assetsDisplay}
               onChange={(value) => {
                 setUiSettings((state) => ({ ...state, assetsDisplay: value }));
+              }}
+            />
+            <SwitchButton
+              label={t("uisettings.enableBAComet")}
+              checked={uiSettings?.enableBAComet}
+              onChange={(value) => {
+                setUiSettings((state) => ({ ...state, enableBAComet: value }));
+              }}
+            />
+            <SwitchButton
+              label={t("uisettings.enableSafeStream")}
+              checked={uiSettings?.remoteSettings.enableSafeStream}
+              onChange={(value) => {
+                setUiSettings((state) => ({
+                  ...state,
+                  remoteSettings: { ...uiSettings.remoteSettings, enableSafeStream: value },
+                }));
               }}
             />
           </div>

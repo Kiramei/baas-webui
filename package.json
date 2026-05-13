@@ -51,7 +51,6 @@
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@tailwindcss/typography": "^0.5.19",
-    "@types/fernet": "^0.4.3",
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
@@ -72,5 +71,6 @@
     "vite": "7.1.11",
     "vite-plugin-compression": "^0.5.1",
     "worker-loader": "^3.0.8"
-  }
+  },
+  "packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8"
 }

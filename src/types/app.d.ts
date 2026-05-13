@@ -15,6 +15,8 @@ export interface ConfigProfile {
 }
 
 export interface RemoteSettings {
+  streamPlayer: "mse" | "broadway" | "tinyh264" | "webcodecs";
+  enableSafeStream: boolean;
   maxWidth: number;
   maxHeight: number;
   maxFPS: number;
@@ -29,6 +31,7 @@ export interface UISettings {
   zoomScale: number;
   scrollToEnd: boolean;
   assetsDisplay: boolean;
+  enableBAComet: boolean;
   remoteSettings: RemoteSettings;
 }
 
@@ -147,7 +150,6 @@ interface WebSocketState {
   trigger: (payload: CommandPayload, callback?: (e: any) => void) => void;
   connectRemote: (
     profileId: string,
-    transferType: "AnnexB" | "fMP4",
     onopen: (event: Event) => void,
     onclose: (event: CloseEvent) => void,
     onerror: (event: Event) => void,

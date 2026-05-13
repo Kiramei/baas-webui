@@ -14,7 +14,10 @@ const DEFAULT_UI_SETTINGS: UISettings = {
   zoomScale: 100,
   scrollToEnd: true,
   assetsDisplay: true,
+  enableBAComet: true,
   remoteSettings: {
+    streamPlayer: "mse",
+    enableSafeStream: true,
     maxWidth: 1280,
     maxHeight: 720,
     maxFPS: 60,

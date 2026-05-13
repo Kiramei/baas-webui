@@ -21,7 +21,6 @@ type StartParams = {
   udid: string;
   playerName?: string;
   player?: BasePlayer;
-  fitToScreen?: boolean;
   videoSettings?: VideoSettings;
 };
 
@@ -72,7 +71,6 @@ interface ParamsStream extends ParamsBase {
 export interface ParamsStreamScrcpy extends ParamsStream {
   action: ACTION.STREAM_SCRCPY;
   ws: string;
-  fitToScreen?: boolean;
   videoSettings?: VideoSettings;
 }
 
@@ -371,10 +369,8 @@ export class StreamClientScrcpy
   extends BaseClient<ParamsStreamScrcpy, never>
   implements KeyEventListener, InteractionHandlerListener
 {
-  public static ACTION = "stream";
   private static players: Map<string, PlayerClass> = new Map<string, PlayerClass>();
 
-  private controlButtons?: HTMLElement;
   private deviceName = "";
   private clientsCount = -1;
   private joinedStream = false;
@@ -382,17 +378,16 @@ export class StreamClientScrcpy
   private touchHandler?: InteractionHandler;
   private player?: BasePlayer;
   private onClipBoxReceived?: (text: string) => void;
-  private fitToScreen?: boolean;
   private readonly streamReceiver: StreamReceiverScrcpy;
 
   protected constructor(
     params: ParamsStreamScrcpy,
     streamReceiver?: StreamReceiverScrcpy,
     player?: BasePlayer,
-    fitToScreen?: boolean,
     videoSettings?: VideoSettings
   ) {
     super(params);
+    console.log(this.params);
     if (streamReceiver) {
       this.streamReceiver = streamReceiver;
     } else {
@@ -400,7 +395,7 @@ export class StreamClientScrcpy
     }
 
     const { udid, player: playerName } = this.params;
-    this.startStream({ udid, player, playerName, fitToScreen, videoSettings });
+    this.startStream({ udid, player, playerName, videoSettings });
   }
 
   public static registerPlayer(playerClass: PlayerClass): void {
@@ -421,45 +416,17 @@ export class StreamClientScrcpy
     return new playerClass(udid, displayInfo);
   }
 
-  public static getFitToScreen(
-    playerName: string,
-    udid: string,
-    displayInfo?: DisplayInfo
-  ): boolean {
-    const playerClass = this.getPlayerClass(playerName);
-    if (!playerClass) {
-      return false;
-    }
-    return playerClass.getFitToScreenStatus(udid, displayInfo);
-  }
-
   public static start(
     query: URLSearchParams | ParamsStreamScrcpy,
     streamReceiver?: StreamReceiverScrcpy,
     player?: BasePlayer,
-    fitToScreen?: boolean,
     videoSettings?: VideoSettings
   ): StreamClientScrcpy {
     if (query instanceof URLSearchParams) {
-      const params = StreamClientScrcpy.parseParameters(query);
-      return new StreamClientScrcpy(params, streamReceiver, player, fitToScreen, videoSettings);
+      const params = StreamReceiverScrcpy.parseParameters(query);
+      return new StreamClientScrcpy(params, streamReceiver, player, videoSettings);
     }
-    return new StreamClientScrcpy(query, streamReceiver, player, fitToScreen, videoSettings);
-  }
-
-  public static parseParameters(params: URLSearchParams): ParamsStreamScrcpy {
-    const typedParams = super.parseParameters(params);
-    const { action } = typedParams;
-    if (action !== ACTION.STREAM_SCRCPY) {
-      throw Error("Incorrect action");
-    }
-    return {
-      ...typedParams,
-      action,
-      player: DataUtil.parseString(params, "player", true),
-      udid: DataUtil.parseString(params, "udid", true),
-      ws: DataUtil.parseString(params, "ws", true),
-    };
+    return new StreamClientScrcpy(query, streamReceiver, player, videoSettings);
   }
 
   private static getPlayerClass(playerName: string): PlayerClass | undefined {
@@ -518,7 +485,7 @@ export class StreamClientScrcpy
     if (!this.player) {
       return;
     }
-    let currentSettings = this.player.getVideoSettings();
+    const currentSettings = this.player.getVideoSettings();
     const displayId = currentSettings.displayId;
     const info = infoArray.find((value) => {
       return value.displayInfo.displayId === displayId;
@@ -531,19 +498,6 @@ export class StreamClientScrcpy
     }
     const { videoSettings, screenInfo } = info;
     this.player.setDisplayInfo(info.displayInfo);
-    if (typeof this.fitToScreen !== "boolean") {
-      this.fitToScreen = this.player.getFitToScreenStatus();
-    }
-    if (this.fitToScreen) {
-      const newBounds = this.getMaxSize();
-      if (newBounds) {
-        currentSettings = StreamClientScrcpy.createVideoSettingsWithBounds(
-          currentSettings,
-          newBounds
-        );
-        this.player.setVideoSettings(currentSettings, this.fitToScreen, false);
-      }
-    }
     if (!videoSettings || !screenInfo) {
       this.joinedStream = true;
       this.sendMessage(CommandControlMessage.createSetVideoSettingsCommand(currentSettings));
@@ -591,12 +545,11 @@ export class StreamClientScrcpy
     this.touchHandler = undefined;
   };
 
-  public startStream({ udid, player, playerName, videoSettings, fitToScreen }: StartParams): void {
+  public startStream({ udid, player, playerName, videoSettings }: StartParams): void {
     if (!udid) {
       throw Error(`Invalid udid value: "${udid}"`);
     }
 
-    this.fitToScreen = fitToScreen;
     if (!player) {
       if (typeof playerName !== "string") {
         throw Error("Must provide BasePlayer instance or playerName");
@@ -609,9 +562,6 @@ export class StreamClientScrcpy
       if (!p) {
         throw Error(`Unsupported player: "${playerName}"`);
       }
-      if (typeof fitToScreen !== "boolean") {
-        fitToScreen = StreamClientScrcpy.getFitToScreen(playerName, udid, displayInfo);
-      }
       player = p;
     }
     this.player = player;
@@ -623,12 +573,6 @@ export class StreamClientScrcpy
 
     player.pause();
 
-    if (fitToScreen) {
-      const newBounds = this.getMaxSize();
-      if (newBounds) {
-        videoSettings = StreamClientScrcpy.createVideoSettingsWithBounds(videoSettings, newBounds);
-      }
-    }
     this.applyNewVideoSettings(videoSettings, false);
 
     const streamReceiver = this.streamReceiver;
@@ -638,6 +582,7 @@ export class StreamClientScrcpy
     streamReceiver.on("displayInfo", this.onDisplayInfo);
     streamReceiver.on("disconnected", this.onDisconnected);
     console.log(player.getName(), udid);
+    player.play();
   }
 
   public sendMessage(message: ControlMessage): void {
@@ -656,23 +601,12 @@ export class StreamClientScrcpy
     }
   }
 
+  public setRequestedVideoSettings(value: VideoSettings): void {
+    this.requestedVideoSettings = value;
+  }
+
   public onKeyEvent(event: KeyCodeControlMessage): void {
     this.sendMessage(event);
-  }
-
-  public sendNewVideoSetting(videoSettings: VideoSettings): void {
-    this.requestedVideoSettings = videoSettings;
-    this.sendMessage(CommandControlMessage.createSetVideoSettingsCommand(videoSettings));
-  }
-
-  public getMaxSize(): Size | undefined {
-    if (!this.controlButtons) {
-      return;
-    }
-    const body = document.body;
-    const width = (body.clientWidth - this.controlButtons.clientWidth) & ~15;
-    const height = body.clientHeight & ~15;
-    return new Size(width, height);
   }
 
   private setTouchListeners(player: BasePlayer): void {
@@ -683,13 +617,8 @@ export class StreamClientScrcpy
   }
 
   private applyNewVideoSettings(videoSettings: VideoSettings, saveToStorage: boolean): void {
-    let fitToScreen = false;
-
-    if (videoSettings.bounds && videoSettings.bounds.equals(this.getMaxSize())) {
-      fitToScreen = true;
-    }
     if (this.player) {
-      this.player.setVideoSettings(videoSettings, fitToScreen, saveToStorage);
+      this.player.setVideoSettings(videoSettings, saveToStorage);
     }
   }
 }

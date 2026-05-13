@@ -1,7 +1,4 @@
-/**
- * @type {{type: string, source: string}}
- */
-export const vertexQuad = {
+export const vertexQuad: { type: string; source: string } = {
   type: "x-shader/x-vertex",
   source: `
   precision mediump float;
@@ -17,10 +14,7 @@ export const vertexQuad = {
 `,
 };
 
-/**
- * @type {{type: string, source: string}}
- */
-export const fragmentYUV = {
+export const fragmentYUV: { type: string; source: string } = {
   type: "x-shader/x-fragment",
   source: `
   precision lowp float;

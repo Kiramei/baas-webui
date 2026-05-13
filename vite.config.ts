@@ -10,7 +10,7 @@ export default defineConfig(() => {
     base: "/",
     clearScreen: false,
     define: {
-      global: "window",
+      global: "globalThis",
     },
     server: {
       host: "0.0.0.0",

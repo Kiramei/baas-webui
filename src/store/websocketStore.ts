@@ -24,7 +24,7 @@ const resolveBase = () => {
   //   const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   //   return `${wsProtocol}//${window.location.host}`;
   // }
-  return "ws://192.168.31.116:8190";
+  return "ws://127.0.0.1:8190";
 };
 
 const { appendGlobalLog } = useGlobalLogStore.getState();
@@ -537,7 +537,6 @@ export const useWebSocketStore = create<WebSocketState>()(
 
     connectRemote: async (
       profileId: string,
-      transferType: "AnnexB" | "fMP4",
       onopen: (event: Event) => void,
       onclose: (event: CloseEvent) => void,
       onerror: (event: Event) => void,
@@ -570,7 +569,7 @@ export const useWebSocketStore = create<WebSocketState>()(
         true
       );
 
-      ws.sendJson({ config_id: profileId, transfer_type: transferType });
+      ws.sendJson({ config_id: profileId });
       set((state) => ({
         connections: {
           ...state.connections,

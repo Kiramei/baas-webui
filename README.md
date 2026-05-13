@@ -58,12 +58,12 @@ from cafés and arenas to tactical drills and whitelist management.
 
 ## 🧠 Architecture
 
-| Layer                  | Technology                          | Description                                                                                 |
-| :--------------------- | :---------------------------------- | :------------------------------------------------------------------------------------------ |
-| Interface              | React 19 + Tailwind CSS 4           | Componentized dashboard with motion-enhanced layouts                                        |
-| State Sync             | Zustand + SecureWebSocket           | Multi-socket store that decrypts Fernet payloads and normalizes config/event/status streams |
-| Automation Core Bridge | Command & Trigger Channels          | Dispatches scheduler commands (`start`, `stop`, `patch`, `trigger`) to the BAAS runtime     |
-| Knowledge Surface      | i18next + Markdown + React Markdown | Localized wiki with syntax highlighting and offline docs                                    |
+| Layer                  | Technology                          | Description                                                                                |
+| :--------------------- | :---------------------------------- |:-------------------------------------------------------------------------------------------|
+| Interface              | React 19 + Tailwind CSS 4           | Componentized dashboard with motion-enhanced layouts                                       |
+| State Sync             | Zustand + SecureWebSocket           | Multi-socket store that decrypts payloads and normalizes config/event/status streams       |
+| Automation Core Bridge | Command & Trigger Channels          | Dispatches scheduler commands (`start`, `stop`, `patch`, `trigger`) to the BAAS runtime    |
+| Knowledge Surface      | i18next + Markdown + React Markdown | Localized wiki with syntax highlighting and offline docs                                   |
 
 - **Profile-centric workflow** — `src/components/layout/Header.tsx` handles tab creation, drag sorting, and
   storage-backed persistence.
@@ -71,7 +71,7 @@ from cafés and arenas to tactical drills and whitelist management.
   task payloads.
 - **Telemetry pipeline** — `src/components/ui/Logger.tsx` streams thousands of log lines using `react-window`
   virtualization while `HeartbeatIndicator.tsx` visualizes socket health.
-- **Secure handshake** — `src/lib/SecureWebSocket.ts` performs HMAC + Fernet negotiation before any payload is
+- **Secure handshake** — `src/lib/SecureWebSocket.ts` performs negotiation before any payload is
   exchanged.
 
 ---
@@ -183,11 +183,11 @@ pnpm dev
 ## 📦 Tech Stack
 
 | Category          | Tools                                        | Notes                                                        |
-| :---------------- | :------------------------------------------- | :----------------------------------------------------------- |
+| :---------------- |:---------------------------------------------| :----------------------------------------------------------- |
 | Core Framework    | React 19, Vite 7                             | Fast dev server, modern JSX transforms                       |
 | Styling           | Tailwind CSS 4, CSS variables                | Dark/light modes, custom cursor & scrollbar skins            |
 | State & Data      | Zustand, React Context, localStorage         | Profile store, config snapshots, UI preferences              |
-| Realtime & Crypto | SecureWebSocket, Fernet, HMAC-SHA256         | Authenticated sockets for `provider/sync/trigger/heartbeat`  |
+| Realtime & Crypto | SecureWebSocket                              | Authenticated sockets for `provider/sync/trigger/heartbeat`  |
 | UX Enhancements   | Framer Motion, Radix UI, Sonner              | Animated layouts, accessible primitives, toast notifications |
 | Content           | React Markdown, remark-gfm, rehype-highlight | Wiki rendering with fenced code highlighting                 |
 

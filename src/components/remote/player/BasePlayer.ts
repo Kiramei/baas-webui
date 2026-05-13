@@ -1,7 +1,6 @@
 import { ScreenInfo, DisplayInfo } from "../GeometryInfo";
 import { Rect, Size } from "../GeometryInfo";
 import { DataUtil, TypedEmitter, VideoSettings } from "../CommonUtil";
-import { KeyEvent } from "../KeySpaceMap.ts";
 
 interface BitrateStat {
   timestamp: number;
@@ -44,13 +43,8 @@ export interface PlayerClass {
   playerFullName: string;
   playerCodeName: string;
   storageKeyPrefix: string;
-
   isSupported(): boolean;
-
-  getFitToScreenStatus(deviceName: string, displayInfo?: DisplayInfo): boolean;
-
   loadVideoSettings(deviceName: string, displayInfo?: DisplayInfo): VideoSettings;
-
   new (udid: string, displayInfo?: DisplayInfo): BasePlayer;
 }
 
@@ -81,7 +75,6 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
     bounds: new Size(480, 480),
     sendFrameMeta: false,
   });
-  public readonly supportsScreenshot: boolean = false;
   public readonly resizeVideoToBounds: boolean = false;
   protected screenInfo?: ScreenInfo;
   protected videoSettings: VideoSettings;
@@ -256,7 +249,6 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
     storageKeyPrefix: string,
     udid: string,
     videoSettings: VideoSettings,
-    fitToScreen: boolean,
     displayInfo?: DisplayInfo
   ): void {
     if (!window.localStorage) {
@@ -264,8 +256,6 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
     }
     const key = this.getFullStorageKey(storageKeyPrefix, udid, displayInfo);
     window.localStorage.setItem(key, JSON.stringify(videoSettings));
-    const fitKey = `${key}:fit`;
-    window.localStorage.setItem(fitKey, JSON.stringify(fitToScreen));
   }
 
   private static getStorageKey(storageKeyPrefix: string, udid: string): string {
@@ -288,13 +278,6 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
   }
 
   public abstract getImageDataURL(): string;
-
-  public createScreenshot(deviceName: string): void {
-    const a = document.createElement("a");
-    a.href = this.getImageDataURL();
-    a.download = `${deviceName} ${new Date().toLocaleString()}.png`;
-    a.click();
-  }
 
   public play(): void {
     if (this.needScreenInfoBeforePlay() && !this.screenInfo) {
@@ -339,18 +322,13 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
     return this.videoSettings;
   }
 
-  public setVideoSettings(
-    videoSettings: VideoSettings,
-    fitToScreen: boolean,
-    saveToStorage: boolean
-  ): void {
+  public setVideoSettings(videoSettings: VideoSettings, saveToStorage: boolean): void {
     this.videoSettings = videoSettings;
     if (saveToStorage) {
       BasePlayer.putVideoSettingsToStorage(
         this.storageKeyPrefix,
         this.udid,
         videoSettings,
-        fitToScreen,
         this.displayInfo
       );
     }
@@ -392,8 +370,6 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
   public setDisplayInfo(displayInfo: DisplayInfo): void {
     this.displayInfo = displayInfo;
   }
-
-  public abstract getFitToScreenStatus(): boolean;
 
   public onStatsUpdate(callback: (value: QualityParsed) => void): void {
     this.statUpdateCallback = callback;

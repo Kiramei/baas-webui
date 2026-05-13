@@ -27,7 +27,6 @@ export class TinyH264Player extends BaseCanvasBasedPlayer {
     sendFrameMeta: false,
   });
   private static videoStreamId = 1;
-  public readonly supportsScreenshot: boolean = true;
   protected canvas?: YUVWebGLCanvas | YUVCanvas;
   private worker?: Worker;
   private isDecoderReady = false;

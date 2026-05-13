@@ -4,7 +4,7 @@ import { GlobalSelectProvider } from "@/components/ui/SelectGlobal";
 import { useWebSocketStore } from "@/store/websocketStore.ts";
 
 import { StorageUtil } from "@/lib/storage.ts";
-import { UISettingsProvider, DEFAULT_UI_SETTINGS } from "./UISettingsProvider";
+import { DEFAULT_UI_SETTINGS } from "./UISettingsProvider";
 
 interface AppContextType {
   uiSettings: UISettings;
@@ -94,9 +94,7 @@ export const AppProvider: React.FC<{ children: ReactNode; setReady: (value: bool
 
   return (
     <AppContext.Provider value={value}>
-      <UISettingsProvider>
-        <GlobalSelectProvider>{children}</GlobalSelectProvider>
-      </UISettingsProvider>
+      <GlobalSelectProvider>{children}</GlobalSelectProvider>
     </AppContext.Provider>
   );
 };

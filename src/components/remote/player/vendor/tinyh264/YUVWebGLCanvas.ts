@@ -7,9 +7,9 @@ import Texture from "../h264-live-player/Texture";
 import Canvas from "./Canvas";
 
 export default class YUVWebGLCanvas extends Canvas {
-  private yTexture: Texture;
-  private uTexture: Texture;
-  private vTexture: Texture;
+  private readonly yTexture: Texture;
+  private readonly uTexture: Texture;
+  private readonly vTexture: Texture;
   private yuvSurfaceShader: YUVSurfaceShader;
 
   constructor(canvas: HTMLCanvasElement) {

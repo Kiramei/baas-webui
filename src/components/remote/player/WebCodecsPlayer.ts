@@ -28,7 +28,6 @@ export class WebCodecsPlayer extends BaseCanvasBasedPlayer {
     bounds: new Size(480, 480),
     sendFrameMeta: false,
   });
-  public readonly supportsScreenshot = true;
   private context: CanvasRenderingContext2D;
   private decoder: VideoDecoder;
   private buffer: ArrayBuffer | undefined;

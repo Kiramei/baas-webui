@@ -14,7 +14,7 @@ import { Toaster } from "./components/ui/Sonner";
 import { PageKey } from "@/types/app";
 import i18n, { loadLocale } from "@/lib/i18n";
 import BAComet from "@/components/ui/BAComet.tsx";
-import { UISettingsProvider } from "@/contexts/UISettingsProvider.tsx";
+import { UISettingsProvider, useUISettings } from "@/contexts/UISettingsProvider.tsx";
 
 /**
  * Shared motion variants that keep inactive pages mounted while keeping the transition lightweight.
@@ -32,63 +32,6 @@ const variants: Variants = {
     transition: { type: "tween" as const, duration: 0.2, ease: "easeOut" as const },
     transitionEnd: { display: "none" },
   },
-};
-
-const App: React.FC = () => {
-  const [ready, setReady] = useState(false);
-  const [hideLoading, setHideLoading] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.lang = i18n.language;
-    const onLangChange = (lng: string) => {
-      document.documentElement.lang = lng;
-    };
-    i18n.on("languageChanged", onLangChange);
-    return () => {
-      i18n.off("languageChanged", onLangChange);
-    };
-  }, []);
-
-  useEffect(() => {
-    loadLocale(i18n.language || "en").then(undefined);
-  }, []);
-
-  return (
-    <>
-      <ThemeProvider>
-        <BAComet />
-        {!hideLoading && (
-          <motion.div
-            initial={false}
-            animate={{ opacity: ready ? 0 : 1 }}
-            transition={{ duration: 0.2 }}
-            onAnimationComplete={(definition) => {
-              // When the animation returns an opacity of zero the loading screen can be removed.
-              if (ready && (definition as any).opacity === 0) {
-                setHideLoading(true);
-              }
-            }}
-            className="fixed inset-0 z-100"
-          >
-            <UISettingsProvider>
-              <LoadingPage />
-            </UISettingsProvider>
-          </motion.div>
-        )}
-
-        <Suspense fallback={null}>
-          <AppProvider setReady={setReady}>
-            {ready && (
-              <>
-                <Main />
-                <Toaster />
-              </>
-            )}
-          </AppProvider>
-        </Suspense>
-      </ThemeProvider>
-    </>
-  );
 };
 
 /**
@@ -166,6 +109,71 @@ const Main: React.FC = () => {
         })}
       </div>
     </MainLayout>
+  );
+};
+
+const WrappedApp: React.FC = () => {
+  const [ready, setReady] = useState(false);
+  const [hideLoading, setHideLoading] = useState(false);
+  const { uiSettings } = useUISettings();
+
+  return (
+    <>
+      {uiSettings.enableBAComet && <BAComet />}
+      {!hideLoading && (
+        <motion.div
+          initial={false}
+          animate={{ opacity: ready ? 0 : 1 }}
+          transition={{ duration: 0.2 }}
+          onAnimationComplete={(definition) => {
+            // When the animation returns an opacity of zero the loading screen can be removed.
+            if (ready && (definition as any).opacity === 0) {
+              setHideLoading(true);
+            }
+          }}
+          className="fixed inset-0 z-100"
+        >
+          <LoadingPage />
+        </motion.div>
+      )}
+      <Suspense fallback={null}>
+        <AppProvider setReady={setReady}>
+          {ready && (
+            <>
+              <Main />
+              <Toaster />
+            </>
+          )}
+        </AppProvider>
+      </Suspense>
+    </>
+  );
+};
+
+const App: React.FC = () => {
+  useEffect(() => {
+    document.documentElement.lang = i18n.language;
+    const onLangChange = (lng: string) => {
+      document.documentElement.lang = lng;
+    };
+    i18n.on("languageChanged", onLangChange);
+    return () => {
+      i18n.off("languageChanged", onLangChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    loadLocale(i18n.language || "en").then(undefined);
+  }, []);
+
+  return (
+    <>
+      <ThemeProvider>
+        <UISettingsProvider>
+          <WrappedApp />
+        </UISettingsProvider>
+      </ThemeProvider>
+    </>
   );
 };
 

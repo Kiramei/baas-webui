@@ -73,12 +73,6 @@ export const formatIsoToReadableTime = (iso: string): string => {
   );
 };
 
-export const assert = (condition: any, msg?: string) => {
-  if (!condition) {
-    throw new Error(msg ?? "Assertion failed");
-  }
-};
-
 export const getTimestamp = (): number => Math.floor(Date.now() / 1000);
 
 export const getTimestampMs = (): number => Date.now();

@@ -34,6 +34,7 @@ export default class YUVCanvas extends Canvas {
         const B = 1.164 * (ybuf[yIndex] - 16) + 2.018 * (ubuf[uIndex] - 128);
 
         const rgbIndex = yIndex * 4;
+        // noinspection PointlessArithmeticExpressionJS
         this.canvasBuffer.data[rgbIndex + 0] = R;
         this.canvasBuffer.data[rgbIndex + 1] = G;
         this.canvasBuffer.data[rgbIndex + 2] = B;

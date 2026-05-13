@@ -50,7 +50,6 @@ export class MsePlayer extends BasePlayer {
   private bigBufferSince = -1;
   private aheadOfBufferSince = -1;
   public fpf: number = MsePlayer.DEFAULT_FRAMES_PER_FRAGMENT;
-  public readonly supportsScreenshot = true;
   private sourceBuffer?: SourceBuffer;
   private waitUntilSegmentRemoved = false;
   private blocks: Block[] = [];
@@ -223,11 +222,7 @@ export class MsePlayer extends BasePlayer {
     this.stopConverter();
   }
 
-  public setVideoSettings(
-    videoSettings: VideoSettings,
-    fitToScreen: boolean,
-    saveToStorage: boolean
-  ): void {
+  public setVideoSettings(videoSettings: VideoSettings, saveToStorage: boolean): void {
     if (this.videoSettings && this.videoSettings.maxFps !== videoSettings.maxFps) {
       const state = this.getState();
       if (this.converter) {
@@ -239,7 +234,7 @@ export class MsePlayer extends BasePlayer {
         this.play();
       }
     }
-    super.setVideoSettings(videoSettings, fitToScreen, saveToStorage);
+    super.setVideoSettings(videoSettings, saveToStorage);
   }
 
   public getPreferredVideoSetting(): VideoSettings {
@@ -453,10 +448,6 @@ export class MsePlayer extends BasePlayer {
       this.converter.pause();
       delete this.converter;
     }
-  }
-
-  public getFitToScreenStatus(): boolean {
-    return MsePlayer.getFitToScreenStatus(this.udid, this.displayInfo);
   }
 
   // noinspection JSUnusedGlobalSymbols

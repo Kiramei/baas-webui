@@ -489,5 +489,8 @@
     "bitrate": "比特率",
     "showStatus": "显示状态",
     "saveAndApply": "保存并应用"
-  }
+  },
+  "uisettings.enableBAComet": "启用 BAComet",
+  "uisettings.player": "远程模拟器解码器",
+  "uisettings.enableSafeStream": "远程模拟器画面启用流加密"
 }
