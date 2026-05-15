@@ -15,7 +15,7 @@ import {
 import { CornerBox } from "@/components/ui/CornerBox.tsx";
 import { Modal } from "@/components/ui/Modal.tsx";
 import { t } from "i18next";
-import { BTN_FUNC_MAP, StreamClientScrcpy } from "./remote/StreamClientScrcpy";
+import { BTN_FUNC_MAP, StreamClientScrcpy, WSMiddleware } from "./remote/StreamClientScrcpy";
 import { BasePlayer, QualityParsed } from "./remote/player/BasePlayer";
 import { useUISettings } from "@/contexts/UISettingsProvider.tsx";
 import { VideoSettings } from "@/components/remote/CommonUtil.ts";
@@ -37,6 +37,7 @@ import {
 } from "@/components/remote/MessageCenter.ts";
 import { KeyEvent } from "@/components/remote/KeySpaceMap.ts";
 import { SlideOutButton } from "@/components/ui/SlideOutButton.tsx";
+import { useWebSocketStore } from "@/store/websocketStore.ts";
 
 /**
  * Connection state used by the UI layer.
@@ -54,7 +55,10 @@ type PlayerType = "mse" | "broadway" | "tinyh264" | "webcodecs";
 
 type ViewElement = HTMLVideoElement | HTMLCanvasElement;
 
-type PlayerFactory = (udid: string, touch: HTMLCanvasElement) => Promise<[ViewElement, BasePlayer]>;
+type PlayerFactory = (
+  videoSettings: VideoSettings,
+  touch: HTMLCanvasElement
+) => Promise<[ViewElement, BasePlayer]>;
 
 /**
  * Remote display component.
@@ -98,6 +102,7 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({ profileId }) =>
    * Get the RemoteSettings from Hook. And the specific settings.
    */
   const { uiSettings, setUiSettings } = useUISettings();
+  const { connectRemote } = useWebSocketStore();
   const [showStatus, setShowStatus] = useState<boolean>(uiSettings.remoteSettings.showStatus);
   const [maxWidth, setMaxWidth] = useState<number>(uiSettings.remoteSettings.maxWidth);
   const [maxHeight, setMaxHeight] = useState<number>(uiSettings.remoteSettings.maxHeight);
@@ -215,6 +220,77 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({ profileId }) =>
    */
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
+  const createView = (showType: "video" | "canvas") => {
+    return {
+      "canvas": () => {
+        const canvas = document.createElement("canvas");
+        canvas.className = "absolute top-0 justify-self-center h-full block select-none";
+        return canvas;
+      },
+      "video": () => {
+        const video = document.createElement("video");
+        video.className = "absolute top-0 w-full h-full block select-none";
+        return video;
+      },
+    }[showType];
+  };
+
+  const playerFactory: Record<PlayerType, PlayerFactory> = {
+    mse: async (videoSettings, touch) => {
+      const view = createView("video")() as HTMLVideoElement;
+      const { MsePlayer } = await import("@/components/remote/player/MsePlayer");
+      StreamClientScrcpy.registerPlayer(MsePlayer);
+      view.id = MsePlayer.playerFullName;
+      const player = new MsePlayer(videoSettings, undefined, MsePlayer.playerFullName, view, touch);
+      return [view, player];
+    },
+
+    broadway: async (videoSettings, touch) => {
+      const view = createView("canvas")() as HTMLCanvasElement;
+      const { BroadwayPlayer } = await import("@/components/remote/player/BroadwayPlayer");
+      StreamClientScrcpy.registerPlayer(BroadwayPlayer);
+      view.id = BroadwayPlayer.playerFullName;
+      const player = new BroadwayPlayer(
+        videoSettings,
+        undefined,
+        BroadwayPlayer.playerFullName,
+        view,
+        touch
+      );
+      return [view, player];
+    },
+
+    tinyh264: async (videoSettings, touch) => {
+      const view = createView("canvas")() as HTMLCanvasElement;
+      const { TinyH264Player } = await import("@/components/remote/player/TinyH264Player");
+      StreamClientScrcpy.registerPlayer(TinyH264Player);
+      view.id = TinyH264Player.playerFullName;
+      const player = new TinyH264Player(
+        videoSettings,
+        undefined,
+        TinyH264Player.playerFullName,
+        view,
+        touch
+      );
+      return [view, player];
+    },
+
+    webcodecs: async (videoSettings, touch) => {
+      const view = createView("canvas")() as HTMLCanvasElement;
+      const { WebCodecsPlayer } = await import("@/components/remote/player/WebCodecsPlayer");
+      StreamClientScrcpy.registerPlayer(WebCodecsPlayer);
+      view.id = WebCodecsPlayer.playerFullName;
+      const player = new WebCodecsPlayer(
+        videoSettings,
+        undefined,
+        WebCodecsPlayer.playerFullName,
+        view,
+        touch
+      );
+      return [view, player];
+    },
+  };
+
   /**
    * Initialize canvas, WebSocket, and VideoDecoder exactly once.
    *
@@ -224,95 +300,36 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({ profileId }) =>
    */
   useEffect(() => {
     if (viewRef.current) return;
+    connectRemote().then(async (ws) => {
+      const wsm = new WSMiddleware();
 
-    const hash = location.hash.replace(/^#!/, "");
-    const parsedQuery = new URLSearchParams(hash);
-    const udid = "192.168.1.13:16384";
-    parsedQuery.set("action", "stream");
-    parsedQuery.set("player", "broadway");
-    parsedQuery.set("udid", udid);
-    parsedQuery.set(
-      "ws",
-      "ws://127.0.0.1:8000/?action=proxy-adb&remote=tcp:8886&udid=192.168.1.13:16384"
-    );
+      ws.onClose = (event) => {
+        wsm.dispatchEvent("close", event);
+      };
 
-    const touch = document.createElement("canvas");
-    touch.className = "absolute top-0 w-full h-full block select-none z-1";
+      ws.onOpen = (event) => {
+        wsm.dispatchEvent("open", event);
+      };
 
-    const createView = (showType: "video" | "canvas") => {
-      return {
-        "canvas": () => {
-          const canvas = document.createElement("canvas");
-          canvas.className = "absolute top-0 justify-self-center h-full block select-none";
-          return canvas;
+      wsm.bindSender(ws.sendBytes);
+
+      await ws.connect(
+        (buffer: ArrayBuffer) => {
+          console.log(buffer);
+          wsm.dispatchEvent("message", new MessageEvent("message", { data: buffer }));
         },
-        "video": () => {
-          const video = document.createElement("video");
-          video.className = "absolute top-0 w-full h-full block select-none";
-          return video;
-        },
-      }[showType];
-    };
+        false,
+        uiSettings.remoteSettings.enableSafeStream
+      );
 
-    const playerFactory: Record<PlayerType, PlayerFactory> = {
-      mse: async (udid, touch) => {
-        const view = createView("video")() as HTMLVideoElement;
-        const { MsePlayer } = await import("@/components/remote/player/MsePlayer");
-        StreamClientScrcpy.registerPlayer(MsePlayer);
-        view.id = MsePlayer.playerFullName;
-        const player = new MsePlayer(udid, undefined, MsePlayer.playerFullName, view, touch);
-        return [view, player];
-      },
+      ws.sendJson({ config_id: profileId, decrypt: uiSettings.remoteSettings.enableSafeStream });
 
-      broadway: async (udid, touch) => {
-        const view = createView("canvas")() as HTMLCanvasElement;
-        const { BroadwayPlayer } = await import("@/components/remote/player/BroadwayPlayer");
-        StreamClientScrcpy.registerPlayer(BroadwayPlayer);
-        view.id = BroadwayPlayer.playerFullName;
-        const player = new BroadwayPlayer(
-          udid,
-          undefined,
-          BroadwayPlayer.playerFullName,
-          view,
-          touch
-        );
-        return [view, player];
-      },
+      const touch = document.createElement("canvas");
+      touch.className = "absolute top-0 w-full h-full block select-none z-1";
+      const type = uiSettings.remoteSettings.streamPlayer as PlayerType;
+      const videoSettings = constructVideoSetting();
 
-      tinyh264: async (udid, touch) => {
-        const view = createView("canvas")() as HTMLCanvasElement;
-        const { TinyH264Player } = await import("@/components/remote/player/TinyH264Player");
-        StreamClientScrcpy.registerPlayer(TinyH264Player);
-        view.id = TinyH264Player.playerFullName;
-        const player = new TinyH264Player(
-          udid,
-          undefined,
-          TinyH264Player.playerFullName,
-          view,
-          touch
-        );
-        return [view, player];
-      },
-
-      webcodecs: async (udid, touch) => {
-        const view = createView("canvas")() as HTMLCanvasElement;
-        const { WebCodecsPlayer } = await import("@/components/remote/player/WebCodecsPlayer");
-        StreamClientScrcpy.registerPlayer(WebCodecsPlayer);
-        view.id = WebCodecsPlayer.playerFullName;
-        const player = new WebCodecsPlayer(
-          udid,
-          undefined,
-          WebCodecsPlayer.playerFullName,
-          view,
-          touch
-        );
-        return [view, player];
-      },
-    };
-
-    const type = uiSettings.remoteSettings.streamPlayer as PlayerType;
-
-    playerFactory[type ?? "mse"](udid, touch).then(([view, player]) => {
+      const [view, player] = await playerFactory[type ?? "mse"](videoSettings, touch);
       viewRef.current = view;
       touchRef.current = touch;
       canvasHostRef.current?.appendChild(view);
@@ -320,17 +337,10 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({ profileId }) =>
       playerRef.current = player;
       playerRef.current.setShowQualityStats(showStatus);
       player.onStatsUpdate((q: any) => setQuality(q));
-      const videoSettings = constructVideoSetting();
-      scrcpyClientRef.current = StreamClientScrcpy.start(
-        parsedQuery,
-        undefined,
-        player,
-        videoSettings
-      );
+      scrcpyClientRef.current = StreamClientScrcpy.start(wsm, player, videoSettings);
       scrcpyClientRef.current?.setOnClipBoxReceived(onClipBoardReceived);
       setConnectionState(ConnectionStatus.connected);
     });
-
     return () => {
       // setConnectionState(ConnectionStatus.connecting);
     };

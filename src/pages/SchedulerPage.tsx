@@ -47,7 +47,7 @@ const TaskRow = React.memo(function TaskRow({
     <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-700 p-2 rounded-md gap-2 min-w-0 overflow-x-hidden">
       {side === "left" ? (
         <>
-          <div className="flex flex-grow min-w-0 overflow-hidden text-ellipsis text-left mr-2">
+          <div className="flex grow min-w-0 overflow-hidden text-ellipsis text-left mr-2">
             <EllipsisWithTooltip text={t("eventName." + task.func_name)} />
           </div>
           <DateTimePicker
@@ -56,30 +56,30 @@ const TaskRow = React.memo(function TaskRow({
             className="hidden xl:flex"
           />
           <CButton onClick={() => onEdit(task)} className="rounded-[50%] w-8 h-8">
-            <Settings className="w-4 h-4 translate-x-[-8px]" />
+            <Settings className="w-4 h-4 -translate-x-2" />
           </CButton>
-          <Separator orientation="vertical" className="!h-8" />
+          <Separator orientation="vertical" className="h-8!" />
           <CButton onClick={() => onMove(task, true)} className="rounded-[50%] w-8 h-8">
-            <ArrowRight className="w-4 h-4 translate-x-[-8px] max-md:hidden" />
-            <ArrowDown className="w-4 h-4 translate-x-[-8px] md:hidden" />
+            <ArrowRight className="w-4 h-4 -translate-x-2 max-md:hidden" />
+            <ArrowDown className="w-4 h-4 -translate-x-2 md:hidden" />
           </CButton>
         </>
       ) : (
         <>
           <CButton onClick={() => onMove(task, false)} className="rounded-[50%] w-8 h-8">
-            <ArrowLeft className="w-4 h-4 translate-x-[-8px] max-md:hidden" />
-            <ArrowUp className="w-4 h-4 translate-x-[-8px] md:hidden" />
+            <ArrowLeft className="w-4 h-4 -translate-x-2 max-md:hidden" />
+            <ArrowUp className="w-4 h-4 -translate-x-2 md:hidden" />
           </CButton>
-          <Separator orientation="vertical" className="!h-8" />
+          <Separator orientation="vertical" className="h-8!" />
           <CButton onClick={() => onEdit(task)} className="rounded-[50%] w-8 h-8">
-            <Settings className="w-4 h-4 translate-x-[-8px]" />
+            <Settings className="w-4 h-4 -translate-x-2" />
           </CButton>
           <DateTimePicker
             value={task.next_tick * 1000}
             onChange={(ts) => onChangeTime(task, ts!)}
             className="hidden xl:flex"
           />
-          <div className="flex flex-grow min-w-0 overflow-hidden text-ellipsis text-right mr-2 justify-end">
+          <div className="flex grow min-w-0 overflow-hidden text-ellipsis text-right mr-2 justify-end">
             <EllipsisWithTooltip text={t("eventName." + task.func_name)} />
           </div>
         </>
@@ -246,7 +246,7 @@ const SchedulerPage: React.FC<ProfileProps> = ({ profileId }) => {
           />
         </div>
         <CButton variant="primary" onClick={refreshAll} className="mr-2 rounded-[50%] w-8 h-8">
-          <RefreshCw className="w-4 h-4 translate-x-[-8px]" />
+          <RefreshCw className="w-4 h-4 -translate-x-2" />
         </CButton>
       </div>
       {/* Dual column layout showing inactive and active task queues. */}
@@ -264,8 +264,8 @@ const SchedulerPage: React.FC<ProfileProps> = ({ profileId }) => {
                 onClick={() => moveAll(true)}
                 className="rounded-[50%] w-8 h-8 mr-4.5"
               >
-                <ArrowRight className="w-4 h-4 translate-x-[-8px] max-md:hidden" />
-                <ArrowDown className="w-4 h-4 translate-x-[-8px] md:hidden" />
+                <ArrowRight className="w-4 h-4 -translate-x-2 max-md:hidden" />
+                <ArrowDown className="w-4 h-4 -translate-x-2 md:hidden" />
               </CButton>
             </div>
             <div className="flex-1 min-h-0 overflow-auto space-y-2 scroll-embedded pr-1 max-md:max-h-40">
@@ -292,8 +292,8 @@ const SchedulerPage: React.FC<ProfileProps> = ({ profileId }) => {
                 onClick={() => moveAll(false)}
                 className="rounded-[50%] w-8 h-8 ml-2"
               >
-                <ArrowLeft className="w-4 h-4 translate-x-[-8px] max-md:hidden" />
-                <ArrowUp className="w-4 h-4 translate-x-[-8px] md:hidden" />
+                <ArrowLeft className="w-4 h-4 -translate-x-2 max-md:hidden" />
+                <ArrowUp className="w-4 h-4 -translate-x-2 md:hidden" />
               </CButton>
               <div className="flex items-center">
                 <span className="font-medium">{t("scheduler.activeTasks")}</span>

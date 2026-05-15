@@ -148,13 +148,7 @@ interface WebSocketState {
   modify: (path: string, value: any, showToast?: boolean) => void;
   patch: (path: string, value: any) => void;
   trigger: (payload: CommandPayload, callback?: (e: any) => void) => void;
-  connectRemote: (
-    profileId: string,
-    onopen: (event: Event) => void,
-    onclose: (event: CloseEvent) => void,
-    onerror: (event: Event) => void,
-    onmessage: (event: ArrayBuffer) => void
-  ) => Promise<`remote-${string}`>;
+  connectRemote: () => Promise<SecureWebSocket>;
   pendingCallbacks: Record<string, (data?: any) => void>;
 
   _all_data_initialized: boolean;
@@ -167,10 +161,4 @@ interface WebSocketState {
   _pwd_epoch: number;
   _control: ControlConnection | null;
   _session: ControlSessionBundle | null;
-}
-
-interface ConnectionError {
-  reason: string;
-
-  [key: string]: any;
 }

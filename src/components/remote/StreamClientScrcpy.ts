@@ -1,4 +1,4 @@
-import { DataUtil, EventMap, TypedEmitter, VideoSettings } from "./CommonUtil";
+import { DataUtil, TypedEmitter, VideoSettings } from "./CommonUtil";
 import { BasePlayer, PlayerClass } from "./player/BasePlayer";
 
 import {
@@ -18,19 +18,12 @@ import { Size, DisplayInfo, ScreenInfo } from "./GeometryInfo";
 import { KeyEvent } from "@/components/remote/KeySpaceMap.ts";
 
 type StartParams = {
-  udid: string;
-  playerName?: string;
-  player?: BasePlayer;
-  videoSettings?: VideoSettings;
+  player: BasePlayer;
+  videoSettings: VideoSettings;
 };
 
 const DEVICE_NAME_FIELD_LENGTH = 64;
 const MAGIC_BYTES_INITIAL = DataUtil.stringToUtf8ByteArray("scrcpy_initial");
-
-export enum ACTION {
-  PROXY_WS = "proxy-ws",
-  STREAM_SCRCPY = "stream",
-}
 
 export type ClientsStats = {
   deviceName: string;
@@ -54,26 +47,6 @@ interface StreamReceiverEvents {
   disconnected: CloseEvent;
 }
 
-interface ParamsBase {
-  action: string;
-  useProxy?: boolean;
-  secure?: boolean;
-  hostname?: string;
-  port?: number;
-  pathname?: string;
-}
-
-interface ParamsStream extends ParamsBase {
-  udid: string;
-  player: string;
-}
-
-export interface ParamsStreamScrcpy extends ParamsStream {
-  action: ACTION.STREAM_SCRCPY;
-  ws: string;
-  videoSettings?: VideoSettings;
-}
-
 export const BTN_FUNC_MAP = {
   "power": KeyEvent.KEYCODE_POWER,
   "vol_up": KeyEvent.KEYCODE_VOLUME_UP,
@@ -83,105 +56,53 @@ export const BTN_FUNC_MAP = {
   "switch": KeyEvent.KEYCODE_APP_SWITCH,
 };
 
-export class BaseClient<P extends ParamsBase, TE extends EventMap> extends TypedEmitter<TE> {
-  protected title = "BaseClient";
-  protected params: P;
+interface EventMap {
+  message: MessageEvent;
+  close: CloseEvent;
+  open: Event;
+}
+type Listener<K extends keyof EventMap> = EventMap[K] extends void
+  ? () => void
+  : (event: EventMap[K]) => void;
 
-  protected constructor(params: P) {
-    super();
-    this.params = params;
+export class WSMiddleware {
+  private sender: ((data: ArrayBuffer | Uint8Array) => void) | undefined;
+  private listeners: {
+    [K in keyof EventMap]?: Listener<K>[];
+  } = {};
+
+  private _readyState: number = -1;
+
+  get readyState(): number {
+    return this._readyState;
   }
 
-  public static parseParameters(query: URLSearchParams): ParamsBase {
-    const action = DataUtil.parseStringEnv(query.get("action"));
-    if (!action) {
-      throw TypeError("Invalid action");
-    }
-    return {
-      action: action,
-      useProxy: DataUtil.parseBooleanEnv(query.get("useProxy")),
-      secure: DataUtil.parseBooleanEnv(query.get("secure")),
-      hostname: DataUtil.parseStringEnv(query.get("hostname")),
-      port: DataUtil.parseIntEnv(query.get("port")),
-      pathname: DataUtil.parseStringEnv(query.get("pathname")),
-    };
+  set readyState(value: number) {
+    this._readyState = value;
+  }
+
+  addEventListener<K extends keyof EventMap>(type: K, listener: Listener<K>) {
+    this.listeners[type] ??= [];
+    this.listeners[type]!.push(listener);
+  }
+
+  dispatchEvent<K extends keyof EventMap>(type: K, event: EventMap[K]) {
+    this.listeners[type]?.forEach((listener) => {
+      (listener as any)(event);
+    });
+  }
+
+  public bindSender(sender: (data: ArrayBuffer | Uint8Array) => void): void {
+    this.sender = sender;
+  }
+
+  public send(bytes: ArrayBuffer | Uint8Array): void {
+    this.sender?.(bytes);
   }
 }
 
-export abstract class ManagerClient<P extends ParamsBase, TE extends EventMap> extends BaseClient<
-  P,
-  TE
-> {
-  public static ACTION = "unknown";
-  protected readonly action?: string;
-  protected url: URL;
-  protected ws?: WebSocket;
-
-  protected constructor(params: P) {
-    super(params);
-    this.action = DataUtil.parseStringEnv(params.action);
-    this.url = this.buildWebSocketUrl();
-  }
-
-  protected openNewConnection(): WebSocket {
-    if (this.ws && this.ws.readyState === this.ws.OPEN) {
-      this.ws.close();
-      delete this.ws;
-    }
-    const url = this.url.toString();
-    const ws = new WebSocket(url);
-    ws.addEventListener("open", this.onSocketOpen.bind(this));
-    ws.addEventListener("message", this.onSocketMessage.bind(this));
-    ws.addEventListener("close", this.onSocketClose.bind(this));
-    this.ws = ws;
-    return this.ws;
-  }
-
-  protected buildWebSocketUrl(): URL {
-    const directUrl = this.buildDirectWebSocketUrl();
-    if (this.params.useProxy) {
-      return this.wrapInProxy(directUrl);
-    }
-    return directUrl;
-  }
-
-  protected buildDirectWebSocketUrl(): URL {
-    const { hostname, port, secure, action } = this.params;
-    const pathname = this.params.pathname ?? location.pathname;
-    let urlString: string;
-    if (typeof hostname === "string" && typeof port === "number") {
-      const protocol = secure ? "wss:" : "ws:";
-      urlString = `${protocol}//${hostname}:${port}${pathname}`;
-    } else {
-      const protocol = location.protocol === "https:" ? "wss:" : "ws:";
-
-      // location.host includes hostname and port
-      urlString = `${protocol}${location.host}${pathname}`;
-    }
-    const directUrl = new URL(urlString);
-    if (action) {
-      directUrl.searchParams.set("action", action);
-    }
-    return directUrl;
-  }
-
-  protected wrapInProxy(directUrl: URL): URL {
-    const localProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-    const localUrl = new URL(`${localProtocol}//${location.host}`);
-    localUrl.searchParams.set("action", ACTION.PROXY_WS);
-    localUrl.searchParams.set("ws", directUrl.toString());
-    return localUrl;
-  }
-
-  protected abstract onSocketOpen(event: Event): void;
-  protected abstract onSocketMessage(event: MessageEvent): void;
-  protected abstract onSocketClose(event: CloseEvent): void;
-}
-
-export class StreamReceiver<P extends ParamsStream> extends ManagerClient<
-  ParamsStream,
-  StreamReceiverEvents
-> {
+export class StreamReceiver extends TypedEmitter<StreamReceiverEvents> {
+  protected ws?: WSMiddleware;
   private events: ControlMessage[] = [];
   private encodersSet: Set<string> = new Set<string>();
   private clientId = -1;
@@ -192,12 +113,9 @@ export class StreamReceiver<P extends ParamsStream> extends ManagerClient<
   private readonly videoSettingsMap: Map<number, VideoSettings> = new Map();
   private hasInitialInfo = false;
 
-  constructor(params: P) {
-    super(params);
-    this.openNewConnection();
-    if (this.ws) {
-      this.ws.binaryType = "arraybuffer";
-    }
+  constructor(ws: WSMiddleware) {
+    super();
+    this.openNewConnection(ws);
   }
 
   private static EqualArrays(a: ArrayLike<number>, b: ArrayLike<number>): boolean {
@@ -213,7 +131,7 @@ export class StreamReceiver<P extends ParamsStream> extends ManagerClient<
   }
 
   public sendEvent(event: ControlMessage): void {
-    if (this.ws && this.ws.readyState === this.ws.OPEN) {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(event.toBuffer());
     } else {
       this.events.push(event);
@@ -244,14 +162,11 @@ export class StreamReceiver<P extends ParamsStream> extends ManagerClient<
     }
   }
 
-  public getDisplayInfo(displayId: number): DisplayInfo | undefined {
-    return this.displayInfoMap.get(displayId);
-  }
-
-  protected buildDirectWebSocketUrl(): URL {
-    const localUrl = super.buildDirectWebSocketUrl();
-    localUrl.searchParams.set("udid", this.params.udid);
-    return localUrl;
+  protected openNewConnection(ws: WSMiddleware): void {
+    ws.addEventListener("open", this.onSocketOpen.bind(this));
+    ws.addEventListener("message", this.onSocketMessage.bind(this));
+    ws.addEventListener("close", this.onSocketClose.bind(this));
+    this.ws = ws;
   }
 
   protected onSocketClose(ev: CloseEvent): void {
@@ -345,28 +260,8 @@ export class StreamReceiver<P extends ParamsStream> extends ManagerClient<
   }
 }
 
-export class StreamReceiverScrcpy extends StreamReceiver<ParamsStreamScrcpy> {
-  public static parseParameters(params: URLSearchParams): ParamsStreamScrcpy {
-    const typedParams = super.parseParameters(params);
-    const { action } = typedParams;
-    if (action !== ACTION.STREAM_SCRCPY) {
-      throw Error("Incorrect action");
-    }
-    return {
-      ...typedParams,
-      action,
-      udid: DataUtil.parseString(params, "udid", true),
-      ws: DataUtil.parseString(params, "ws", true),
-      player: DataUtil.parseString(params, "player", true),
-    };
-  }
-  protected buildDirectWebSocketUrl(): URL {
-    return new URL((this.params as ParamsStreamScrcpy).ws);
-  }
-}
-
 export class StreamClientScrcpy
-  extends BaseClient<ParamsStreamScrcpy, never>
+  extends TypedEmitter<never>
   implements KeyEventListener, InteractionHandlerListener
 {
   private static players: Map<string, PlayerClass> = new Map<string, PlayerClass>();
@@ -374,28 +269,15 @@ export class StreamClientScrcpy
   private deviceName = "";
   private clientsCount = -1;
   private joinedStream = false;
-  private requestedVideoSettings?: VideoSettings;
   private touchHandler?: InteractionHandler;
   private player?: BasePlayer;
   private onClipBoxReceived?: (text: string) => void;
-  private readonly streamReceiver: StreamReceiverScrcpy;
+  private readonly streamReceiver: StreamReceiver;
 
-  protected constructor(
-    params: ParamsStreamScrcpy,
-    streamReceiver?: StreamReceiverScrcpy,
-    player?: BasePlayer,
-    videoSettings?: VideoSettings
-  ) {
-    super(params);
-    console.log(this.params);
-    if (streamReceiver) {
-      this.streamReceiver = streamReceiver;
-    } else {
-      this.streamReceiver = new StreamReceiverScrcpy(this.params);
-    }
-
-    const { udid, player: playerName } = this.params;
-    this.startStream({ udid, player, playerName, videoSettings });
+  protected constructor(ws: WSMiddleware, player: BasePlayer, videoSettings: VideoSettings) {
+    super();
+    this.streamReceiver = new StreamReceiver(ws);
+    this.startStream({ player, videoSettings });
   }
 
   public static registerPlayer(playerClass: PlayerClass): void {
@@ -404,39 +286,12 @@ export class StreamClientScrcpy
     }
   }
 
-  public static createPlayer(
-    playerName: string,
-    udid: string,
-    displayInfo?: DisplayInfo
-  ): BasePlayer | undefined {
-    const playerClass = this.getPlayerClass(playerName);
-    if (!playerClass) {
-      return;
-    }
-    return new playerClass(udid, displayInfo);
-  }
-
   public static start(
-    query: URLSearchParams | ParamsStreamScrcpy,
-    streamReceiver?: StreamReceiverScrcpy,
-    player?: BasePlayer,
-    videoSettings?: VideoSettings
+    ws: WSMiddleware,
+    player: BasePlayer,
+    videoSettings: VideoSettings
   ): StreamClientScrcpy {
-    if (query instanceof URLSearchParams) {
-      const params = StreamReceiverScrcpy.parseParameters(query);
-      return new StreamClientScrcpy(params, streamReceiver, player, videoSettings);
-    }
-    return new StreamClientScrcpy(query, streamReceiver, player, videoSettings);
-  }
-
-  private static getPlayerClass(playerName: string): PlayerClass | undefined {
-    let playerClass: PlayerClass | undefined;
-    for (const value of StreamClientScrcpy.players.values()) {
-      if (value.playerFullName === playerName || value.playerCodeName === playerName) {
-        playerClass = value;
-      }
-    }
-    return playerClass;
+    return new StreamClientScrcpy(ws, player, videoSettings);
   }
 
   private static createVideoSettingsWithBounds(old: VideoSettings, newBounds: Size): VideoSettings {
@@ -512,8 +367,9 @@ export class StreamClientScrcpy
     }
 
     if (!videoSettings.equals(currentSettings)) {
-      this.applyNewVideoSettings(videoSettings, videoSettings.equals(this.requestedVideoSettings));
+      this.applyNewVideoSettings(videoSettings);
     }
+
     if (!oldInfo) {
       const bounds = currentSettings.bounds;
       const videoSize: Size = screenInfo.videoSize;
@@ -545,43 +401,17 @@ export class StreamClientScrcpy
     this.touchHandler = undefined;
   };
 
-  public startStream({ udid, player, playerName, videoSettings }: StartParams): void {
-    if (!udid) {
-      throw Error(`Invalid udid value: "${udid}"`);
-    }
-
-    if (!player) {
-      if (typeof playerName !== "string") {
-        throw Error("Must provide BasePlayer instance or playerName");
-      }
-      let displayInfo: DisplayInfo | undefined;
-      if (this.streamReceiver && videoSettings) {
-        displayInfo = this.streamReceiver.getDisplayInfo(videoSettings.displayId);
-      }
-      const p = StreamClientScrcpy.createPlayer(playerName, udid, displayInfo);
-      if (!p) {
-        throw Error(`Unsupported player: "${playerName}"`);
-      }
-      player = p;
-    }
+  public startStream({ player, videoSettings }: StartParams): void {
     this.player = player;
     this.setTouchListeners(player);
-
-    if (!videoSettings) {
-      videoSettings = player.getVideoSettings();
-    }
-
     player.pause();
-
-    this.applyNewVideoSettings(videoSettings, false);
-
+    this.applyNewVideoSettings(videoSettings);
     const streamReceiver = this.streamReceiver;
     streamReceiver.on("deviceMessage", this.OnDeviceMessage);
     streamReceiver.on("video", this.onVideo);
     streamReceiver.on("clientsStats", this.onClientsStats);
     streamReceiver.on("displayInfo", this.onDisplayInfo);
     streamReceiver.on("disconnected", this.onDisconnected);
-    console.log(player.getName(), udid);
     player.play();
   }
 
@@ -602,7 +432,7 @@ export class StreamClientScrcpy
   }
 
   public setRequestedVideoSettings(value: VideoSettings): void {
-    this.requestedVideoSettings = value;
+    this.applyNewVideoSettings(value);
   }
 
   public onKeyEvent(event: KeyCodeControlMessage): void {
@@ -616,9 +446,9 @@ export class StreamClientScrcpy
     this.touchHandler = new InteractionHandler(player, this);
   }
 
-  private applyNewVideoSettings(videoSettings: VideoSettings, saveToStorage: boolean): void {
+  private applyNewVideoSettings(videoSettings: VideoSettings): void {
     if (this.player) {
-      this.player.setVideoSettings(videoSettings, saveToStorage);
+      this.player.setVideoSettings(videoSettings);
     }
   }
 }

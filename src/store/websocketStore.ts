@@ -535,13 +535,7 @@ export const useWebSocketStore = create<WebSocketState>()(
       }));
     },
 
-    connectRemote: async (
-      profileId: string,
-      onopen: (event: Event) => void,
-      onclose: (event: CloseEvent) => void,
-      onerror: (event: Event) => void,
-      onmessage: (event: ArrayBuffer) => void
-    ): Promise<`remote-${string}`> => {
+    connectRemote: async (): Promise<SecureWebSocket> => {
       const session = get()._session;
       if (!session) {
         throw new Error("No authenticated session is available");
@@ -550,10 +544,7 @@ export const useWebSocketStore = create<WebSocketState>()(
       const name = `remote-${unique}` as `remote-${string}`;
       const ws = new SecureWebSocket(`${resolveBase()}/ws/remote`, name, session, "arraybuffer");
 
-      ws.onOpen = onopen;
-      ws.onError = onerror;
-      ws.onClose = (event: CloseEvent) => {
-        onclose(event);
+      ws.hookClose = () => {
         set((state) => {
           const next = { ...state.connections };
           delete next[name];
@@ -561,22 +552,14 @@ export const useWebSocketStore = create<WebSocketState>()(
         });
       };
 
-      await ws.connect(
-        (buffer: ArrayBuffer) => {
-          onmessage(buffer);
-        },
-        false,
-        true
-      );
-
-      ws.sendJson({ config_id: profileId });
       set((state) => ({
         connections: {
           ...state.connections,
           [name]: ws,
         },
       }));
-      return name;
+
+      return ws;
     },
 
     disconnect: (name: WsName) => {

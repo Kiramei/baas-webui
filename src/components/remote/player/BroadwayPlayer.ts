@@ -38,31 +38,18 @@ export class BroadwayPlayer extends BaseCanvasBasedPlayer {
   private avc?: DecoderInstance;
 
   public constructor(
-    udid: string,
+    videoSettings: VideoSettings,
     displayInfo?: DisplayInfo,
     name = BroadwayPlayer.playerFullName,
     protected tag: HTMLCanvasElement = BaseCanvasBasedPlayer.createElement(),
     protected touchableCanvas: HTMLCanvasElement = document.createElement("canvas")
   ) {
-    super(udid, displayInfo, name, BroadwayPlayer.storageKeyPrefix, tag, touchableCanvas);
+    super(videoSettings, displayInfo, name, BroadwayPlayer.storageKeyPrefix, tag, touchableCanvas);
   }
 
   // noinspection JSUnusedGlobalSymbols
   public static isSupported(): boolean {
     return typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function";
-  }
-
-  public getPreferredVideoSetting(): VideoSettings {
-    return BroadwayPlayer.preferredVideoSettings;
-  }
-
-  public getFitToScreenStatus(): boolean {
-    return BroadwayPlayer.getFitToScreenStatus(this.udid, this.displayInfo);
-  }
-
-  // noinspection JSUnusedGlobalSymbols
-  public loadVideoSettings(): VideoSettings {
-    return BroadwayPlayer.loadVideoSettings(this.udid, this.displayInfo);
   }
 
   protected initCanvas(width: number, height: number): void {

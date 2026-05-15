@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
   return (
     <div className="relative">
       {/* 侧边栏 - 桌面端 */}
-      <aside className="w-64 h-full flex-shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex-col lg:block hidden">
+      <aside className="w-64 h-full shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex-col lg:block hidden">
         <div className="h-16 flex items-center border-b border-slate-200 dark:border-slate-700 px-4">
           <img src={`${baseUrl}images/logo.png`} alt="Logo" className="h-8 w-8" />
           <h1 className="text-xl font-bold text-primary-600 dark:text-primary-400 flex-1 text-start ml-2">
@@ -57,7 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
                 {item.id === "settings" && (
                   <hr
                     key={item.id + "hr"}
-                    className="border-[1px] border-slate-300 dark:border-slate-500"
+                    className="border border-slate-300 dark:border-slate-500"
                   />
                 )}
                 <button
@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
               </li>
             ))}
           </ul>
-          <div className="flex-grow" />
+          <div className="grow" />
           {hasUpdate && (
             <button
               className="flex flex-row items-center justify-center p-4 bg-red-100/50 hover:bg-red-100/90
@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
               <div className="ml-2 text-sm font-bold rounded-lg text-red-500">
                 {t("update.available")}
               </div>
-              <div className="flex-grow" />
+              <div className="grow" />
             </button>
           )}
           <HeartbeatChart />
@@ -167,7 +167,7 @@ export const ConfirmUpdateModal: React.FC<{
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
         transition={{ duration: 0.18, ease: "easeOut" }}
         onMouseDown={(e) => e.stopPropagation()}
-        className="w-[420px] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6"
+        className="w-105 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6"
       >
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">

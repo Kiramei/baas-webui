@@ -44,8 +44,7 @@ export interface PlayerClass {
   playerCodeName: string;
   storageKeyPrefix: string;
   isSupported(): boolean;
-  loadVideoSettings(deviceName: string, displayInfo?: DisplayInfo): VideoSettings;
-  new (udid: string, displayInfo?: DisplayInfo): BasePlayer;
+  new (videoSettings: VideoSettings, displayInfo?: DisplayInfo): BasePlayer;
 }
 
 type DecodedFrame = {
@@ -99,7 +98,7 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
   private showQualityStats = BasePlayer.DEFAULT_SHOW_QUALITY_STATS;
 
   protected constructor(
-    public readonly udid: string,
+    public readonly _videoSettings: VideoSettings,
     protected displayInfo?: DisplayInfo,
     protected name: string = "BasePlayer",
     protected storageKeyPrefix: string = "Dummy",
@@ -110,129 +109,7 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
     this.touchableCanvas.oncontextmenu = function (event: MouseEvent): void {
       event.preventDefault();
     };
-    const preferred = this.getPreferredVideoSetting();
-    this.videoSettings = BasePlayer.getVideoSettingFromStorage(
-      preferred,
-      this.storageKeyPrefix,
-      udid,
-      displayInfo
-    );
-  }
-
-  public static getFromStorageCompat(
-    prefix: string,
-    udid: string,
-    displayInfo?: DisplayInfo
-  ): string | null {
-    const shortKey = this.getStorageKey(prefix, udid);
-    const savedInShort = window.localStorage.getItem(shortKey);
-    if (!displayInfo) {
-      return savedInShort;
-    }
-    const isDefaultDisplay = displayInfo.displayId === DisplayInfo.DEFAULT_DISPLAY;
-    const fullKey = this.getFullStorageKey(prefix, udid, displayInfo);
-    const savedInFull = window.localStorage.getItem(fullKey);
-    if (savedInFull) {
-      if (savedInShort && isDefaultDisplay) {
-        window.localStorage.removeItem(shortKey);
-      }
-      return savedInFull;
-    }
-    if (isDefaultDisplay) {
-      return savedInShort;
-    }
-    return null;
-  }
-
-  public static getFitToScreenFromStorage(
-    storageKeyPrefix: string,
-    udid: string,
-    displayInfo?: DisplayInfo
-  ): boolean {
-    if (!window.localStorage) {
-      return false;
-    }
-    let parsedValue = false;
-    const key = `${this.getFullStorageKey(storageKeyPrefix, udid, displayInfo)}:fit`;
-    const saved = window.localStorage.getItem(key);
-    if (!saved) {
-      return false;
-    }
-    try {
-      parsedValue = JSON.parse(saved);
-    } catch (error: any) {
-      console.error(`[${this.name}]`, "Failed to parse", saved, error);
-    }
-    return parsedValue;
-  }
-
-  public static getVideoSettingFromStorage(
-    preferred: VideoSettings,
-    storageKeyPrefix: string,
-    udid: string,
-    displayInfo?: DisplayInfo
-  ): VideoSettings {
-    if (!window.localStorage) {
-      return preferred;
-    }
-    const saved = this.getFromStorageCompat(storageKeyPrefix, udid, displayInfo);
-    if (!saved) {
-      return preferred;
-    }
-    const parsed = JSON.parse(saved);
-    const {
-      displayId,
-      crop,
-      bitrate,
-      iFrameInterval,
-      sendFrameMeta,
-      lockedVideoOrientation,
-      codecOptions,
-      encoderName,
-    } = parsed;
-
-    // REMOVE `frameRate`
-    const maxFps = isNaN(parsed.maxFps) ? parsed.frameRate : parsed.maxFps;
-    // REMOVE `maxSize`
-    let bounds: Size | null = null;
-    if (
-      typeof parsed.bounds !== "object" ||
-      isNaN(parsed.bounds.width) ||
-      isNaN(parsed.bounds.height)
-    ) {
-      if (!isNaN(parsed.maxSize)) {
-        bounds = new Size(parsed.maxSize, parsed.maxSize);
-      }
-    } else {
-      bounds = new Size(parsed.bounds.width, parsed.bounds.height);
-    }
-    return new VideoSettings({
-      displayId: typeof displayId === "number" ? displayId : 0,
-      crop: crop ? new Rect(crop.left, crop.top, crop.right, crop.bottom) : preferred.crop,
-      bitrate: !isNaN(bitrate) ? bitrate : preferred.bitrate,
-      bounds: bounds !== null ? bounds : preferred.bounds,
-      maxFps: !isNaN(maxFps) ? maxFps : preferred.maxFps,
-      iFrameInterval: !isNaN(iFrameInterval) ? iFrameInterval : preferred.iFrameInterval,
-      sendFrameMeta: typeof sendFrameMeta === "boolean" ? sendFrameMeta : preferred.sendFrameMeta,
-      lockedVideoOrientation: !isNaN(lockedVideoOrientation)
-        ? lockedVideoOrientation
-        : preferred.lockedVideoOrientation,
-      codecOptions,
-      encoderName,
-    });
-  }
-
-  public static loadVideoSettings(udid: string, displayInfo?: DisplayInfo): VideoSettings {
-    return this.getVideoSettingFromStorage(
-      this.preferredVideoSettings,
-      this.storageKeyPrefix,
-      udid,
-      displayInfo
-    );
-  }
-
-  public static getFitToScreenStatus(udid: string, displayInfo?: DisplayInfo): boolean {
-    return this.getFitToScreenFromStorage(this.storageKeyPrefix, udid, displayInfo);
+    this.videoSettings = _videoSettings;
   }
 
   protected static isIFrame(frame: Uint8Array): boolean {
@@ -243,38 +120,6 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
     // https://www.itu.int/rec/T-REC-H.264-201906-I/en
     // Table 7-1 – NAL unit type codes, syntax element categories, and NAL unit type classes
     return frame && frame.length > 4 && (frame[4] & 31) === 5;
-  }
-
-  protected static putVideoSettingsToStorage(
-    storageKeyPrefix: string,
-    udid: string,
-    videoSettings: VideoSettings,
-    displayInfo?: DisplayInfo
-  ): void {
-    if (!window.localStorage) {
-      return;
-    }
-    const key = this.getFullStorageKey(storageKeyPrefix, udid, displayInfo);
-    window.localStorage.setItem(key, JSON.stringify(videoSettings));
-  }
-
-  private static getStorageKey(storageKeyPrefix: string, udid: string): string {
-    const { innerHeight, innerWidth } = window;
-    return `${storageKeyPrefix}:${udid}:${innerWidth}x${innerHeight}`;
-  }
-
-  private static getFullStorageKey(
-    storageKeyPrefix: string,
-    udid: string,
-    displayInfo?: DisplayInfo
-  ): string {
-    const { innerHeight, innerWidth } = window;
-    let base = `${storageKeyPrefix}:${udid}:${innerWidth}x${innerHeight}`;
-    if (displayInfo) {
-      const { displayId, size } = displayInfo;
-      base = `${base}:${displayId}:${size.width}x${size.height}`;
-    }
-    return base;
   }
 
   public abstract getImageDataURL(): string;
@@ -312,8 +157,6 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
     });
   }
 
-  public abstract getPreferredVideoSetting(): VideoSettings;
-
   public getTouchableElement(): HTMLCanvasElement {
     return this.touchableCanvas;
   }
@@ -322,16 +165,8 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
     return this.videoSettings;
   }
 
-  public setVideoSettings(videoSettings: VideoSettings, saveToStorage: boolean): void {
+  public setVideoSettings(videoSettings: VideoSettings): void {
     this.videoSettings = videoSettings;
-    if (saveToStorage) {
-      BasePlayer.putVideoSettingsToStorage(
-        this.storageKeyPrefix,
-        this.udid,
-        videoSettings,
-        this.displayInfo
-      );
-    }
     this.resetStats();
     this.emit("video-settings", VideoSettings.copy(videoSettings));
   }
@@ -355,10 +190,6 @@ export abstract class BasePlayer extends TypedEmitter<PlayerEvents> {
     }
     const size = new Size(width, height);
     this.emit("video-view-resize", size);
-  }
-
-  public getName(): string {
-    return this.name;
   }
 
   public setShowQualityStats(value: boolean): void {
@@ -507,14 +338,14 @@ export abstract class BaseCanvasBasedPlayer extends BasePlayer {
   protected canvas?: CanvasDecoder;
 
   protected constructor(
-    udid: string,
+    videoSettings: VideoSettings,
     displayInfo?: DisplayInfo,
     name = "Canvas",
     storageKeyPrefix = "DummyCanvas",
     protected tag: HTMLCanvasElement = BaseCanvasBasedPlayer.createElement(),
     protected touchableCanvas: HTMLCanvasElement = document.createElement("canvas")
   ) {
-    super(udid, displayInfo, name, storageKeyPrefix, tag, touchableCanvas);
+    super(videoSettings, displayInfo, name, storageKeyPrefix, tag, touchableCanvas);
   }
 
   public static hasWebGLSupport(): boolean {
@@ -544,7 +375,6 @@ export abstract class BaseCanvasBasedPlayer extends BasePlayer {
     return tag;
   }
 
-  public abstract getPreferredVideoSetting(): VideoSettings;
 
   public getImageDataURL(): string {
     return this.tag.toDataURL();

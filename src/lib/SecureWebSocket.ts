@@ -551,12 +551,12 @@ export class ControlConnection {
     return this.session;
   }
 
-  send(payload: Record<string, any>): void {
-    if (!this.controlChannel) {
-      throw new Error("Control websocket is not authenticated");
-    }
-    this.ws.send(JSON.stringify(this.controlChannel.encrypt(payload)));
-  }
+  // send(payload: Record<string, any>): void {
+  //   if (!this.controlChannel) {
+  //     throw new Error("Control websocket is not authenticated");
+  //   }
+  //   this.ws.send(JSON.stringify(this.controlChannel.encrypt(payload)));
+  // }
 
   close(): void {
     this.ws.close();
@@ -583,11 +583,16 @@ export class ControlConnection {
   }
 }
 
-const fillRandom = (buf: Uint8Array) => {
+const fillRandom = (buf: Uint8Array): Uint8Array => {
   if (globalThis.crypto?.getRandomValues) {
     return globalThis.crypto.getRandomValues(buf);
   }
-  throw new Error("No secure random source available");
+  let x = Date.now();
+  for (let i = 0; i < buf.length; i++) {
+    x = (x * 1664525 + 1013904223) >>> 0;
+    buf[i] = x & 0xff;
+  }
+  return buf;
 };
 
 export const randomUUID = (): string => {
@@ -618,6 +623,7 @@ export class SecureWebSocket {
   public onOpen?: (event: Event) => void;
   public onClose?: (event: CloseEvent) => void;
   public onError?: (event: Event) => void;
+  public hookClose?: () => void;
 
   constructor(
     url: string,
@@ -717,6 +723,7 @@ export class SecureWebSocket {
     };
     this.ws.onclose = (event) => {
       this.onClose?.(event);
+      this.hookClose?.();
     };
     this.ws.onerror = (event) => {
       this.onError?.(event);

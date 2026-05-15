@@ -36,13 +36,13 @@ export class WebCodecsPlayer extends BaseCanvasBasedPlayer {
   private bufferedPPS = false;
 
   constructor(
-    udid: string,
+    videoSettings: VideoSettings,
     displayInfo?: DisplayInfo,
     name = WebCodecsPlayer.playerFullName,
     protected tag: HTMLCanvasElement = BaseCanvasBasedPlayer.createElement(),
     protected touchableCanvas: HTMLCanvasElement = document.createElement("canvas")
   ) {
-    super(udid, displayInfo, name, WebCodecsPlayer.storageKeyPrefix, tag, touchableCanvas);
+    super(videoSettings, displayInfo, name, WebCodecsPlayer.storageKeyPrefix, tag, touchableCanvas);
     const context = this.tag.getContext("2d");
     if (!context) {
       throw Error("Failed to get 2d context from canvas");
@@ -85,19 +85,6 @@ export class WebCodecsPlayer extends BaseCanvasBasedPlayer {
       (2 - frame_mbs_only_flag) * (pic_height_in_map_units_minus1 + 1) * 16 -
       (frame_mbs_only_flag ? 2 : 4) * (frame_crop_top_offset + frame_crop_bottom_offset);
     return { codec, width, height };
-  }
-
-  public getFitToScreenStatus(): boolean {
-    return false;
-  }
-
-  public getPreferredVideoSetting(): VideoSettings {
-    return WebCodecsPlayer.preferredVideoSettings;
-  }
-
-  // noinspection JSUnusedGlobalSymbols
-  public loadVideoSettings(): VideoSettings {
-    return WebCodecsPlayer.loadVideoSettings(this.udid, this.displayInfo);
   }
 
   public stop(): void {

@@ -32,13 +32,13 @@ export class TinyH264Player extends BaseCanvasBasedPlayer {
   private isDecoderReady = false;
 
   constructor(
-    udid: string,
+    videoSettings: VideoSettings,
     displayInfo?: DisplayInfo,
     name = TinyH264Player.playerFullName,
     protected tag: HTMLCanvasElement = BaseCanvasBasedPlayer.createElement(),
     protected touchableCanvas: HTMLCanvasElement = document.createElement("canvas")
   ) {
-    super(udid, displayInfo, name, TinyH264Player.storageKeyPrefix, tag, touchableCanvas);
+    super(videoSettings, displayInfo, name, TinyH264Player.storageKeyPrefix, tag, touchableCanvas);
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -60,19 +60,6 @@ export class TinyH264Player extends BaseCanvasBasedPlayer {
       this.worker.postMessage({ type: "release", renderStateId: TinyH264Player.videoStreamId });
       delete this.worker;
     }
-  }
-
-  public getPreferredVideoSetting(): VideoSettings {
-    return TinyH264Player.preferredVideoSettings;
-  }
-
-  public getFitToScreenStatus(): boolean {
-    return TinyH264Player.getFitToScreenStatus(this.udid, this.displayInfo);
-  }
-
-  // noinspection JSUnusedGlobalSymbols
-  public loadVideoSettings(): VideoSettings {
-    return TinyH264Player.loadVideoSettings(this.udid, this.displayInfo);
   }
 
   protected initCanvas(width: number, height: number): void {

@@ -76,13 +76,13 @@ export class MsePlayer extends BasePlayer {
   }
 
   constructor(
-    udid: string,
+    videoSettings: VideoSettings,
     displayInfo?: DisplayInfo,
     name = MsePlayer.playerFullName,
     protected tag: HTMLVideoElement = MsePlayer.createElement(),
     protected touchableCanvas: HTMLCanvasElement = document.createElement("canvas")
   ) {
-    super(udid, displayInfo, name, MsePlayer.storageKeyPrefix, tag, touchableCanvas);
+    super(videoSettings, displayInfo, name, MsePlayer.storageKeyPrefix, tag, touchableCanvas);
     tag.oncontextmenu = function (event: MouseEvent): boolean {
       event.preventDefault();
       return false;
@@ -222,7 +222,7 @@ export class MsePlayer extends BasePlayer {
     this.stopConverter();
   }
 
-  public setVideoSettings(videoSettings: VideoSettings, saveToStorage: boolean): void {
+  public setVideoSettings(videoSettings: VideoSettings): void {
     if (this.videoSettings && this.videoSettings.maxFps !== videoSettings.maxFps) {
       const state = this.getState();
       if (this.converter) {
@@ -234,11 +234,7 @@ export class MsePlayer extends BasePlayer {
         this.play();
       }
     }
-    super.setVideoSettings(videoSettings, saveToStorage);
-  }
-
-  public getPreferredVideoSetting(): VideoSettings {
-    return MsePlayer.preferredVideoSettings;
+    super.setVideoSettings(videoSettings);
   }
 
   checkVideoResize = (): void => {
@@ -448,10 +444,5 @@ export class MsePlayer extends BasePlayer {
       this.converter.pause();
       delete this.converter;
     }
-  }
-
-  // noinspection JSUnusedGlobalSymbols
-  public loadVideoSettings(): VideoSettings {
-    return MsePlayer.loadVideoSettings(this.udid, this.displayInfo);
   }
 }
