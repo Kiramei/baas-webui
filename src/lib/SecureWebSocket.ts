@@ -293,12 +293,12 @@ class JsonSecureChannel {
 }
 
 class SecretStreamChannel {
+  readonly clientHeader: Uint8Array;
   private txSeq = 0;
   private rxSeq = 0;
   private readonly aadPrefix: Uint8Array;
   private readonly pushState: any;
   private readonly pullState: any;
-  readonly clientHeader: Uint8Array;
 
   constructor(
     txKey: Uint8Array,
@@ -442,16 +442,14 @@ export class ControlConnection {
   readonly pwdEpoch: number;
   readonly argon2: Argon2Params;
   readonly pwdSalt: string | null;
-
+  public onSecureMessage?: (payload: Record<string, any>) => void;
+  public onClose?: (event: CloseEvent) => void;
+  public onError?: (event: Event) => void;
   private readonly sharedKey: Uint8Array;
   private readonly transcriptHash: Uint8Array;
   private readonly preauthChannel: JsonSecureChannel;
   private controlChannel: JsonSecureChannel | null = null;
   private session: ControlSessionBundle | null = null;
-
-  public onSecureMessage?: (payload: Record<string, any>) => void;
-  public onClose?: (event: CloseEvent) => void;
-  public onError?: (event: Event) => void;
 
   private constructor(args: {
     ws: WebSocket;
@@ -611,6 +609,10 @@ export const randomUUID = (): string => {
 };
 
 export class SecureWebSocket {
+  public onOpen?: (event: Event) => void;
+  public onClose?: (event: CloseEvent) => void;
+  public onError?: (event: Event) => void;
+  public hookClose?: () => void;
   private readonly url: string;
   private readonly name: string;
   private readonly session: ControlSessionBundle;
@@ -619,11 +621,6 @@ export class SecureWebSocket {
   private stream: SecretStreamChannel | null = null;
   private socketId = randomUUID();
   private readonly channelName: string;
-
-  public onOpen?: (event: Event) => void;
-  public onClose?: (event: CloseEvent) => void;
-  public onError?: (event: Event) => void;
-  public hookClose?: () => void;
 
   constructor(
     url: string,
@@ -636,6 +633,10 @@ export class SecureWebSocket {
     this.session = session;
     this.binaryType = binaryType;
     this.channelName = name.startsWith("remote-") ? "remote" : name;
+  }
+
+  get readyState(): number | undefined {
+    return this.ws?.readyState;
   }
 
   async connect(onMessage?: (msg: any) => void, decodeJson = true, decrypt = true): Promise<void> {

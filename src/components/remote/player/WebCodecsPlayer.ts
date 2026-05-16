@@ -1,8 +1,10 @@
 import { BaseCanvasBasedPlayer } from "./BasePlayer";
 import { VideoSettings } from "../CommonUtil";
 import { Size, Rect, DisplayInfo, ScreenInfo } from "../GeometryInfo";
-import H264Parser from "h264-converter/dist/h264-parser";
-import NALU from "h264-converter/dist/util/NALU";
+import RawH264Parser from "h264-converter/dist/h264-parser";
+import RawNALU from "h264-converter/dist/util/NALU";
+const NALU = (RawNALU as any).default ?? RawNALU;
+const H264Parser = (RawH264Parser as any).default ?? RawH264Parser;
 
 type ParametersSubSet = {
   codec: string;
@@ -160,6 +162,7 @@ export class WebCodecsPlayer extends BaseCanvasBasedPlayer {
     }
     const array = this.addToBuffer(data);
     this.hadIDR = this.hadIDR || isIDR;
+
     if (array && this.decoder.state === "configured" && this.hadIDR) {
       this.buffer = undefined;
       this.bufferedPPS = false;

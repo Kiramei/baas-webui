@@ -300,49 +300,126 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({ profileId }) =>
    */
   useEffect(() => {
     if (viewRef.current) return;
-    connectRemote().then(async (ws) => {
-      const wsm = new WSMiddleware();
 
-      ws.onClose = (event) => {
-        wsm.dispatchEvent("close", event);
-      };
+    let disposed = false;
 
-      ws.onOpen = (event) => {
-        wsm.dispatchEvent("open", event);
-      };
+    const cleanup = () => {
+      try {
+        playerRef.current?.stop?.();
+      } catch {
+        /* empty */
+      }
+      try {
+        touchRef.current?.remove();
+      } catch {
+        /* empty */
+      }
 
-      wsm.bindSender(ws.sendBytes);
+      try {
+        viewRef.current?.remove();
+      } catch {
+        /* empty */
+      }
 
-      await ws.connect(
-        (buffer: ArrayBuffer) => {
-          console.log(buffer);
-          wsm.dispatchEvent("message", new MessageEvent("message", { data: buffer }));
-        },
-        false,
-        uiSettings.remoteSettings.enableSafeStream
-      );
+      scrcpyClientRef.current = null;
+      playerRef.current = null;
+      touchRef.current = null;
+      viewRef.current = null;
+    };
 
-      ws.sendJson({ config_id: profileId, decrypt: uiSettings.remoteSettings.enableSafeStream });
+    const start = async () => {
+      try {
+        const ws = await connectRemote();
 
-      const touch = document.createElement("canvas");
-      touch.className = "absolute top-0 w-full h-full block select-none z-1";
-      const type = uiSettings.remoteSettings.streamPlayer as PlayerType;
-      const videoSettings = constructVideoSetting();
+        if (disposed) {
+          ws.close?.();
+          return;
+        }
 
-      const [view, player] = await playerFactory[type ?? "mse"](videoSettings, touch);
-      viewRef.current = view;
-      touchRef.current = touch;
-      canvasHostRef.current?.appendChild(view);
-      canvasHostRef.current?.appendChild(touch);
-      playerRef.current = player;
-      playerRef.current.setShowQualityStats(showStatus);
-      player.onStatsUpdate((q: any) => setQuality(q));
-      scrcpyClientRef.current = StreamClientScrcpy.start(wsm, player, videoSettings);
-      scrcpyClientRef.current?.setOnClipBoxReceived(onClipBoardReceived);
-      setConnectionState(ConnectionStatus.connected);
-    });
+        const wsm = new WSMiddleware(ws);
+
+        ws.onClose = (event) => {
+          wsm.dispatchEvent("close", event);
+        };
+
+        ws.onOpen = (event) => {
+          wsm.dispatchEvent("open", event);
+        };
+
+        wsm.bindSender(ws.sendBytes.bind(ws));
+
+        await ws.connect(
+          (buffer: ArrayBuffer) => {
+            if (disposed) return;
+
+            setConnectionState(ConnectionStatus.connected);
+            wsm.dispatchEvent("message", new MessageEvent("message", { data: buffer }));
+          },
+          false,
+          uiSettings.remoteSettings.enableSafeStream
+        );
+
+        if (disposed) {
+          ws.close?.();
+          return;
+        }
+
+        ws.sendJson({
+          config_id: profileId,
+          decrypt: uiSettings.remoteSettings.enableSafeStream,
+        });
+
+        const touch = document.createElement("canvas");
+        touch.className = "absolute top-0 w-full h-full block select-none z-1";
+
+        const type = uiSettings.remoteSettings.streamPlayer as PlayerType;
+
+        const videoSettings = constructVideoSetting();
+
+        const [view, player] = await playerFactory[type ?? "mse"](videoSettings, touch);
+
+        if (disposed) {
+          player?.stop?.();
+          view?.remove?.();
+          touch?.remove?.();
+          ws.close?.();
+          return;
+        }
+
+        viewRef.current = view;
+        touchRef.current = touch;
+        playerRef.current = player;
+
+        canvasHostRef.current?.appendChild(view);
+        canvasHostRef.current?.appendChild(touch);
+
+        player.setShowQualityStats(showStatus);
+        player.onStatsUpdate((q: any) => {
+          if (!disposed) setQuality(q);
+        });
+
+        const client = StreamClientScrcpy.start(wsm, player, videoSettings);
+
+        if (disposed) {
+          return;
+        }
+
+        scrcpyClientRef.current = client;
+        scrcpyClientRef.current?.setOnClipBoxReceived(onClipBoardReceived);
+      } catch (error) {
+        if (!disposed) {
+          console.error("remote display init failed:", error);
+          setConnectionState(ConnectionStatus.connecting);
+        }
+      }
+    };
+
+    start().then();
+
     return () => {
-      // setConnectionState(ConnectionStatus.connecting);
+      disposed = true;
+      setConnectionState(ConnectionStatus.connecting);
+      cleanup();
     };
   }, []);
 

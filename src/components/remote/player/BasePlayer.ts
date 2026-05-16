@@ -375,7 +375,6 @@ export abstract class BaseCanvasBasedPlayer extends BasePlayer {
     return tag;
   }
 
-
   public getImageDataURL(): string {
     return this.tag.toDataURL();
   }

@@ -106,7 +106,7 @@ export class MsePlayer extends BasePlayer {
     fps: number = MsePlayer.DEFAULT_FRAMES_PER_SECOND,
     fpf: number = MsePlayer.DEFAULT_FRAMES_PER_FRAGMENT
   ): VideoConverter {
-    return new VideoConverter(tag, fps, fpf);
+    return new (VideoConverter as any).default(tag, fps, fpf);
   }
 
   private getVideoPlaybackQuality(): QualityStats | null {

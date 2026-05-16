@@ -16,6 +16,7 @@ import {
 
 import { Size, DisplayInfo, ScreenInfo } from "./GeometryInfo";
 import { KeyEvent } from "@/components/remote/KeySpaceMap.ts";
+import { SecureWebSocket } from "@/lib/SecureWebSocket.ts";
 
 type StartParams = {
   player: BasePlayer;
@@ -71,14 +72,10 @@ export class WSMiddleware {
     [K in keyof EventMap]?: Listener<K>[];
   } = {};
 
-  private _readyState: number = -1;
+  constructor(private ws: SecureWebSocket) {}
 
   get readyState(): number {
-    return this._readyState;
-  }
-
-  set readyState(value: number) {
-    this._readyState = value;
+    return this.ws.readyState ?? 0;
   }
 
   addEventListener<K extends keyof EventMap>(type: K, listener: Listener<K>) {
