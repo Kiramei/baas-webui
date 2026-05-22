@@ -8,37 +8,27 @@ permissions:
   contents: write
 
 jobs:
-  cache-and-install:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 10
-          run_install: false
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
+          bun-version: latest
 
       - name: Install dependencies
-        run: pnpm install
+        run: bun install
 
-      - name: Modify vite.config.js for GitHub Pages
+      - name: Modify vite.config.ts for GitHub Pages
         run: |
-          if [ "$GITHUB_REF" == "refs/heads/master" ]; then
-            echo "Modifying base path for GitHub Pages..."
-            sed -i 's|base: \"/\"|base: \"/baas-webui/\"|' vite.config.ts
-          fi
+          sed -i 's|base: "/"|base: "/baas-webui/"|' vite.config.ts
 
       - name: Build Project
-        run: pnpm build
+        run: bun run build
 
       - name: Deploy Github Pages
         uses: JamesIves/github-pages-deploy-action@v4
