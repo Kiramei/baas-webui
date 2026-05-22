@@ -1,9 +1,10 @@
-import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
-import type {ConfigProfile, UISettings} from '@/types/app';
-import {GlobalSelectProvider} from "@/components/ui/select-global"
-import {useWebSocketStore} from "@/store/websocketStore.ts";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import type { ConfigProfile, UISettings } from "@/types/app";
+import { GlobalSelectProvider } from "@/components/ui/SelectGlobal";
+import { useWebSocketStore } from "@/store/websocketStore.ts";
 
-import {StorageUtil} from "@/lib/storage.ts";
+import { StorageUtil } from "@/lib/storage.ts";
+import { DEFAULT_UI_SETTINGS } from "./UISettingsProvider";
 
 interface AppContextType {
   uiSettings: UISettings;
@@ -13,59 +14,30 @@ interface AppContextType {
   setActiveProfile: (profile: ConfigProfile | null) => void;
 }
 
-const DEFAULT_UI_SETTINGS = {
-  lang: "",
-  theme: "",
-  zoomScale: 100,
-  scrollToEnd: true,
-  assetsDisplay: true
-}
-
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-function createResource<T>(promise: Promise<T>) {
-  let status = "pending";
-  let result: T;
-  let suspender = promise.then(
-    (r) => {
-      status = "success";
-      result = r;
-    },
-    (e) => {
-      status = "error";
-      result = e;
-    }
-  );
-  return {
-    read(): T {
-      if (status === "pending") throw suspender;
-      if (status === "error") throw result;
-      return result!;
-    },
-  };
-}
-
-const init = useWebSocketStore.getState().init;
-const configRes = createResource(init())
-
-
-export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: boolean) => void }> = (
-  {
-    children,
-    setReady
-  }
-) => {
+export const AppProvider: React.FC<{ children: ReactNode; setReady: (value: boolean) => void }> = ({
+  children,
+  setReady,
+}) => {
   const [profiles, setProfiles] = useState<ConfigProfile[]>([]);
   const [activeProfile, setActiveProfile] = useState<ConfigProfile | null>(null);
-  const [stageInitiated, setStageInitiated] = useState<boolean>(false)
+  const [stageInitiated, setStageInitiated] = useState<boolean>(false);
   const [uiSettings, setUiSettings] = useState<UISettings>(DEFAULT_UI_SETTINGS);
-
-  configRes.read()
-
+  const init = useWebSocketStore((s) => s.init);
+  const authPhase = useWebSocketStore((s) => s._auth_phase);
+  const allDataInitialized = useWebSocketStore((s) => s._all_data_initialized);
+  const initiating = useWebSocketStore((s) => s._initiating);
   const configStore = useWebSocketStore((s) => s.configStore);
 
   useEffect(() => {
-    const _uiSettings: UISettings | null = StorageUtil.get("uiSettings")
+    if (authPhase === "authenticated" && !allDataInitialized) {
+      void init();
+    }
+  }, [authPhase, allDataInitialized, init]);
+
+  useEffect(() => {
+    const _uiSettings: UISettings | null = StorageUtil.get("uiSettings");
     if (!_uiSettings) {
       setUiSettings(DEFAULT_UI_SETTINGS);
       StorageUtil.set("uiSettings", DEFAULT_UI_SETTINGS);
@@ -78,7 +50,6 @@ export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: bool
   useEffect(() => {
     if (stageInitiated) StorageUtil.set("uiSettings", uiSettings);
   }, [uiSettings]);
-
 
   useEffect(() => {
     const list = Object.keys(configStore).map((key) => ({
@@ -108,23 +79,22 @@ export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: bool
   }, [configStore]);
 
   useEffect(() => {
-    setReady(true);
-  }, []);
+    setReady(
+      authPhase === "authenticated" && allDataInitialized && activeProfile !== null && !initiating
+    );
+  }, [authPhase, allDataInitialized, setReady, activeProfile, initiating]);
 
   const value = {
     profiles,
     uiSettings,
     setUiSettings,
     activeProfile,
-    setActiveProfile
+    setActiveProfile,
   };
-
 
   return (
     <AppContext.Provider value={value}>
-      <GlobalSelectProvider>
-        {children}
-      </GlobalSelectProvider>
+      <GlobalSelectProvider>{children}</GlobalSelectProvider>
     </AppContext.Provider>
   );
 };
@@ -132,7 +102,7 @@ export const AppProvider: React.FC<{ children: ReactNode, setReady: (value: bool
 export const useApp = (): AppContextType => {
   const context = useContext(AppContext);
   if (context === undefined) {
-    throw new Error('useApp must be used within an AppProvider');
+    throw new Error("useApp must be used within an AppProvider");
   }
   return context;
 };

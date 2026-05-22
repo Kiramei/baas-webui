@@ -8,7 +8,9 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
@@ -83,6 +85,7 @@ html, body, #root {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --color-autofill: oklch(1 0 0);
 }
 
 .dark {
@@ -117,6 +120,7 @@ html, body, #root {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --color-autofill: oklch(27.9% 0.041 260.031);
 }
 
 @layer base {
@@ -125,5 +129,19 @@ html, body, #root {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+input:-webkit-autofill {
+  -webkit-text-fill-color: var(--foreground);
+  box-shadow: 0 0 0 1000px var(--color-autofill) inset;
+  border-color: var(--ring);
+  transition: 0.3s;
+}
+
+@keyframes resetBg {
+  to {
+    color: #fff;
+    background: transparent;
   }
 }

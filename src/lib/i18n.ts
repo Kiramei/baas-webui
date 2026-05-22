@@ -1,6 +1,6 @@
 import i18n from "i18next";
-import {initReactI18next} from "react-i18next";
-import {StorageUtil} from "@/lib/storage.ts";
+import { initReactI18next } from "react-i18next";
+import { StorageUtil } from "@/lib/storage.ts";
 
 const baseUrl = import.meta.env.BASE_URL;
 
@@ -8,12 +8,15 @@ const baseUrl = import.meta.env.BASE_URL;
  * Initialize i18next immediately so React never complains.
  * Resources are empty at first; we load them dynamically later.
  */
-i18n.use(initReactI18next).init({
-  lng: StorageUtil.get("uiSettings")?.["lang"] || "en",
-  fallbackLng: "en",
-  resources: {},
-  interpolation: {escapeValue: false},
-});
+i18n
+  .use(initReactI18next)
+  .init({
+    lng: StorageUtil.get("uiSettings")?.["lang"] || "en",
+    fallbackLng: "en",
+    resources: {},
+    interpolation: { escapeValue: false },
+  })
+  .then();
 
 /**
  * Load locale JSON file from /public/locales/

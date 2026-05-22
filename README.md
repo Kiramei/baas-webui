@@ -1,13 +1,14 @@
 <div align="center">
 <h1> 🌌 Blue Archive Auto Script WebUI </h1>
 
-*Automation command center for multi-profile Blue Archive orchestration*
+_Automation command center for multi-profile Blue Archive orchestration_
 
 [![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react&logoColor=white)](https://react.dev/) [![Tailwind](https://img.shields.io/badge/Tailwind-4.1-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/) [![License: GPL v3](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 </div>
 
 |            ☀️ Light Mode            |           🌙 Dark Mode            |
-|:-----------------------------------:|:---------------------------------:|
+| :---------------------------------: | :-------------------------------: |
 | ![Light Mode](docs/cover-light.png) | ![Dark Mode](docs/cover-dark.png) |
 
 ---
@@ -23,10 +24,10 @@ automation service, persists UI preferences, and renders fine-grained configurat
 from cafés and arenas to tactical drills and whitelist management.
 
 ```
-✨ Multi-profile orchestration with drag-to-reorder tabs  
-⚡ Real-time task queue and log streaming over secure WebSockets  
-🧠 Built-in multilingual wiki (EN/JA/KO/ZH/RU/FR/DE) with syntax-highlighted guides  
-🧩 Modular configuration modals for every automation domain  
+✨ Multi-profile orchestration with drag-to-reorder tabs
+⚡ Real-time task queue and log streaming over secure WebSockets
+🧠 Built-in multilingual wiki (EN/JA/KO/ZH/RU/FR/DE) with syntax-highlighted guides
+🧩 Modular configuration modals for every automation domain
 ```
 
 ---
@@ -36,42 +37,41 @@ from cafés and arenas to tactical drills and whitelist management.
 
 <div style="text-align: left">
 
-| Section                                    | Description                             |
-|:-------------------------------------------|:----------------------------------------|
-| [🚀 Overview](#-overview)                  | Project summary & key features          |
+| Section                                   | Description                             |
+| :---------------------------------------- | :-------------------------------------- |
+| [🚀 Overview](#-overview)                 | Project summary & key features          |
 | [🏗️ Architecture](#-architecture)         | Structural design and workflow          |
-| [⚙️ Installation](#-installation)          | Setup instructions and environment      |
-| [🧩 Usage](#-usage)                        | How to run and interact with the system |
+| [⚙️ Installation](#-installation)         | Setup instructions and environment      |
+| [🧩 Usage](#-usage)                       | How to run and interact with the system |
 | [🛠️ Configuration](#-configuration)       | Customization and environment variables |
-| [🧠 Tech Stack](#-tech-stack)              | Frameworks, libraries, and tools        |
+| [🧠 Tech Stack](#-tech-stack)             | Frameworks, libraries, and tools        |
 | [🗂️ Folder Structure](#-folder-structure) | Directory layout and file roles         |
-| [📸 Visuals](#-visuals)                    | UI previews and architecture diagrams   |
-| [🤝 Contributing](#-contributing)          | Guidelines for contributors             |
-| [📜 License](#-license)                    | Licensing details and credits           |
+| [📸 Visuals](#-visuals)                   | UI previews and architecture diagrams   |
+| [🤝 Contributing](#-contributing)         | Guidelines for contributors             |
+| [📜 License](#-license)                   | Licensing details and credits           |
 
 </div>
 
 </details>
 
-
 ---
 
 ## 🧠 Architecture
 
-| Layer                  | Technology                          | Description                                                                                 |
-|:-----------------------|:------------------------------------|:--------------------------------------------------------------------------------------------|
-| Interface              | React 19 + Tailwind CSS 4           | Componentized dashboard with motion-enhanced layouts                                        |
-| State Sync             | Zustand + SecureWebSocket           | Multi-socket store that decrypts Fernet payloads and normalizes config/event/status streams |
-| Automation Core Bridge | Command & Trigger Channels          | Dispatches scheduler commands (`start`, `stop`, `patch`, `trigger`) to the BAAS runtime     |
-| Knowledge Surface      | i18next + Markdown + React Markdown | Localized wiki with syntax highlighting and offline docs                                    |
+| Layer                  | Technology                          | Description                                                                             |
+| :--------------------- | :---------------------------------- | :-------------------------------------------------------------------------------------- |
+| Interface              | React 19 + Tailwind CSS 4           | Componentized dashboard with motion-enhanced layouts                                    |
+| State Sync             | Zustand + SecureWebSocket           | Multi-socket store that decrypts payloads and normalizes config/event/status streams    |
+| Automation Core Bridge | Command & Trigger Channels          | Dispatches scheduler commands (`start`, `stop`, `patch`, `trigger`) to the BAAS runtime |
+| Knowledge Surface      | i18next + Markdown + React Markdown | Localized wiki with syntax highlighting and offline docs                                |
 
 - **Profile-centric workflow** — `src/components/layout/Header.tsx` handles tab creation, drag sorting, and
   storage-backed persistence.
 - **Task engine** — `src/pages/SchedulerPage.tsx` manages the dual-column event queue with `FeatureSwitchModal` to edit
   task payloads.
 - **Telemetry pipeline** — `src/components/ui/Logger.tsx` streams thousands of log lines using `react-window`
-  virtualization while `HeartbeatDiv.tsx` visualizes socket health.
-- **Secure handshake** — `src/lib/SecureWebSocket.ts` performs HMAC + Fernet negotiation before any payload is
+  virtualization while `HeartbeatIndicator.tsx` visualizes socket health.
+- **Secure handshake** — `src/lib/SecureWebSocket.ts` performs negotiation before any payload is
   exchanged.
 
 ---
@@ -155,13 +155,12 @@ pnpm dev
   </tr>
 </table>
 
-- **📖 Wiki Page**: This page serves as the documentation hub for the project, providing users with easy access to the project's instructions, API documentation, and general guidelines. See image ①.  
-- **⚙️ Settings Page 2**: Settings Page 2 allows users to configure additional options, such as advanced preferences, notifications, and more detailed system settings. See image ②.  
-- **⚙️ Settings Page 1**: Settings Page 1 focuses on user account settings, where users can modify their personal information, change their password, and set language preferences. See image ③.  
-- **🧩 Configuration**: The configuration page is used by system administrators to set up core system features, including managing database connections, API keys, and backend services. See image ④.  
-- **⏱ Scheduler**: The scheduler feature allows users to automate tasks such as running reports, sending notifications, or syncing data with other systems. Check image ⑤.  
+- **📖 Wiki Page**: This page serves as the documentation hub for the project, providing users with easy access to the project's instructions, API documentation, and general guidelines. See image ①.
+- **⚙️ Settings Page 2**: Settings Page 2 allows users to configure additional options, such as advanced preferences, notifications, and more detailed system settings. See image ②.
+- **⚙️ Settings Page 1**: Settings Page 1 focuses on user account settings, where users can modify their personal information, change their password, and set language preferences. See image ③.
+- **🧩 Configuration**: The configuration page is used by system administrators to set up core system features, including managing database connections, API keys, and backend services. See image ④.
+- **⏱ Scheduler**: The scheduler feature allows users to automate tasks such as running reports, sending notifications, or syncing data with other systems. Check image ⑤.
 - **☕ Café Feature**: The café feature enables users to explore coffee options and place orders directly through the app, integrating the café's menu and ordering system into the user's interface. See image ⑥.
-
 
 ---
 
@@ -177,18 +176,18 @@ pnpm dev
 - **Themes & zoom:** Controlled in `src/pages/SettingsPage.tsx`, leveraging `useTheme` and global CSS variables.
 
 > Need a new automation feature? Create a modal component under `src/features/` and register it in
-`ConfigurationPage.tsx`.
+> `ConfigurationPage.tsx`.
 
 ---
 
 ## 📦 Tech Stack
 
 | Category          | Tools                                        | Notes                                                        |
-|:------------------|:---------------------------------------------|:-------------------------------------------------------------|
+| :---------------- | :------------------------------------------- | :----------------------------------------------------------- |
 | Core Framework    | React 19, Vite 7                             | Fast dev server, modern JSX transforms                       |
 | Styling           | Tailwind CSS 4, CSS variables                | Dark/light modes, custom cursor & scrollbar skins            |
 | State & Data      | Zustand, React Context, localStorage         | Profile store, config snapshots, UI preferences              |
-| Realtime & Crypto | SecureWebSocket, Fernet, HMAC-SHA256         | Authenticated sockets for `provider/sync/trigger/heartbeat`  |
+| Realtime & Crypto | SecureWebSocket                              | Authenticated sockets for `provider/sync/trigger/heartbeat`  |
 | UX Enhancements   | Framer Motion, Radix UI, Sonner              | Animated layouts, accessible primitives, toast notifications |
 | Content           | React Markdown, remark-gfm, rehype-highlight | Wiki rendering with fenced code highlighting                 |
 
@@ -221,7 +220,7 @@ pnpm dev
 ## 🤝 Contributing
 
 | Name    | Role         | Contact                                |
-|:--------|:-------------|:---------------------------------------|
+| :------ | :----------- | :------------------------------------- |
 | Kiramei | Project Lead | [@Kiramei](https://github.com/Kiramei) |
 
 1. Fork the repository and create a feature branch.
