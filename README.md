@@ -58,12 +58,12 @@ from cafés and arenas to tactical drills and whitelist management.
 
 ## 🧠 Architecture
 
-| Layer                  | Technology                          | Description                                                                                |
-| :--------------------- | :---------------------------------- |:-------------------------------------------------------------------------------------------|
-| Interface              | React 19 + Tailwind CSS 4           | Componentized dashboard with motion-enhanced layouts                                       |
-| State Sync             | Zustand + SecureWebSocket           | Multi-socket store that decrypts payloads and normalizes config/event/status streams       |
-| Automation Core Bridge | Command & Trigger Channels          | Dispatches scheduler commands (`start`, `stop`, `patch`, `trigger`) to the BAAS runtime    |
-| Knowledge Surface      | i18next + Markdown + React Markdown | Localized wiki with syntax highlighting and offline docs                                   |
+| Layer                  | Technology                          | Description                                                                             |
+| :--------------------- | :---------------------------------- | :-------------------------------------------------------------------------------------- |
+| Interface              | React 19 + Tailwind CSS 4           | Componentized dashboard with motion-enhanced layouts                                    |
+| State Sync             | Zustand + SecureWebSocket           | Multi-socket store that decrypts payloads and normalizes config/event/status streams    |
+| Automation Core Bridge | Command & Trigger Channels          | Dispatches scheduler commands (`start`, `stop`, `patch`, `trigger`) to the BAAS runtime |
+| Knowledge Surface      | i18next + Markdown + React Markdown | Localized wiki with syntax highlighting and offline docs                                |
 
 - **Profile-centric workflow** — `src/components/layout/Header.tsx` handles tab creation, drag sorting, and
   storage-backed persistence.
@@ -183,7 +183,7 @@ pnpm dev
 ## 📦 Tech Stack
 
 | Category          | Tools                                        | Notes                                                        |
-| :---------------- |:---------------------------------------------| :----------------------------------------------------------- |
+| :---------------- | :------------------------------------------- | :----------------------------------------------------------- |
 | Core Framework    | React 19, Vite 7                             | Fast dev server, modern JSX transforms                       |
 | Styling           | Tailwind CSS 4, CSS variables                | Dark/light modes, custom cursor & scrollbar skins            |
 | State & Data      | Zustand, React Context, localStorage         | Profile store, config snapshots, UI preferences              |

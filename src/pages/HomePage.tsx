@@ -1,11 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useApp } from "../contexts/AppContext";
 import CButton from "../components/ui/CButton.tsx";
 import Logger from "../components/ui/Logger";
 import AssetsDisplay from "../components/AssetsDisplay";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
-import { FileUp, ListEnd, Logs, Play, Square } from "lucide-react";
+import { FileUp, ListEnd, Logs, Play, Square, Webcam } from "lucide-react";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
 import { ProfileProps } from "@/types/app";
 import { TaskStatus } from "@/components/HomeTaskStatus.tsx";
@@ -33,6 +33,7 @@ const HomePage: React.FC<ProfileProps> = ({ profileId }) => {
   const logStore = useWebSocketStore((state) => state.logStore);
 
   const scriptRunning = statusStore[profileId!]?.running || false;
+  const [remoteVisible, setRemoteVisible] = useState<boolean>(false);
 
   /**
    * Issues the scheduler start command for the active profile.
@@ -90,6 +91,16 @@ const HomePage: React.FC<ProfileProps> = ({ profileId }) => {
           <h2 className="text-2xl ml-3 text-slate-500 dark:text-slate-400">#{profile?.name}</h2>
         </div>
         <div className="flex sm:hidden items-center gap-2">
+          <SwitchButton
+            checked={remoteVisible}
+            onChange={(value) => {
+              setRemoteVisible(value);
+            }}
+            label=""
+            className="px-4! ml-2 w-8 h-8"
+          >
+            <Webcam size={20} className="rounded w-4 h-4 -translate-x-2" />
+          </SwitchButton>
           <CButton
             onClick={scriptRunning ? stopScript : startScript}
             variant={scriptRunning ? "danger" : "primary"}
@@ -99,6 +110,16 @@ const HomePage: React.FC<ProfileProps> = ({ profileId }) => {
           </CButton>
         </div>
         <div className="hidden sm:flex items-center gap-2">
+          <SwitchButton
+            checked={remoteVisible}
+            onChange={(value) => {
+              setRemoteVisible(value);
+            }}
+            label=""
+            className="px-4! ml-2 w-8 h-8"
+          >
+            <Webcam size={20} className="rounded w-4 h-4 -translate-x-2" />
+          </SwitchButton>
           <CButton
             onClick={scriptRunning ? stopScript : startScript}
             variant={scriptRunning ? "danger" : "primary"}
@@ -167,7 +188,7 @@ const HomePage: React.FC<ProfileProps> = ({ profileId }) => {
         </CardHeader>
 
         <CardContent className="relative flex-1 min-h-0 p-0 flex overflow-x-hidden">
-          <RemoteDisplay profileId={profileId!} />
+          {remoteVisible && <RemoteDisplay profileId={profileId!} />}
           <Logger logs={logStore[`config:${profileId}`]} scrollToEnd={uiSettings?.scrollToEnd} />
         </CardContent>
       </Card>

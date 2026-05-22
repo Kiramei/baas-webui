@@ -96,6 +96,10 @@ export class WSMiddleware {
   public send(bytes: ArrayBuffer | Uint8Array): void {
     this.sender?.(bytes);
   }
+
+  public close(): void {
+    this.ws.close();
+  }
 }
 
 export class StreamReceiver extends TypedEmitter<StreamReceiverEvents> {
@@ -254,6 +258,10 @@ export class StreamReceiver extends TypedEmitter<StreamReceiverEvents> {
     this.deviceName = DataUtil.utf8ByteArrayToString(nameBytes);
     this.hasInitialInfo = true;
     this.triggerInitialInfoEvents();
+  }
+
+  public closeWebSocket(): void {
+    this.ws?.close();
   }
 }
 
@@ -447,5 +455,9 @@ export class StreamClientScrcpy
     if (this.player) {
       this.player.setVideoSettings(videoSettings);
     }
+  }
+
+  public disconnect(): void {
+    this.streamReceiver.closeWebSocket();
   }
 }

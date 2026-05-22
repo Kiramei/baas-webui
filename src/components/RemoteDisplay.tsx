@@ -321,6 +321,12 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({ profileId }) =>
         /* empty */
       }
 
+      try {
+        scrcpyClientRef.current?.disconnect();
+      } catch {
+        /* empty */
+      }
+
       scrcpyClientRef.current = null;
       playerRef.current = null;
       touchRef.current = null;
