@@ -27,7 +27,7 @@ Les pages sont commutées à l’aide d’un **routeur framer-motion** léger qu
 | **Pages**           | Conteneurs de niveau route : `Home`, `Scheduler`, `Configuration`, `Settings`, `Wiki`.  | `pages/*.tsx`                                                               |
 | **Feature Forms**   | Panneaux modulaires opérant sur un fragment de `DynamicConfig`.                         | `features/*Config.tsx`, `features/DailySweep.tsx`                           |
 | **Shared UI**       | Composants visuels réutilisables (entrées, sélecteurs, modales, journaux).              | `components/ui`, `components/AssetsDisplay.tsx`, `components/Particles.tsx` |
-| **Hooks**           | Logique métier, incluant la gestion des raccourcis et du thème.                         | `hooks/useHotkeys.ts`, `hooks/useTheme.tsx`                                 |
+| **Hooks**           | Logique métier, incluant la gestion des raccourcis et du thème.                         | `hooks/useHotkeys.ts`, `hooks/ThemeProvider.tsx`                                 |
 
 ---
 

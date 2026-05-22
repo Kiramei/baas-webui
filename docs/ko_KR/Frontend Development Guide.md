@@ -31,7 +31,7 @@ React 앱은 `App.tsx`를 통해 렌더링됩니다.
 | **Pages**           | `Home`, `Scheduler`, `Configuration`, `Settings`, `Wiki` 등의 페이지 레벨 컨테이너 | `pages/*.tsx`                                                               |
 | **Feature Forms**   | `DynamicConfig`의 일부를 다루는 구성 패널 모듈                                       | `features/*Config.tsx`, `features/DailySweep.tsx`                           |
 | **Shared UI**       | 재사용 가능한 시각 요소 및 구성 요소 (입력, 선택기, 모달, 로거 등)                               | `components/ui`, `components/AssetsDisplay.tsx`, `components/Particles.tsx` |
-| **Hooks**           | 비즈니스 로직 훅, 핫키 조율, 테마 처리 포함                                              | `hooks/useHotkeys.ts`, `hooks/useTheme.tsx`                                 |
+| **Hooks**           | 비즈니스 로직 훅, 핫키 조율, 테마 처리 포함                                              | `hooks/useHotkeys.ts`, `hooks/ThemeProvider.tsx`                                 |
 
 ---
 

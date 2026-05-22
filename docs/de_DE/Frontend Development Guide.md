@@ -27,7 +27,7 @@ Seiten werden über einen leichten **framer-motion Router** gewechselt, der inak
 | **Pages**           | Container auf Routenebene für `Home`, `Scheduler`, `Configuration`, `Settings`, `Wiki`.                 | `pages/*.tsx`                                                               |
 | **Feature Forms**   | Modulare Konfigurationspanel, das auf einem Ausschnitt von `DynamicConfig` arbeitet.                    | `features/*Config.tsx`, `features/DailySweep.tsx`                           |
 | **Shared UI**       | Wiederverwendbare visuelle Primitiven und Komponenten für Publikum (Inputs, Selectors, Modals, Logger). | `components/ui`, `components/AssetsDisplay.tsx`, `components/Particles.tsx` |
-| **Hooks**           | Business-Logic Hooks, etwa Hotkey-Orchestrierung und Theme-Handling.                                    | `hooks/useHotkeys.ts`, `hooks/useTheme.tsx`                                 |
+| **Hooks**           | Business-Logic Hooks, etwa Hotkey-Orchestrierung und Theme-Handling.                                    | `hooks/useHotkeys.ts`, `hooks/ThemeProvider.tsx`                                 |
 
 ---
 

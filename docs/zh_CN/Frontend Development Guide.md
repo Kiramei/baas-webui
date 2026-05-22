@@ -27,7 +27,7 @@ React 应用由 `App.tsx` 渲染，负责加载 **ThemeProvider**、**AppProvide
 | **Pages**           | 对应路由的页面容器（Home、Scheduler、Configuration、Settings、Wiki）。 | `pages/*.tsx`                                                             |
 | **Feature Forms**   | 模块化配置面板，对应 `DynamicConfig` 的局部操作。                      | `features/*Config.tsx`、`features/DailySweep.tsx`                          |
 | **Shared UI**       | 可复用的界面组件（输入框、选择器、模态框、日志面板等）。                           | `components/ui`、`components/AssetsDisplay.tsx`、`components/Particles.tsx` |
-| **Hooks**           | 包含快捷键控制、主题切换等业务逻辑。                                     | `hooks/useHotkeys.ts`、`hooks/useTheme.tsx`                                |
+| **Hooks**           | 包含快捷键控制、主题切换等业务逻辑。                                     | `hooks/useHotkeys.ts`、`hooks/ThemeProvider.tsx`                                |
 
 ---
 

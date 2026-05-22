@@ -30,7 +30,7 @@ Reactアプリは `App.tsx` でレンダリングされ、
 | **Pages**           | `Home`・`Scheduler`・`Configuration`・`Settings`・`Wiki` ページ | `pages/*.tsx`                               |
 | **Feature Forms**   | 各機能設定パネル（DynamicConfigに基づく）                              | `features/*Config.tsx`                      |
 | **Shared UI**       | 入力、モーダル、ログなど共通コンポーネント群                                   | `components/ui`                             |
-| **Hooks**           | ビジネスロジック用カスタムフック                                         | `hooks/useHotkeys.ts`, `hooks/useTheme.tsx` |
+| **Hooks**           | ビジネスロジック用カスタムフック                                         | `hooks/useHotkeys.ts`, `hooks/ThemeProvider.tsx` |
 
 ---
 

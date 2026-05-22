@@ -28,7 +28,7 @@ React-приложение рендерится через `App.tsx`.
 | **Pages**           | Контейнеры верхнего уровня для страниц `Home`, `Scheduler`, `Configuration`, `Settings`, `Wiki`.       | `pages/*.tsx`                                                               |
 | **Feature Forms**   | Модульные панели конфигурации, работающие с фрагментом `DynamicConfig`.                                | `features/*Config.tsx`, `features/DailySweep.tsx`                           |
 | **Shared UI**       | Повторно используемые визуальные элементы (инпуты, селекторы, модальные окна, логгеры и пр.).          | `components/ui`, `components/AssetsDisplay.tsx`, `components/Particles.tsx` |
-| **Hooks**           | Бизнес-логика, включая горячие клавиши и управление темой.                                             | `hooks/useHotkeys.ts`, `hooks/useTheme.tsx`                                 |
+| **Hooks**           | Бизнес-логика, включая горячие клавиши и управление темой.                                             | `hooks/useHotkeys.ts`, `hooks/ThemeProvider.tsx`                                 |
 
 ---
 
