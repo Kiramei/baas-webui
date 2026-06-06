@@ -61,6 +61,8 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({ message = "Loading..."
   const loadingMessage =
     authPhase === "control_connecting"
       ? "Connecting to the server..."
+      : authPhase === "resuming"
+        ? "Restoring authenticated session..."
       : authPhase === "initializing"
         ? "Initializing system password..."
         : authPhase === "authenticating"

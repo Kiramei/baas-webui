@@ -1,6 +1,11 @@
 import { toast } from "sonner";
 import { create } from "zustand";
-import { ControlConnection, randomUUID, SecureWebSocket } from "@/lib/SecureWebSocket";
+import {
+  ControlConnection,
+  randomUUID,
+  rememberControlSession,
+  SecureWebSocket,
+} from "@/lib/SecureWebSocket";
 import { subscribeWithSelector } from "zustand/middleware";
 import { getTimestampMs, isPlainObject } from "@/lib/utils.ts";
 import { useGlobalLogStore } from "@/store/globalLogStore.ts";
@@ -20,11 +25,18 @@ const resolveBase = () => {
   if (import.meta.env.VITE_BAAS_WS_BASE) {
     return import.meta.env.VITE_BAAS_WS_BASE as string;
   }
-  // if (typeof window !== "undefined") {
-  //   const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  //   return `${wsProtocol}//${window.location.host}`;
-  // }
+  if (typeof window !== "undefined" && window.location.hostname) {
+    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    return `${wsProtocol}//${window.location.hostname}:8190`;
+  }
   return "ws://127.0.0.1:8190";
+};
+
+const resolveHttpBase = () => {
+  const wsBase = resolveBase();
+  if (wsBase.startsWith("wss://")) return `https://${wsBase.slice("wss://".length)}`;
+  if (wsBase.startsWith("ws://")) return `http://${wsBase.slice("ws://".length)}`;
+  return wsBase;
 };
 
 const { appendGlobalLog } = useGlobalLogStore.getState();
@@ -151,6 +163,7 @@ export const useWebSocketStore = create<WebSocketState>()(
         phase === "control_connecting" ||
         phase === "server_verified" ||
         phase === "waiting_password" ||
+        phase === "resuming" ||
         phase === "initializing" ||
         phase === "authenticating" ||
         phase === "authenticated"
@@ -228,6 +241,26 @@ export const useWebSocketStore = create<WebSocketState>()(
           _pwd_epoch: control.pwdEpoch,
           _auth_phase: "server_verified",
         }));
+
+        if (control.initialized) {
+          set((state) => ({ ...state, _auth_phase: "resuming", _auth_error: null }));
+          const session = await control.resumeWithCookie();
+          if (session) {
+            set((state) => ({
+              ...state,
+              ...resetDataStores(),
+              _auth_phase: "authenticated",
+              _auth_error: null,
+              _server_initialized: true,
+              _server_verified: true,
+              _pwd_epoch: session.pwdEpoch,
+              _control: control,
+              _session: session,
+            }));
+            return;
+          }
+        }
+
         set((state) => ({ ...state, _auth_phase: "waiting_password" }));
       } catch (error) {
         console.error("[control] failed to connect", error);
@@ -268,6 +301,11 @@ export const useWebSocketStore = create<WebSocketState>()(
 
       try {
         const session = await control.authenticate(secret);
+        try {
+          await rememberControlSession(resolveHttpBase(), session);
+        } catch (rememberError) {
+          console.warn("[control] failed to persist remembered session", rememberError);
+        }
         set((state) => ({
           ...state,
           ...resetDataStores(),

@@ -7,6 +7,7 @@ export type AuthPhase =
   | "control_connecting"
   | "server_verified"
   | "waiting_password"
+  | "resuming"
   | "initializing"
   | "authenticating"
   | "authenticated"
@@ -19,6 +20,7 @@ export interface ControlSessionBundle {
   expiresAt: number;
   masterSecret: Uint8Array;
   resumeSecret: Uint8Array;
+  authMode?: "password" | "remember";
 }
 
 interface Argon2Params {
@@ -485,6 +487,23 @@ export class ControlConnection {
     });
   }
 
+  async resumeWithCookie(): Promise<ControlSessionBundle | null> {
+    this.ws.send(JSON.stringify(this.preauthChannel.encrypt({ type: "resume_control" })));
+    const payload = this.preauthChannel.decrypt(await waitForJsonMessage(this.ws));
+    if (payload.type === "resume_unavailable") {
+      return null;
+    }
+    if (payload.type !== "auth_ok") {
+      throw new Error("Expected auth_ok from remembered control session");
+    }
+    const masterSecret = base64UrlToBytes(String(payload.master_secret || ""));
+    const resumeSecret = base64UrlToBytes(String(payload.resume_secret || ""));
+    if (masterSecret.length !== 32 || resumeSecret.length !== 32) {
+      throw new Error("Remembered control session did not provide session secrets");
+    }
+    return this.establishSession(payload, masterSecret, resumeSecret, "remember");
+  }
+
   async authenticate(password: string): Promise<ControlSessionBundle> {
     if (!this.initialized) {
       this.ws.send(JSON.stringify(this.preauthChannel.encrypt({ type: "initialize", password })));
@@ -531,6 +550,15 @@ export class ControlConnection {
       32,
       this.transcriptHash
     );
+    return this.establishSession(authOk, masterSecret, resumeSecret, "password");
+  }
+
+  private async establishSession(
+    authOk: Record<string, any>,
+    masterSecret: Uint8Array,
+    resumeSecret: Uint8Array,
+    authMode: "password" | "remember"
+  ): Promise<ControlSessionBundle> {
     const sessionId = String(authOk.session_id);
     const controlSalt = await sha256(textEncoder.encode(sessionId));
     this.controlChannel = new JsonSecureChannel(
@@ -544,6 +572,7 @@ export class ControlConnection {
       expiresAt: Number(authOk.expires_at),
       masterSecret,
       resumeSecret,
+      authMode,
     };
     this.bindControlHandlers();
     return this.session;
@@ -606,6 +635,33 @@ export const randomUUID = (): string => {
 
   const hex = [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+};
+
+export const rememberControlSession = async (
+  httpBase: string,
+  session: ControlSessionBundle
+): Promise<void> => {
+  await sodium.ready;
+  const proofContext = canonicalBytes({
+    type: "remember_session",
+    session_id: session.sessionId,
+    pwd_epoch: session.pwdEpoch,
+  });
+  const proof = toUint8Array(sodium.crypto_auth_hmacsha256(proofContext, session.resumeSecret));
+  const response = await fetch(`${httpBase}/auth/remember`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      session_id: session.sessionId,
+      proof: bytesToBase64Url(proof),
+    }),
+  });
+  if (!response.ok) {
+    throw new Error((await response.text()) || "Failed to persist authenticated session");
+  }
 };
 
 export class SecureWebSocket {
