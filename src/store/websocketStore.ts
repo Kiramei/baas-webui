@@ -41,8 +41,16 @@ const resolveHttpBase = () => {
 
 const { appendGlobalLog } = useGlobalLogStore.getState();
 
-const resetDataStores = (): Partial<WebSocketState> => ({
+const resetConnectionStores = (): Partial<WebSocketState> => ({
   connections: {},
+  pendingCallbacks: {},
+  _all_data_initialized: false,
+  _heartbeat_time: 0,
+  _initiating: false,
+});
+
+const resetDataStores = (): Partial<WebSocketState> => ({
+  ...resetConnectionStores(),
   logStore: {},
   configStore: {},
   staticStore: {},
@@ -50,10 +58,6 @@ const resetDataStores = (): Partial<WebSocketState> => ({
   updateStore: {},
   statusStore: {},
   versionStore: {},
-  pendingCallbacks: {},
-  _all_data_initialized: false,
-  _heartbeat_time: 0,
-  _initiating: false,
 });
 
 const connectWithRetry = async (name: WsName, retryInterval = 1000) => {
@@ -212,7 +216,7 @@ export const useWebSocketStore = create<WebSocketState>()(
             Object.values(get().connections).forEach((connection) => connection?.close());
             set((state) => ({
               ...state,
-              ...resetDataStores(),
+              ...resetConnectionStores(),
               _auth_phase: "revoked",
               _auth_error: "Control connection closed. Authenticate again.",
               _server_initialized: true,
@@ -248,7 +252,7 @@ export const useWebSocketStore = create<WebSocketState>()(
           if (session) {
             set((state) => ({
               ...state,
-              ...resetDataStores(),
+              ...resetConnectionStores(),
               _auth_phase: "authenticated",
               _auth_error: null,
               _server_initialized: true,
@@ -308,7 +312,7 @@ export const useWebSocketStore = create<WebSocketState>()(
         }
         set((state) => ({
           ...state,
-          ...resetDataStores(),
+          ...resetConnectionStores(),
           _auth_phase: "authenticated",
           _auth_error: null,
           _server_initialized: true,
