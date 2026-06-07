@@ -1,14 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useApp } from "@/contexts/AppContext";
+import { useApp } from "@/context/AppContext";
 import { ChevronLeft, ChevronRight, FilePlus2, Loader2, Pencil, Trash2, X } from "lucide-react";
 import { AnimatePresence, motion, Reorder } from "framer-motion";
 import { type ProfileDTO } from "@/types/app";
 import { FormSelect } from "@/components/ui/FormSelect.tsx";
 import { FormInput } from "@/components/ui/FormInput.tsx";
-import { useWebSocketStore, waitForNormal } from "@/store/websocketStore.ts";
-import { StorageUtil } from "@/lib/storage.ts";
-import { getTimestampMs } from "@/lib/utils.ts";
+import { useWebSocketStore, waitForNormal } from "@/store/WebsocketStore.ts";
+import { StorageUtil } from "@/shared/StorageManager.ts";
+import { getTimestampMs } from "@/shared/GlobalUtilities.ts";
 
 const noScrollbarStyle =
   "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";

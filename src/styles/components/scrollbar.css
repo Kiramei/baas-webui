@@ -26,12 +26,8 @@
 }
 
 .scroll-embedded {
-  /* 
-   * 关键属性: 始终为滚动条保留空间，防止页面内容跳动。
-   * 这解决了“滚动条不能遮盖原内容”的核心问题。
-   */
   scrollbar-gutter: stable;
-  /* 应用滚动条样式 */
+  /* App Scrollbar Style */
   /* @apply scrollbar-thin scrollbar-track-slate-200 scrollbar-thumb-cyan-600 hover:scrollbar-thumb-cyan-700; */
 
   /* &:where(.dark, .dark *) {

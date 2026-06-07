@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "@/App.tsx";
-import "@/lib/i18n.ts";
+import "@/shared/I18nTranslator.ts";
 import { Buffer } from "buffer";
 
 (globalThis as any).Buffer = Buffer;

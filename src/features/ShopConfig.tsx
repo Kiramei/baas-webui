@@ -6,8 +6,8 @@ import { EllipsisWithTooltip } from "../components/ui/ETooltip.tsx";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/Tabs";
 import { FormInput } from "@/components/ui/FormInput.tsx";
 import { DynamicConfig } from "@/types/dynamic";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
-import { serverMap } from "@/lib/utils.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
+import { serverMap } from "@/shared/GlobalUtilities.ts";
 
 type TabKey = "common" | "tactical";
 

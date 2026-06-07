@@ -1,6 +1,5 @@
 const baseUrl = import.meta.env.BASE_URL;
 
-// src/descriptions/wikiContent.ts
 export type LanguageCode = "en" | "zh" | "ja" | "ko" | "fr" | "de" | "ru";
 
 export interface LocalizedField {

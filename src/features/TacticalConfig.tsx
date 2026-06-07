@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import { FormSelect } from "@/components/ui/FormSelect.tsx";
 import { useTranslation } from "react-i18next";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
-import { serverMap } from "@/lib/utils.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
+import { serverMap } from "@/shared/GlobalUtilities.ts";
 import { DynamicConfig } from "@/types/dynamic";
 
 type TacticalConfigProps = {

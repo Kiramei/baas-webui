@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Input } from "./Input";
 import { LabelWithTooltip } from "@/components/ui/LabelWithTooltip.tsx";
-import { cn } from "@/lib/utils.ts";
+import { cn } from "@/shared/GlobalUtilities.ts";
 
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;

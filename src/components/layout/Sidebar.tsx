@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import HeartbeatChart from "../HeartbeatIndicator.tsx";
 import { motion } from "framer-motion";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 import { PageKey } from "@/types/app";
 
 const baseUrl = import.meta.env.BASE_URL;

@@ -1,7 +1,7 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 import type { UISettings } from "@/types/app";
-import { StorageUtil } from "@/lib/storage.ts";
+import { StorageUtil } from "@/shared/StorageManager.ts";
 
 interface UISettingsContextType {
   uiSettings: UISettings;

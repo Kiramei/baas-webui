@@ -2,7 +2,7 @@
 
 import React, { useLayoutEffect, useRef } from "react";
 import type { LogItem } from "@/types/app";
-import { formatIsoToReadableTime } from "@/lib/utils.ts";
+import { formatIsoToReadableTime } from "@/shared/GlobalUtilities.ts";
 import { List } from "react-window";
 import { type RowComponentProps, useDynamicRowHeight } from "react-window";
 

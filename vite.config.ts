@@ -13,7 +13,7 @@ export default defineConfig({
   },
   server: {
     host: "0.0.0.0",
-    port: 8192,
+    port: 8191,
     strictPort: true,
   },
   plugins: [
@@ -41,6 +41,10 @@ export default defineConfig({
 
           if (id.includes("node_modules/rehype-highlight")) {
             return "highlight";
+          }
+
+          if (id.includes("node_modules/libsodium-wrappers-sumo")) {
+            return "libsodium";
           }
 
           if (

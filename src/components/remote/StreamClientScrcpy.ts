@@ -16,7 +16,7 @@ import {
 
 import { Size, DisplayInfo, ScreenInfo } from "./GeometryInfo";
 import { KeyEvent } from "@/components/remote/KeySpaceMap.ts";
-import { SecureWebSocket } from "@/lib/SecureWebSocket.ts";
+import { SecureWebSocket } from "@/shared/SecureWebSocket.ts";
 
 type StartParams = {
   player: BasePlayer;

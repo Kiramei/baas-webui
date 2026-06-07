@@ -1,6 +1,6 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
-import { AppProvider, useApp } from "@/contexts/AppContext";
-import { ThemeProvider } from "./contexts/ThemeProvider";
+import { AppProvider, useApp } from "@/context/AppContext";
+import { ThemeProvider } from "@/context/ThemeProvider";
 import MainLayout from "@/components/layout/MainLayout";
 import HomePage from "@/pages/HomePage";
 import SchedulerPage from "@/pages/SchedulerPage";
@@ -12,9 +12,9 @@ import { motion } from "framer-motion";
 import { LoadingPage } from "@/pages/LoadingPage";
 import { Toaster } from "./components/ui/Sonner";
 import { PageKey } from "@/types/app";
-import i18n, { loadLocale } from "@/lib/i18n";
+import i18n, { loadLocale } from "@/shared/I18nTranslator.ts";
 import BAComet from "@/components/ui/BAComet.tsx";
-import { UISettingsProvider, useUISettings } from "@/contexts/UISettingsProvider.tsx";
+import { UISettingsProvider, useUISettings } from "@/context/UISettingsProvider.tsx";
 import ReconnectingOverlay from "@/components/ReconnectingOverlay.tsx";
 
 /**

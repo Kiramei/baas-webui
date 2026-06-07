@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback, startTransition } from "react";
 import { useTranslation } from "react-i18next";
-import { useApp } from "../contexts/AppContext";
+import { useApp } from "@/context/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import {
   CheckCircle2,
@@ -23,7 +23,7 @@ import FeatureSwitchModal from "@/components/FeatureSwitchModal";
 import { DateTimePicker } from "@/components/DateTimePicker.tsx";
 import { EventConfig } from "@/types/event";
 import { EllipsisWithTooltip } from "../components/ui/ETooltip.tsx";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 
 const EMPTY_ARRAY: any[] = [];
 

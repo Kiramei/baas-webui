@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { PageKey } from "@/types/app";
-import { useUISettings } from "@/contexts/UISettingsProvider.tsx";
+import { useUISettings } from "@/context/UISettingsProvider.tsx";
 
 interface MainLayoutProps {
   children: React.ReactNode;

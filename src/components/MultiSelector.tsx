@@ -1,7 +1,7 @@
 import { Reorder } from "framer-motion";
 import { Plus, X } from "lucide-react";
 import React, { useMemo, useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/GlobalUtilities.ts";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useTranslation } from "react-i18next";
 import { LabelWithTooltip } from "@/components/ui/LabelWithTooltip.tsx";

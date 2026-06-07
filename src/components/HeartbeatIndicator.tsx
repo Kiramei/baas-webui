@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 import { useTranslation } from "react-i18next";
 
 interface IndicatorProps {

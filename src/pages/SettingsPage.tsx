@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
-import { useTheme } from "../contexts/ThemeProvider";
+import { useTheme } from "@/context/ThemeProvider";
 import { Theme } from "@/types/app";
 import { FormSelect } from "@/components/ui/FormSelect.tsx";
 import { FormInput } from "@/components/ui/FormInput.tsx";
@@ -23,11 +23,11 @@ import {
   UserSearch,
   XCircle,
 } from "lucide-react";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
-import { formatIsoToReadable, getTimestampMs } from "@/lib/utils.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
+import { formatIsoToReadable, getTimestampMs } from "@/shared/GlobalUtilities.ts";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
-import { loadLocale } from "@/lib/i18n.ts";
-import { useUISettings } from "@/contexts/UISettingsProvider.tsx";
+import { loadLocale } from "@/shared/I18nTranslator.ts";
+import { useUISettings } from "@/context/UISettingsProvider.tsx";
 
 type RepoConfig = {
   label: string;

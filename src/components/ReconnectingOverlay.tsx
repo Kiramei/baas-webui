@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { PasswordInputModal } from "@/pages/LoadingPage.tsx";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 
 const reconnectingMessages: Record<string, string> = {
   idle: "Opening secure control channel...",

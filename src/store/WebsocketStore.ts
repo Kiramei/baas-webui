@@ -5,10 +5,10 @@ import {
   randomUUID,
   rememberControlSession,
   SecureWebSocket,
-} from "@/lib/SecureWebSocket";
+} from "@/shared/SecureWebSocket";
 import { subscribeWithSelector } from "zustand/middleware";
-import { getTimestampMs, isPlainObject } from "@/lib/utils.ts";
-import { useGlobalLogStore } from "@/store/globalLogStore.ts";
+import { getTimestampMs, isPlainObject } from "@/shared/GlobalUtilities.ts";
+import { useGlobalLogStore } from "@/store/GlobalLogStore.ts";
 import { t } from "i18next";
 import {
   LogItem,

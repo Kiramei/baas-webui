@@ -5,7 +5,7 @@ import { startTransition } from "react";
 import { Calendar } from "./ui/Calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover";
 import { FormInput } from "@/components/ui/FormInput";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/GlobalUtilities.ts";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 

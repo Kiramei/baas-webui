@@ -1,6 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import { StorageUtil } from "@/lib/storage.ts";
+import { StorageUtil } from "@/shared/StorageManager.ts";
 
 const baseUrl = import.meta.env.BASE_URL;
 

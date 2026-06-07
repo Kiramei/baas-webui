@@ -6,7 +6,7 @@ import {
   ControlConnection,
   ControlSessionBundle,
   SecureWebSocket,
-} from "@/lib/SecureWebSocket";
+} from "@/shared/SecureWebSocket";
 
 export interface ConfigProfile {
   id: string;

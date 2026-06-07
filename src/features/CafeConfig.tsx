@@ -7,8 +7,8 @@ import { FormInput } from "@/components/ui/FormInput";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../components/ui/Tabs";
 import { Separator } from "../components/ui/Separator.tsx";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
-import { serverMap } from "@/lib/utils.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
+import { serverMap } from "@/shared/GlobalUtilities.ts";
 import { DynamicConfig } from "@/types/dynamic";
 
 type CafeConfigProps = {
