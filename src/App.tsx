@@ -15,6 +15,7 @@ import { PageKey } from "@/types/app";
 import i18n, { loadLocale } from "@/lib/i18n";
 import BAComet from "@/components/ui/BAComet.tsx";
 import { UISettingsProvider, useUISettings } from "@/contexts/UISettingsProvider.tsx";
+import ReconnectingOverlay from "@/components/ReconnectingOverlay.tsx";
 
 /**
  * Shared motion variants that keep inactive pages mounted while keeping the transition lightweight.
@@ -114,8 +115,15 @@ const Main: React.FC = () => {
 
 const WrappedApp: React.FC = () => {
   const [ready, setReady] = useState(false);
+  const [hasReadyOnce, setHasReadyOnce] = useState(false);
   const [hideLoading, setHideLoading] = useState(false);
   const { uiSettings } = useUISettings();
+
+  useEffect(() => {
+    if (ready) {
+      setHasReadyOnce(true);
+    }
+  }, [ready]);
 
   return (
     <>
@@ -123,11 +131,11 @@ const WrappedApp: React.FC = () => {
       {!hideLoading && (
         <motion.div
           initial={false}
-          animate={{ opacity: ready ? 0 : 1 }}
+          animate={{ opacity: hasReadyOnce ? 0 : 1 }}
           transition={{ duration: 0.2 }}
           onAnimationComplete={(definition) => {
             // When the animation returns an opacity of zero the loading screen can be removed.
-            if (ready && (definition as any).opacity === 0) {
+            if (hasReadyOnce && (definition as any).opacity === 0) {
               setHideLoading(true);
             }
           }}
@@ -138,9 +146,10 @@ const WrappedApp: React.FC = () => {
       )}
       <Suspense fallback={null}>
         <AppProvider setReady={setReady}>
-          {ready && (
+          {hasReadyOnce && (
             <>
               <Main />
+              {!ready && <ReconnectingOverlay />}
               <Toaster />
             </>
           )}

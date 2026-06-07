@@ -58,24 +58,23 @@ export const AppProvider: React.FC<{ children: ReactNode; setReady: (value: bool
       settings: configStore[key],
     }));
 
-    if (list.length > 0 && !activeProfile) {
-      (async () => {
-        const tabOrder = StorageUtil.get("tabOrder");
-        if (tabOrder && tabOrder.length) {
-          list.sort((a, b) => {
-            const ia = tabOrder.indexOf(a.id);
-            const ib = tabOrder.indexOf(b.id);
-            if (ia === -1 && ib === -1) return 0;
-            if (ia === -1) return 1;
-            if (ib === -1) return -1;
-            return ia - ib;
-          });
-        }
-        setActiveProfile(list[0]);
-      })();
+    const tabOrder = StorageUtil.get("tabOrder");
+    if (tabOrder && tabOrder.length) {
+      list.sort((a, b) => {
+        const ia = tabOrder.indexOf(a.id);
+        const ib = tabOrder.indexOf(b.id);
+        if (ia === -1 && ib === -1) return 0;
+        if (ia === -1) return 1;
+        if (ib === -1) return -1;
+        return ia - ib;
+      });
     }
 
     setProfiles(list);
+    setActiveProfile((prev) => {
+      if (list.length === 0) return prev;
+      return list.find((profile) => profile.id === prev?.id) ?? list[0];
+    });
   }, [configStore]);
 
   useEffect(() => {

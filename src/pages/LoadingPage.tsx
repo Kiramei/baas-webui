@@ -63,11 +63,11 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({ message = "Loading..."
       ? "Connecting to the server..."
       : authPhase === "resuming"
         ? "Restoring authenticated session..."
-      : authPhase === "initializing"
-        ? "Initializing system password..."
-        : authPhase === "authenticating"
-          ? "Authenticating session..."
-          : message;
+        : authPhase === "initializing"
+          ? "Initializing system password..."
+          : authPhase === "authenticating"
+            ? "Authenticating session..."
+            : message;
 
   return (
     <>
@@ -167,7 +167,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({ message = "Loading..."
 };
 
 const overlayCls =
-  "fixed inset-0 flex items-center justify-center bg-black/50 z-50 backdrop-blur-sm";
+  "fixed inset-0 flex items-center justify-center bg-black/50 z-[120] backdrop-blur-sm";
 
 export const PasswordInputModal: React.FC<{
   open: boolean;
