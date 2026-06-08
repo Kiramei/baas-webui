@@ -5,6 +5,7 @@ import { FormSelect } from "@/components/ui/FormSelect";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
 import { DynamicConfig } from "@/types/dynamic";
 import { useWebSocketStore } from "@/store/WebsocketStore.ts";
+import StorageUtil from "@/shared/StorageManager.ts";
 
 type EmulatorConfigProps = {
   profileId: string;
@@ -111,9 +112,24 @@ const EmulatorConfig: React.FC<EmulatorConfigProps> = ({ profileId, onClose }) =
               type="text"
               value={draft.program_address}
               onChange={(e) => handleChange("program_address")(e.target.value)}
-              placeholder="C:\\Path\\to\\MuMuPlayer.exe"
+              placeholder="C:\\Path\to\emulator.exe"
               className="flex-1"
             />
+            {__WITH_TAURI__ && (
+              <button
+                type="button"
+                className="px-3 py-1.5 bg-slate-200 dark:bg-slate-700 rounded-md"
+                onClick={async () => {
+                  const path = await StorageUtil.retrievePath(t("desc.getEmulator"), [
+                    { name: "Executable File", extensions: ["exe", "bin", "app", "*"] },
+                  ]);
+                  if (!path) return;
+                  setDraft((state) => ({ ...state, program_address: path }));
+                }}
+              >
+                {t("choose")}
+              </button>
+            )}
           </div>
         </div>
       )}

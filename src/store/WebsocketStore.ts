@@ -20,6 +20,7 @@ import {
   WsMessageItem,
   WsName,
 } from "@/types/app";
+import StorageUtil from "@/shared/StorageManager.ts";
 
 const resolveBase = () => {
   if (import.meta.env.VITE_BAAS_WS_BASE) {
@@ -626,6 +627,8 @@ export const useWebSocketStore = create<WebSocketState>()(
       if (get()._auth_phase !== "authenticated") return;
 
       set((state) => ({ ...state, _initiating: true }));
+
+      await StorageUtil.init();
 
       try {
         await connectWithRetry("provider");

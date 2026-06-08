@@ -13,3 +13,6 @@ declare interface ImportMeta {
     }
   ) => Record<string, T>;
 }
+
+declare const __WITH_WEBUI__: boolean;
+declare const __WITH_TAURI__: boolean;

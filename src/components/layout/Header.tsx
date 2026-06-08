@@ -7,7 +7,7 @@ import { type ProfileDTO } from "@/types/app";
 import { FormSelect } from "@/components/ui/FormSelect.tsx";
 import { FormInput } from "@/components/ui/FormInput.tsx";
 import { useWebSocketStore, waitForNormal } from "@/store/WebsocketStore.ts";
-import { StorageUtil } from "@/shared/StorageManager.ts";
+import StorageUtil from "@/shared/StorageManager.ts";
 import { getTimestampMs } from "@/shared/GlobalUtilities.ts";
 
 const noScrollbarStyle =
@@ -187,7 +187,7 @@ const Header: React.FC = () => {
   const statusStore = useWebSocketStore((e) => e.statusStore);
 
   return (
-    <header className="h-16 flex-shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 flex items-center px-3">
+    <header className="h-16 shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 flex items-center px-3">
       {/* 左侧：滚动控制 */}
       <div className="flex items-center gap-1 mr-2">
         <button
@@ -281,7 +281,7 @@ const Header: React.FC = () => {
           onClick={() => setEditor({ mode: "create" })}
           className="flex sm:hidden items-center h-9 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors w-9"
         >
-          <FilePlus2 className="w-5 h-5 translate-x-[8px]" />
+          <FilePlus2 className="w-5 h-5 translate-x-2" />
         </button>
       </div>
 
@@ -293,7 +293,7 @@ const Header: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ type: "tween", duration: 0.12 }}
-            className="fixed z-50 min-w-[160px] rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg py-1"
+            className="fixed z-50 min-w-40 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg py-1"
             style={{ top: ctxMenu.y + 2, left: ctxMenu.x + 2 }}
           >
             <button
@@ -411,7 +411,7 @@ const ProfileEditorModal = (props: {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 12, scale: 0.98 }}
         transition={{ duration: 0.18, type: "tween", ease: "easeOut" }}
-        className="w-[420px] rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl p-5"
+        className="w-105 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl p-5"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="text-lg font-semibold mb-4">
@@ -491,7 +491,7 @@ const ConfirmDeleteModal = (props: {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 8 }}
         transition={{ duration: 0.16 }}
-        className="w-[420px] rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl p-5"
+        className="w-105 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl p-5"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="flex items-start gap-3">

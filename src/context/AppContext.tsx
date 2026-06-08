@@ -3,7 +3,7 @@ import type { ConfigProfile, UISettings } from "@/types/app";
 import { GlobalSelectProvider } from "@/components/ui/SelectGlobal";
 import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 
-import { StorageUtil } from "@/shared/StorageManager.ts";
+import StorageUtil from "@/shared/StorageManager.ts";
 import { DEFAULT_UI_SETTINGS } from "./UISettingsProvider";
 
 interface AppContextType {

@@ -1,7 +1,7 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 import type { UISettings } from "@/types/app";
-import { StorageUtil } from "@/shared/StorageManager.ts";
+import StorageUtil from "@/shared/StorageManager.ts";
 
 interface UISettingsContextType {
   uiSettings: UISettings;
@@ -14,7 +14,7 @@ const DEFAULT_UI_SETTINGS: UISettings = {
   zoomScale: 100,
   scrollToEnd: true,
   assetsDisplay: true,
-  enableBAComet: true,
+  enableBAComet: false,
   remoteSettings: {
     streamPlayer: "mse",
     enableSafeStream: true,

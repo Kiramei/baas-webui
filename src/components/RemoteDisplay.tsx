@@ -29,7 +29,7 @@ import {
 import { FormInput } from "@/components/ui/FormInput.tsx";
 import CButton from "@/components/ui/CButton.tsx";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
-import { StorageUtil } from "@/shared/StorageManager.ts";
+import StorageUtil, { dataURLToBlob } from "@/shared/StorageManager.ts";
 import {
   CommandControlMessage,
   ControlMessage,
@@ -144,10 +144,15 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({ profileId }) =>
   /**
    * Remote Tools functionality
    */
-  const screenshot = () => {
+  const screenshot = async () => {
     const deviceName = scrcpyClientRef.current?.getDeviceName();
     const imageDataURL = playerRef.current?.getImageDataURL();
-    StorageUtil.download(`${deviceName}_${new Date().toLocaleString()}.png`, null, imageDataURL);
+    if (!imageDataURL) return;
+    await StorageUtil.download(
+      `${deviceName}_${new Date().toLocaleString()}.png`,
+      dataURLToBlob(imageDataURL),
+      t
+    );
   };
 
   const btnTrigger = (key: keyof typeof BTN_FUNC_MAP, type: number): (() => void) => {
