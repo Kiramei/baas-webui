@@ -16,6 +16,7 @@ import i18n, { loadLocale } from "@/shared/I18nTranslator.ts";
 import BAComet from "@/components/ui/BAComet.tsx";
 import { UISettingsProvider, useUISettings } from "@/context/UISettingsProvider.tsx";
 import ReconnectingOverlay from "@/components/ReconnectingOverlay.tsx";
+// import SetupPage from "@/pages/SetupPage.tsx";
 
 /**
  * Shared motion variants that keep inactive pages mounted while keeping the transition lightweight.

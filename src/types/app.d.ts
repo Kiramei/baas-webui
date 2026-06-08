@@ -162,3 +162,9 @@ interface WebSocketState {
   _control: ControlConnection | null;
   _session: ControlSessionBundle | null;
 }
+
+interface BaseBackendInterface {
+  baseBackendAddr: string;
+  baseBackendPort: number;
+  serviceSecret: string;
+}

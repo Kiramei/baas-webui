@@ -14,12 +14,12 @@ export default defineConfig(({ mode }) => {
     clearScreen: false,
     define: {
       global: "globalThis",
-      ___WITH_WEBUI__: mode === "webui",
-      ___WITH_TAURI__: mode === "tauri",
+      __WITH_WEBUI__: mode === "webui",
+      __WITH_TAURI__: mode === "tauri",
     },
     server: {
       host: "0.0.0.0",
-      port: 8191,
+      port: mode === "tauri" ? 8191 : 8192,
       strictPort: true,
     },
     plugins: [

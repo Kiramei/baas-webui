@@ -8,22 +8,27 @@ const baseUrl = import.meta.env.BASE_URL;
  * Initialize i18next immediately so React never complains.
  * Resources are empty at first; we load them dynamically later.
  */
-i18n
-  .use(initReactI18next)
-  .init({
+export async function initI18n() {
+  await StorageUtil.init().catch(() => {
+    console.warn("[i18n] Storage init failed, fallback to default settings");
+  });
+
+  await i18n.use(initReactI18next).init({
     lng: StorageUtil.get("uiSettings")?.["lang"] || "en",
     fallbackLng: "en",
     resources: {},
     interpolation: { escapeValue: false },
-  })
-  .then();
+  });
+
+  console.log("[i18n] initialized");
+}
 
 /**
  * Load locale JSON file from /public/locales/
  */
 export async function loadLocale(lang: string) {
   try {
-    const res = await fetch(`${baseUrl}locales/${lang}.json`);
+    const res = await fetch(`${__WITH_WEBUI__ ? baseUrl : ""}locales/${lang}.json`);
     if (!res.ok) throw new Error(`Failed to load locale: ${lang}`);
     const data = await res.json();
 
