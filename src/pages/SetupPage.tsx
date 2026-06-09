@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { InstallerLayout } from "../components/installer/InstallerLayout";
-import { LogViewer } from "../components/installer/LogViewer";
-import { ProgressBar } from "../components/installer/ProgressBar";
-import { PathSelector } from "../components/installer/PathSelector";
+
 import StorageUtil from "@/shared/StorageManager";
 import { BaseBackendInterface } from "@/types/app";
 import { listen } from "@tauri-apps/api/event";
@@ -12,9 +9,14 @@ import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 import { formatIsoToReadableTime } from "@/shared/GlobalUtilities";
 import { useTheme } from "@/context/ThemeProvider";
 import CButton from "@/components/ui/CButton.tsx";
-import ConfigEditorModal from "@/components/installer/ConfigEditor.tsx";
+import ConfigEditorModal from "@/components/updater/ConfigEditor.tsx";
 import { exit } from "@tauri-apps/plugin-process";
 import { useTranslation } from "react-i18next";
+
+import TermViewer from "@/components/updater/TermViewer.tsx";
+import ProgressBar from "@/components/updater/ProgressBar";
+import PathSelector from "@/components/updater/PathSelector";
+import InstallerLayout from "@/components/updater/InstallerLayout";
 
 const init = useWebSocketStore.getState().init;
 void init();
@@ -95,6 +97,7 @@ const SetupPage = () => {
         "setupConfig": base_config || config,
       });
       StorageUtil.set("base_dir", base_dir || installPath);
+      console.log(ret);
       StorageUtil.set("baseBackendAddr", ret.baseBackendAddr);
       StorageUtil.set("baseBackendPort", ret.baseBackendPort);
       StorageUtil.set("SECRET", ret.serviceSecret);
@@ -129,7 +132,7 @@ const SetupPage = () => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-[var(--color-slate-100)] dark:bg-[oklch(12.9%_0.042_264.695)] overflow-hidden z-1">
+      <div className="fixed inset-0 bg-slate-100 dark:bg-slate-950 overflow-hidden z-1">
         <img
           src={theme === "light" ? "/images/bg-light.webp" : "/images/bg-dark.webp"}
           alt="Loading BG"
@@ -137,7 +140,7 @@ const SetupPage = () => {
         />
       </div>
       <InstallerLayout title={t("installer.title.wizard")}>
-        <div className="flex flex-col gap-2 max-w-3xl mx-auto w-full bg-background px-5 md:px-20 py-5 backdrop-blur supports-[backdrop-filter]:bg-background/85 md:py-10 rounded-xl shadow-2xl shadow-slate-800">
+        <div className="flex flex-col gap-2 max-w-3xl mx-auto w-full bg-background px-5 md:px-20 py-5 backdrop-blur supports-backdrop-filter:bg-background/85 md:py-10 rounded-xl shadow-2xl shadow-slate-800">
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold">{t("installer.title")}</h2>
             <p className="text-muted-foreground">
@@ -170,7 +173,7 @@ const SetupPage = () => {
             {!setupPhase && started && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <ProgressBar />
-                <LogViewer />
+                <TermViewer />
               </div>
             )}
           </div>

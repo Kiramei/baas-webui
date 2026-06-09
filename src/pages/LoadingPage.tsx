@@ -42,7 +42,7 @@ export function AutoScrollTerminal({ children }: { children: React.ReactNode }) 
   );
 }
 
-export const LoadingPage: React.FC<LoadingPageProps> = ({ message = "Loading..." }) => {
+const LoadingPage: React.FC<LoadingPageProps> = ({ message = "Loading..." }) => {
   const globalLogData = useGlobalLogStore((state) => state.globalLogData);
   const authPhase = useWebSocketStore((state) => state._auth_phase);
   const authError = useWebSocketStore((state) => state._auth_error);
@@ -320,3 +320,5 @@ export const PasswordInputModal: React.FC<{
     </div>
   );
 };
+
+export default LoadingPage;

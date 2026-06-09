@@ -9,14 +9,12 @@ import SettingsPage from "@/pages/SettingsPage";
 import WikiPage from "@/pages/WikiPage.tsx";
 import type { Variants } from "framer-motion";
 import { motion } from "framer-motion";
-import { LoadingPage } from "@/pages/LoadingPage";
 import { Toaster } from "./components/ui/Sonner";
 import { PageKey } from "@/types/app";
 import i18n, { loadLocale } from "@/shared/I18nTranslator.ts";
 import BAComet from "@/components/ui/BAComet.tsx";
 import { UISettingsProvider, useUISettings } from "@/context/UISettingsProvider.tsx";
 import ReconnectingOverlay from "@/components/ReconnectingOverlay.tsx";
-// import SetupPage from "@/pages/SetupPage.tsx";
 
 /**
  * Shared motion variants that keep inactive pages mounted while keeping the transition lightweight.
@@ -126,6 +124,13 @@ const WrappedApp: React.FC = () => {
     }
   }, [ready]);
 
+  const InitialPage = React.lazy(async () => {
+    console.log("Initial page", __WITH_TAURI__, __WITH_WEBUI__);
+    if (__WITH_WEBUI__) return import("@/pages/LoadingPage");
+    if (__WITH_TAURI__) return import("@/pages/SetupPage");
+    return import("@/pages/LoadingPage");
+  });
+
   return (
     <>
       {uiSettings.enableBAComet && <BAComet />}
@@ -142,7 +147,9 @@ const WrappedApp: React.FC = () => {
           }}
           className="fixed inset-0 z-100"
         >
-          <LoadingPage />
+          <Suspense fallback={<></>}>
+            <InitialPage />
+          </Suspense>
         </motion.div>
       )}
       <Suspense fallback={null}>

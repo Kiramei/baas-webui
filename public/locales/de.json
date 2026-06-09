@@ -485,5 +485,16 @@
     "bitrate": "Bitrate",
     "showStatus": "Status anzeigen",
     "saveAndApply": "Speichern und anwenden"
-  }
+  },
+  "installer.title": "Willkommen bei Blue Archive Auto Script",
+  "installer.title.wizard": "Einrichtungsassistent",
+  "installer.subtitle.stage_1": "Konfigurieren Sie Ihre Installation",
+  "installer.subtitle.stage_2": "Wir richten Ihre Umgebung ein. Dies kann einige Minuten dauern.",
+  "label.install_dir": "Installationsverzeichnis",
+  "installer.exit": "Installation abbrechen",
+  "installer.setting": "Installationseinstellungen",
+  "installer.advanced": "Erweiterte Einstellungen",
+  "installer.start": "Installation starten",
+  "label.repo_url": "Repository-Adresse oder Spiegelserver wählen",
+  "label.pypi_mirror": "PyPI-Spiegelserver auswählen"
 }

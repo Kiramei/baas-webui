@@ -485,5 +485,16 @@
     "bitrate": "Débit",
     "showStatus": "Afficher le statut",
     "saveAndApply": "Enregistrer et appliquer"
-  }
+  },
+  "installer.title": "Bienvenue dans Blue Archive Auto Script",
+  "installer.title.wizard": "Assistant d'installation",
+  "installer.subtitle.stage_1": "Configurez votre installation",
+  "installer.subtitle.stage_2": "Nous configurons votre environnement. Cela peut prendre quelques minutes.",
+  "label.install_dir": "Répertoire d'installation",
+  "installer.exit": "Annuler l'installation",
+  "installer.setting": "Paramètres d'installation",
+  "installer.advanced": "Paramètres avancés",
+  "installer.start": "Démarrer l'installation",
+  "label.repo_url": "Choisir l'adresse du dépôt ou le miroir",
+  "label.pypi_mirror": "Sélectionner un miroir PyPI"
 }

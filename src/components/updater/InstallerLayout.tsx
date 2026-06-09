@@ -6,7 +6,7 @@ interface InstallerLayoutProps {
   title?: string;
 }
 
-export const InstallerLayout: React.FC<InstallerLayoutProps> = ({ children, title }) => {
+const InstallerLayout: React.FC<InstallerLayoutProps> = ({ children, title }) => {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-primary selection:text-primary-foreground">
       <header className="p-4 border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-1">
@@ -36,3 +36,5 @@ export const InstallerLayout: React.FC<InstallerLayoutProps> = ({ children, titl
     </div>
   );
 };
+
+export default InstallerLayout;

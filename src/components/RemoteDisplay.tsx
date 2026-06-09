@@ -605,7 +605,7 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({ profileId }) =>
           )}
           <div
             id="remote-ctrl-mount"
-            className="max-h-[80vh] w-full aspect-video bg-black overflow-hidden"
+            className="max-h-[72vh] w-full aspect-video bg-black overflow-hidden"
           />
         </div>
 

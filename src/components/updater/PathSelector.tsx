@@ -10,7 +10,7 @@ interface PathSelectorProps {
   setPath: (path: string) => void;
 }
 
-export const PathSelector: React.FC<PathSelectorProps> = ({ path, setPath }) => {
+const PathSelector: React.FC<PathSelectorProps> = ({ path, setPath }) => {
   const { t } = useTranslation();
   const handleBrowse = async () => {
     const selected = await open({
@@ -48,3 +48,5 @@ export const PathSelector: React.FC<PathSelectorProps> = ({ path, setPath }) => 
     </div>
   );
 };
+
+export default PathSelector;

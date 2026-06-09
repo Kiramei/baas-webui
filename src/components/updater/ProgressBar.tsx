@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useGlobalLogStore } from "@/store/GlobalLogStore.ts";
 
-export const ProgressBar: React.FC = () => {
+const ProgressBar: React.FC = () => {
   const globalProgress = useGlobalLogStore((e) => e.globalProgress);
 
   return (
@@ -22,3 +22,5 @@ export const ProgressBar: React.FC = () => {
     </div>
   );
 };
+
+export default ProgressBar;
