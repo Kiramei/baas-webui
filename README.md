@@ -1,3 +1,6 @@
+> ⚠️ This repo has been migrated to [Kiramei/baas-tauri](https://github.com/Kiramei/baas-tauri) and won't be maintained,
+> please move forward.
+
 <div align="center">
 <h1> 🌌 Blue Archive Auto Script WebUI </h1>
 
@@ -8,7 +11,7 @@ _Automation command center for multi-profile Blue Archive orchestration_
 </div>
 
 |            ☀️ Light Mode            |           🌙 Dark Mode            |
-| :---------------------------------: | :-------------------------------: |
+|:-----------------------------------:|:---------------------------------:|
 | ![Light Mode](docs/cover-light.png) | ![Dark Mode](docs/cover-dark.png) |
 
 ---
@@ -37,18 +40,18 @@ from cafés and arenas to tactical drills and whitelist management.
 
 <div style="text-align: left">
 
-| Section                                   | Description                             |
-| :---------------------------------------- | :-------------------------------------- |
-| [🚀 Overview](#-overview)                 | Project summary & key features          |
+| Section                                    | Description                             |
+|:-------------------------------------------|:----------------------------------------|
+| [🚀 Overview](#-overview)                  | Project summary & key features          |
 | [🏗️ Architecture](#-architecture)         | Structural design and workflow          |
-| [⚙️ Installation](#-installation)         | Setup instructions and environment      |
-| [🧩 Usage](#-usage)                       | How to run and interact with the system |
+| [⚙️ Installation](#-installation)          | Setup instructions and environment      |
+| [🧩 Usage](#-usage)                        | How to run and interact with the system |
 | [🛠️ Configuration](#-configuration)       | Customization and environment variables |
-| [🧠 Tech Stack](#-tech-stack)             | Frameworks, libraries, and tools        |
+| [🧠 Tech Stack](#-tech-stack)              | Frameworks, libraries, and tools        |
 | [🗂️ Folder Structure](#-folder-structure) | Directory layout and file roles         |
-| [📸 Visuals](#-visuals)                   | UI previews and architecture diagrams   |
-| [🤝 Contributing](#-contributing)         | Guidelines for contributors             |
-| [📜 License](#-license)                   | Licensing details and credits           |
+| [📸 Visuals](#-visuals)                    | UI previews and architecture diagrams   |
+| [🤝 Contributing](#-contributing)          | Guidelines for contributors             |
+| [📜 License](#-license)                    | Licensing details and credits           |
 
 </div>
 
@@ -59,7 +62,7 @@ from cafés and arenas to tactical drills and whitelist management.
 ## 🧠 Architecture
 
 | Layer                  | Technology                          | Description                                                                             |
-| :--------------------- | :---------------------------------- | :-------------------------------------------------------------------------------------- |
+|:-----------------------|:------------------------------------|:----------------------------------------------------------------------------------------|
 | Interface              | React 19 + Tailwind CSS 4           | Componentized dashboard with motion-enhanced layouts                                    |
 | State Sync             | Zustand + SecureWebSocket           | Multi-socket store that decrypts payloads and normalizes config/event/status streams    |
 | Automation Core Bridge | Command & Trigger Channels          | Dispatches scheduler commands (`start`, `stop`, `patch`, `trigger`) to the BAAS runtime |
@@ -155,12 +158,18 @@ pnpm dev
   </tr>
 </table>
 
-- **📖 Wiki Page**: This page serves as the documentation hub for the project, providing users with easy access to the project's instructions, API documentation, and general guidelines. See image ①.
-- **⚙️ Settings Page 2**: Settings Page 2 allows users to configure additional options, such as advanced preferences, notifications, and more detailed system settings. See image ②.
-- **⚙️ Settings Page 1**: Settings Page 1 focuses on user account settings, where users can modify their personal information, change their password, and set language preferences. See image ③.
-- **🧩 Configuration**: The configuration page is used by system administrators to set up core system features, including managing database connections, API keys, and backend services. See image ④.
-- **⏱ Scheduler**: The scheduler feature allows users to automate tasks such as running reports, sending notifications, or syncing data with other systems. Check image ⑤.
-- **☕ Café Feature**: The café feature enables users to explore coffee options and place orders directly through the app, integrating the café's menu and ordering system into the user's interface. See image ⑥.
+- **📖 Wiki Page**: This page serves as the documentation hub for the project, providing users with easy access to the
+  project's instructions, API documentation, and general guidelines. See image ①.
+- **⚙️ Settings Page 2**: Settings Page 2 allows users to configure additional options, such as advanced preferences,
+  notifications, and more detailed system settings. See image ②.
+- **⚙️ Settings Page 1**: Settings Page 1 focuses on user account settings, where users can modify their personal
+  information, change their password, and set language preferences. See image ③.
+- **🧩 Configuration**: The configuration page is used by system administrators to set up core system features, including
+  managing database connections, API keys, and backend services. See image ④.
+- **⏱ Scheduler**: The scheduler feature allows users to automate tasks such as running reports, sending notifications,
+  or syncing data with other systems. Check image ⑤.
+- **☕ Café Feature**: The café feature enables users to explore coffee options and place orders directly through the
+  app, integrating the café's menu and ordering system into the user's interface. See image ⑥.
 
 ---
 
@@ -168,7 +177,8 @@ pnpm dev
 
 - **WebSocket endpoints:** Adjust `BASE` or channel names in `src/store/WebsocketStore.ts:19` if your automation service
   runs elsewhere.
-- **UI defaults:** Persisted via `StorageUtil` (`src/lib/StorageManager.ts`); initial values are injected in `AppContext.tsx`.
+- **UI defaults:** Persisted via `StorageUtil` (`src/lib/StorageManager.ts`); initial values are injected in
+  `AppContext.tsx`.
 - **Localization:** Update `src/assets/locales/*.json` for new languages; wiki articles live in
   `src/assets/docs/<locale>`.
 - **Hotkeys:** Extend `src/services/hotkeyService.ts` once the backend API is ready; UI bindings are powered by
@@ -183,7 +193,7 @@ pnpm dev
 ## 📦 Tech Stack
 
 | Category          | Tools                                        | Notes                                                        |
-| :---------------- | :------------------------------------------- | :----------------------------------------------------------- |
+|:------------------|:---------------------------------------------|:-------------------------------------------------------------|
 | Core Framework    | React 19, Vite 7                             | Fast dev server, modern JSX transforms                       |
 | Styling           | Tailwind CSS 4, CSS variables                | Dark/light modes, custom cursor & scrollbar skins            |
 | State & Data      | Zustand, React Context, localStorage         | Profile store, config snapshots, UI preferences              |
@@ -220,7 +230,7 @@ pnpm dev
 ## 🤝 Contributing
 
 | Name    | Role         | Contact                                |
-| :------ | :----------- | :------------------------------------- |
+|:--------|:-------------|:---------------------------------------|
 | Kiramei | Project Lead | [@Kiramei](https://github.com/Kiramei) |
 
 1. Fork the repository and create a feature branch.
