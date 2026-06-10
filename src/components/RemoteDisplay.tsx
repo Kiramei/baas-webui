@@ -17,7 +17,7 @@ import { Modal } from "@/components/ui/Modal.tsx";
 import { t } from "i18next";
 import { BTN_FUNC_MAP, StreamClientScrcpy, WSMiddleware } from "./remote/StreamClientScrcpy";
 import { BasePlayer, QualityParsed } from "./remote/player/BasePlayer";
-import { useUISettings } from "@/contexts/UISettingsProvider.tsx";
+import { useUISettings } from "@/context/UISettingsProvider.tsx";
 import { VideoSettings } from "@/components/remote/CommonUtil.ts";
 import { Size } from "@/components/remote/GeometryInfo.ts";
 import {
@@ -29,7 +29,7 @@ import {
 import { FormInput } from "@/components/ui/FormInput.tsx";
 import CButton from "@/components/ui/CButton.tsx";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
-import { StorageUtil } from "@/lib/storage.ts";
+import StorageUtil, { dataURLToBlob } from "@/shared/StorageManager.ts";
 import {
   CommandControlMessage,
   ControlMessage,
@@ -37,7 +37,7 @@ import {
 } from "@/components/remote/MessageCenter.ts";
 import { KeyEvent } from "@/components/remote/KeySpaceMap.ts";
 import { SlideOutButton } from "@/components/ui/SlideOutButton.tsx";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 
 /**
  * Connection state used by the UI layer.
@@ -144,10 +144,15 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({ profileId }) =>
   /**
    * Remote Tools functionality
    */
-  const screenshot = () => {
+  const screenshot = async () => {
     const deviceName = scrcpyClientRef.current?.getDeviceName();
     const imageDataURL = playerRef.current?.getImageDataURL();
-    StorageUtil.download(`${deviceName}_${new Date().toLocaleString()}.png`, null, imageDataURL);
+    if (!imageDataURL) return;
+    await StorageUtil.download(
+      `${deviceName}_${new Date().toLocaleString()}.png`,
+      dataURLToBlob(imageDataURL),
+      t
+    );
   };
 
   const btnTrigger = (key: keyof typeof BTN_FUNC_MAP, type: number): (() => void) => {
@@ -600,7 +605,7 @@ export const RemoteDisplay: React.FC<{ profileId: string }> = ({ profileId }) =>
           )}
           <div
             id="remote-ctrl-mount"
-            className="max-h-[80vh] w-full aspect-video bg-black overflow-hidden"
+            className="max-h-[72vh] w-full aspect-video bg-black overflow-hidden"
           />
         </div>
 

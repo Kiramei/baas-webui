@@ -4,8 +4,8 @@ import CButton from "@/components/ui/CButton.tsx";
 import { Card } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 import { Loader2, SearchCode } from "lucide-react";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
-import { getTimestampMs } from "@/lib/utils.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
+import { getTimestampMs } from "@/shared/GlobalUtilities.ts";
 
 type ADBSeekProps = {
   onSelect?: (addr: string) => void;

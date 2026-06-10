@@ -6,9 +6,9 @@ import { Separator } from "../components/ui/Separator";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
 import { FormInput } from "@/components/ui/FormInput.tsx";
 import StudentSelectorModal from "@/components/StudentSelectorModal.tsx";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 import { DynamicConfig, LessonEachRegionObjectPriority } from "@/types/dynamic";
-import { serverMap, serverMapSpec } from "@/lib/utils.ts";
+import { serverMap, serverMapSpec } from "@/shared/GlobalUtilities.ts";
 
 type LessonConfigProps = {
   onClose: () => void;

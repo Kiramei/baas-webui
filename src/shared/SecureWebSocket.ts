@@ -277,7 +277,11 @@ class JsonSecureChannel {
     }
     const seq = Number(envelope.seq);
     if (seq !== this.rxSeq) {
-      throw new Error("Control sequence mismatch");
+      if (seq === this.rxSeq + 1) {
+        this.rxSeq = seq;
+      } else {
+        throw new Error("Control sequence mismatch");
+      }
     }
     this.rxSeq += 1;
     const nonce = nonceFromSeq(seq);

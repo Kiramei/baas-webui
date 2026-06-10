@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { FormInput } from "@/components/ui/FormInput.tsx";
 import { DynamicConfig } from "@/types/dynamic";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
-import { serverMap } from "@/lib/utils.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
+import { serverMap } from "@/shared/GlobalUtilities.ts";
 
 type WhiteListConfigProps = {
   onClose: () => void;

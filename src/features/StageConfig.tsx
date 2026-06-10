@@ -6,9 +6,9 @@ import CButton from "@/components/ui/CButton.tsx";
 import { Card } from "@/components/ui/Card";
 import { useTranslation } from "react-i18next";
 import { Separator } from "../components/ui/Separator.tsx";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 import { DynamicConfig } from "@/types/dynamic";
-import { getTimestampMs, serverMap } from "@/lib/utils.ts";
+import { getTimestampMs, serverMap } from "@/shared/GlobalUtilities.ts";
 import { toast } from "sonner";
 import { PageKey } from "@/types/app";
 

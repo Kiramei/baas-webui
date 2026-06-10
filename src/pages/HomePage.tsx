@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useApp } from "../contexts/AppContext";
+import { useApp } from "@/context/AppContext";
 import CButton from "../components/ui/CButton.tsx";
 import Logger from "../components/ui/Logger";
 import AssetsDisplay from "../components/AssetsDisplay";
@@ -9,11 +9,11 @@ import { FileUp, ListEnd, Logs, Play, Square, Webcam } from "lucide-react";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
 import { ProfileProps } from "@/types/app";
 import { TaskStatus } from "@/components/HomeTaskStatus.tsx";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
-import { formatIsoToReadable, getTimestamp, getTimestampMs } from "@/lib/utils.ts";
-import { useUISettings } from "@/contexts/UISettingsProvider.tsx";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
+import { formatIsoToReadable, getTimestamp, getTimestampMs } from "@/shared/GlobalUtilities.ts";
+import { useUISettings } from "@/context/UISettingsProvider.tsx";
 import { RemoteDisplay } from "@/components/RemoteDisplay.tsx";
-import { StorageUtil } from "@/lib/storage.ts";
+import StorageUtil from "@/shared/StorageManager.ts";
 
 /**
  * Landing experience for a profile that provides orchestration controls, status, and live logs.
@@ -75,11 +75,14 @@ const HomePage: React.FC<ProfileProps> = ({ profileId }) => {
   /**
    * Serializes the on-screen log buffer and triggers a local download for auditing or support.
    */
-  const exportLog = () => {
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  const exportLog = async () => {
     const content = logStore[`config:${profileId}`]
       .map((entry) => `[${formatIsoToReadable(entry.time)}] ${entry.level}: ${entry.message}`)
       .join("\n");
-    StorageUtil.download(`logs-${profileId}-${new Date().toISOString()}.txt`, content);
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+    await StorageUtil.download(`logs-${profileId}-${formattedDate}.txt`, content, t);
   };
 
   return (

@@ -485,5 +485,16 @@
     "bitrate": "Битрейт",
     "showStatus": "Показать статус",
     "saveAndApply": "Сохранить и применить"
-  }
+  },
+  "installer.title": "Добро пожаловать в Blue Archive Auto Script",
+  "installer.title.wizard": "Мастер установки",
+  "installer.subtitle.stage_1": "Настройте установку",
+  "installer.subtitle.stage_2": "Настраиваем окружение. Это может занять несколько минут.",
+  "label.install_dir": "Папка установки",
+  "installer.exit": "Отменить установку",
+  "installer.setting": "Настройки установки",
+  "installer.advanced": "Расширенные настройки",
+  "installer.start": "Начать установку",
+  "label.repo_url": "Выберите адрес репозитория или зеркало",
+  "label.pypi_mirror": "Выберите зеркало PyPI"
 }

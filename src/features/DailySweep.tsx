@@ -5,7 +5,7 @@ import { FormSelect } from "@/components/ui/FormSelect";
 import { FormInput } from "@/components/ui/FormInput";
 import { LabelWithTooltip } from "@/components/ui/LabelWithTooltip.tsx";
 import { Separator } from "../components/ui/Separator.tsx";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 import { DynamicConfig } from "@/types/dynamic";
 import CButton from "@/components/ui/CButton.tsx";
 import StudentSelectorModal from "@/components/StudentSelectorModal.tsx";

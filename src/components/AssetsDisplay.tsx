@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/Popover.tsx";
 
 const baseUrl = import.meta.env.BASE_URL;

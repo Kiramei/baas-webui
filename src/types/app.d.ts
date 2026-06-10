@@ -6,7 +6,7 @@ import {
   ControlConnection,
   ControlSessionBundle,
   SecureWebSocket,
-} from "@/lib/SecureWebSocket";
+} from "@/shared/SecureWebSocket";
 
 export interface ConfigProfile {
   id: string;
@@ -161,4 +161,10 @@ interface WebSocketState {
   _pwd_epoch: number;
   _control: ControlConnection | null;
   _session: ControlSessionBundle | null;
+}
+
+interface BaseBackendInterface {
+  baseBackendAddr: string;
+  baseBackendPort: number;
+  serviceSecret: string;
 }

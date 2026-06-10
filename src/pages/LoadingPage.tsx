@@ -1,18 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { TextGenerateEffect } from "../components/ui/TextGenerateEffect.tsx";
-import { useGlobalLogStore } from "@/store/globalLogStore.ts";
-import { formatIsoToReadableTime } from "@/lib/utils.ts";
+import { useGlobalLogStore } from "@/store/GlobalLogStore.ts";
+import { formatIsoToReadableTime } from "@/shared/GlobalUtilities.ts";
 import { motion } from "framer-motion";
-import { useTheme } from "../contexts/ThemeProvider.tsx";
-import { useWebSocketStore } from "../store/websocketStore";
+import { useTheme } from "@/context/ThemeProvider.tsx";
+import { useWebSocketStore } from "../store/WebsocketStore.ts";
 import { useTranslation } from "react-i18next";
 import { Info, KeyRound, ShieldCheck } from "lucide-react";
 import { FormInput } from "@/components/ui/FormInput.tsx";
 import CButton from "@/components/ui/CButton.tsx";
 import { FormSelect } from "@/components/ui/FormSelect.tsx";
 import i18n from "i18next";
-import { loadLocale } from "@/lib/i18n.ts";
-import { useUISettings } from "@/contexts/UISettingsProvider.tsx";
+import { loadLocale } from "@/shared/I18nTranslator.ts";
+import { useUISettings } from "@/context/UISettingsProvider.tsx";
 
 const baseUrl = import.meta.env.BASE_URL;
 
@@ -42,7 +42,7 @@ export function AutoScrollTerminal({ children }: { children: React.ReactNode }) 
   );
 }
 
-export const LoadingPage: React.FC<LoadingPageProps> = ({ message = "Loading..." }) => {
+const LoadingPage: React.FC<LoadingPageProps> = ({ message = "Loading..." }) => {
   const globalLogData = useGlobalLogStore((state) => state.globalLogData);
   const authPhase = useWebSocketStore((state) => state._auth_phase);
   const authError = useWebSocketStore((state) => state._auth_error);
@@ -320,3 +320,5 @@ export const PasswordInputModal: React.FC<{
     </div>
   );
 };
+
+export default LoadingPage;

@@ -12,9 +12,9 @@ import { useTranslation } from "react-i18next";
 import SwitchButton from "@/components/ui/SwitchButton.tsx";
 import { FormInput } from "@/components/ui/FormInput.tsx";
 import { FormSelect } from "@/components/ui/FormSelect.tsx";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 import StudentSelectorModal from "@/components/StudentSelectorModal.tsx";
-import { serverMap } from "@/lib/utils.ts";
+import { serverMap } from "@/shared/GlobalUtilities.ts";
 import { DynamicConfig } from "@/types/dynamic";
 import CButton from "@/components/ui/CButton.tsx";
 

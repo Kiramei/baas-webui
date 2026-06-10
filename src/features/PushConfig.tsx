@@ -3,7 +3,7 @@ import SwitchButton from "@/components/ui/SwitchButton";
 import { FormInput } from "@/components/ui/FormInput";
 import { useTranslation } from "react-i18next";
 import { DynamicConfig } from "@/types/dynamic";
-import { useWebSocketStore } from "@/store/websocketStore.ts";
+import { useWebSocketStore } from "@/store/WebsocketStore.ts";
 
 type PushConfigProps = {
   profileId: string;

@@ -22,7 +22,7 @@ Les pages sont commutées à l’aide d’un **routeur framer-motion** léger qu
 | Module              | Responsabilité                                                                          | Fichiers principaux                                                         |
 | :------------------ | :-------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------- |
 | **Context**         | Partage les paramètres UI, le profil actif et le catalogue de profils.                  | `contexts/AppContext.tsx`                                                   |
-| **State Stores**    | Les magasins Zustand normalisent l’état distant (config, événements, statut, journaux). | `store/websocketStore.ts`, `store/globalLogStore.ts`                        |
+| **State Stores**    | Les magasins Zustand normalisent l’état distant (config, événements, statut, journaux). | `store/WebsocketStore.ts`, `store/GlobalLogStore.ts`                        |
 | **Remote Services** | Encapsulent les interactions serveur (raccourcis, WebSocket chiffré).                   | `services/hotkeyService.ts`, `lib/SecureWebSocket.ts`                       |
 | **Pages**           | Conteneurs de niveau route : `Home`, `Scheduler`, `Configuration`, `Settings`, `Wiki`.  | `pages/*.tsx`                                                               |
 | **Feature Forms**   | Panneaux modulaires opérant sur un fragment de `DynamicConfig`.                         | `features/*Config.tsx`, `features/DailySweep.tsx`                           |

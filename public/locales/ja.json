@@ -485,5 +485,16 @@
     "bitrate": "ビットレート",
     "showStatus": "ステータスを表示",
     "saveAndApply": "保存して適用"
-  }
+  },
+  "installer.title": "Blue Archive Auto Script へようこそ",
+  "installer.title.wizard": "セットアップウィザード",
+  "installer.subtitle.stage_1": "インストールの設定",
+  "installer.subtitle.stage_2": "実行環境を構築しています。少々お待ちください。",
+  "label.install_dir": "インストール先",
+  "installer.exit": "キャンセル",
+  "installer.setting": "インストール設定",
+  "installer.advanced": "詳細設定",
+  "installer.start": "インストール開始",
+  "label.repo_url": "リポジトリのアドレスまたはミラーを選択",
+  "label.pypi_mirror": "PyPI ミラーを選択"
 }

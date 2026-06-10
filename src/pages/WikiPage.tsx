@@ -8,7 +8,7 @@ import {
   loadDocs,
   mapLanguage,
   WikiArticle,
-} from "@/lib/wikiContent.ts";
+} from "@/components/LocalWikiContent.tsx";
 import { BookOpen, Loader2, Search, Tag, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";

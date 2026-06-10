@@ -1,6 +1,6 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
-import { AppProvider, useApp } from "@/contexts/AppContext";
-import { ThemeProvider } from "./contexts/ThemeProvider";
+import { AppProvider, useApp } from "@/context/AppContext";
+import { ThemeProvider } from "@/context/ThemeProvider";
 import MainLayout from "@/components/layout/MainLayout";
 import HomePage from "@/pages/HomePage";
 import SchedulerPage from "@/pages/SchedulerPage";
@@ -9,12 +9,11 @@ import SettingsPage from "@/pages/SettingsPage";
 import WikiPage from "@/pages/WikiPage.tsx";
 import type { Variants } from "framer-motion";
 import { motion } from "framer-motion";
-import { LoadingPage } from "@/pages/LoadingPage";
 import { Toaster } from "./components/ui/Sonner";
 import { PageKey } from "@/types/app";
-import i18n, { loadLocale } from "@/lib/i18n";
+import i18n, { loadLocale } from "@/shared/I18nTranslator.ts";
 import BAComet from "@/components/ui/BAComet.tsx";
-import { UISettingsProvider, useUISettings } from "@/contexts/UISettingsProvider.tsx";
+import { UISettingsProvider, useUISettings } from "@/context/UISettingsProvider.tsx";
 import ReconnectingOverlay from "@/components/ReconnectingOverlay.tsx";
 
 /**
@@ -125,6 +124,13 @@ const WrappedApp: React.FC = () => {
     }
   }, [ready]);
 
+  const InitialPage = React.lazy(async () => {
+    console.log("Initial page", __WITH_TAURI__, __WITH_WEBUI__);
+    if (__WITH_WEBUI__) return import("@/pages/LoadingPage");
+    if (__WITH_TAURI__) return import("@/pages/SetupPage");
+    return import("@/pages/LoadingPage");
+  });
+
   return (
     <>
       {uiSettings.enableBAComet && <BAComet />}
@@ -141,7 +147,9 @@ const WrappedApp: React.FC = () => {
           }}
           className="fixed inset-0 z-100"
         >
-          <LoadingPage />
+          <Suspense fallback={<></>}>
+            <InitialPage />
+          </Suspense>
         </motion.div>
       )}
       <Suspense fallback={null}>

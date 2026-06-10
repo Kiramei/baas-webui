@@ -25,7 +25,7 @@ Reactアプリは `App.tsx` でレンダリングされ、
 | モジュール               | 役割                                                       | 主なファイル                                      |
 | :------------------ | :------------------------------------------------------- | :------------------------------------------ |
 | **Context**         | UI設定・アクティブプロファイル共有                                       | `contexts/AppContext.tsx`                   |
-| **State Stores**    | Zustandによりリモート状態を正規化                                     | `store/websocketStore.ts`                   |
+| **State Stores**    | Zustandによりリモート状態を正規化                                     | `store/WebsocketStore.ts`                   |
 | **Remote Services** | バックエンドとの暗号通信／ホットキー設定保持                                   | `services/hotkeyService.ts`                 |
 | **Pages**           | `Home`・`Scheduler`・`Configuration`・`Settings`・`Wiki` ページ | `pages/*.tsx`                               |
 | **Feature Forms**   | 各機能設定パネル（DynamicConfigに基づく）                              | `features/*Config.tsx`                      |

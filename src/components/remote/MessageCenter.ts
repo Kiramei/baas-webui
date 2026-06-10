@@ -132,7 +132,7 @@ export class CommandControlMessage extends ControlMessage {
       buffer.writeUInt8(this.type, 0);
       this.buffer = buffer;
     }
-    return this.buffer;
+    return this.buffer!;
   }
 
   public toString(): string {

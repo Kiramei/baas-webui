@@ -166,9 +166,9 @@ pnpm dev
 
 ## 🔧 Configuration
 
-- **WebSocket endpoints:** Adjust `BASE` or channel names in `src/store/websocketStore.ts:19` if your automation service
+- **WebSocket endpoints:** Adjust `BASE` or channel names in `src/store/WebsocketStore.ts:19` if your automation service
   runs elsewhere.
-- **UI defaults:** Persisted via `StorageUtil` (`src/lib/storage.ts`); initial values are injected in `AppContext.tsx`.
+- **UI defaults:** Persisted via `StorageUtil` (`src/lib/StorageManager.ts`); initial values are injected in `AppContext.tsx`.
 - **Localization:** Update `src/assets/locales/*.json` for new languages; wiki articles live in
   `src/assets/docs/<locale>`.
 - **Hotkeys:** Extend `src/services/hotkeyService.ts` once the backend API is ready; UI bindings are powered by
